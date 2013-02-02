@@ -1,0 +1,59 @@
+#!/usr/bin/python
+
+import commands, os
+
+sourceFile = "usr/lib/solydxk/updatemanager/updatemanager.py"
+
+menuName = commands.getoutput("cat " + sourceFile + " | grep menuName")
+menuName = menuName.replace("menuName", "")
+menuName = menuName.replace("=", "")
+menuName = menuName.replace("_(", "")
+menuName = menuName.replace("\"", "")
+menuName = menuName.replace(")", "")
+menuName = menuName.strip()
+
+menuComment = commands.getoutput("cat " + sourceFile + " | grep menuComment")
+menuComment = menuComment.replace("menuComment", "")
+menuComment = menuComment.replace("=", "")
+menuComment = menuComment.replace("_(", "")
+menuComment = menuComment.replace("\"", "")
+menuComment = menuComment.replace(")", "")
+menuComment = menuComment.strip()
+
+desktopFile = open("usr/share/applications/updatemanager.desktop", "w")
+desktopFile.writelines("""[Desktop Entry]
+Name=Update Manager
+""")
+
+import gettext
+gettext.install("updatemanager", "usr/share/solydxk/updatemanager/locale")
+
+for directory in os.listdir("usr/share/solydxk/updatemanager/locale"):
+	if os.path.isdir(os.path.join("usr/share/solydxk/updatemanager/locale", directory)):
+		try:
+			language = gettext.translation('updatemanager', "usr/share/solydxk/updatemanager/locale", languages=[directory])
+			language.install()
+			desktopFile.writelines("Name[%s]=%s\n" % (directory, _(menuName)))
+		except:
+			pass
+
+desktopFile.writelines("Comment=Show and install available updates\n")
+
+for directory in os.listdir("usr/share/solydxk/updatemanager/locale"):
+	if os.path.isdir(os.path.join("usr/share/solydxk/updatemanager/locale", directory)):
+		try:
+			language = gettext.translation('updatemanager', "usr/share/solydxk/updatemanager/locale", languages=[directory])
+			language.install()			
+			desktopFile.writelines("Comment[%s]=%s\n" % (directory, _(menuComment)))
+		except:
+			pass
+
+desktopFile.writelines("""Exec=updatemanager
+Icon=/usr/share/solydxk/updatemanager/icons/base.svg
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;Settings;
+StartupNotify=false
+""")
+

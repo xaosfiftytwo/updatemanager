@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo rm -rf /usr/lib/solydxk/updatemanager
+sudo cp -R etc /
+sudo cp -R usr /
+updatemanager

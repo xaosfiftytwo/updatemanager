@@ -1,0 +1,5 @@
+updatemanager (1.0.0) debian; urgency=low
+
+  * mintupdate-debian adapted and repackaged for SolydXK version 1.0.0
+
+ -- Schoelje <schoelje@solydxk.com>  Tue, 23 Jan 2012 08:38:00 +0200

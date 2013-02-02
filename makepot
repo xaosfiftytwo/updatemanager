@@ -1,0 +1,3 @@
+#!/bin/bash
+
+xgettext --language=Python --keyword=_ --output=mintupdate-debian.pot usr/lib/solydxk/updatemanager/updatemanager.py usr/lib/solydxk/updatemanager/checkAPT.py
