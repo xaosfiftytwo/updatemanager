@@ -13,6 +13,7 @@ try:
     import gettext
     import fnmatch
     import urllib2
+    import webbrowser
     from config import Config
 except Exception, detail:
     print detail
@@ -28,7 +29,7 @@ except Exception, detail:
 from subprocess import Popen, PIPE
 
 try:
-    nrUpdMgr = commands.getoutput("ps -A | grep updatemanager | wc -l")
+    nrUpdMgr = commands.getoutput("ps -A | grep updatemanager$ | wc -l")
     if (nrUpdMgr != "0"):
         if (os.getuid() == 0):
             os.system("killall updatemanager")
@@ -724,15 +725,15 @@ def install(widget, treeView, statusIcon, wTree):
         slist = apt_pkg.SourceList()
         slist.read_main_list()
         slist.get_indexes(acquire, True)
-        lm_debian_repo_url = None
+        solydxk_repo_url = None
         for item in acquire.items:
             repo = item.desc_uri
-            if repo.endswith('Packages.bz2') and ('/latest/dists/testing/' in repo or
-               '/incoming/dists/testing/' in repo):
-                lm_debian_repo_url = repo.partition('/dists/')[0]
+            if repo.endswith('Packages.bz2') and ('/production/dists/testing/' in repo or
+               '/testing/dists/testing/' in repo):
+                solydxk_repo_url = repo.partition('/dists/')[0]
                 break
-        if lm_debian_repo_url is not None:
-            url = "%s/update-pack-info.txt" % lm_debian_repo_url
+        if solydxk_repo_url is not None:
+            url = "%s/update-pack-info.txt" % solydxk_repo_url
             import urllib2
             html = urllib2.urlopen(url)
             for line in html.readlines():
@@ -857,6 +858,8 @@ def read_configuration():
     global icon_error
     global icon_unknown
     global icon_apply
+
+    prefs = {}
 
     #Read refresh config
     try:
@@ -1142,7 +1145,7 @@ def open_pack_info(widget):
     config_str = "<span color='red'><b>" + _("Could not identify your APT sources") + "</b></span>"
     latest_update_pack = _("N/A")
     installed_update_pack = _("N/A")
-    lm_debian_repo_url = None
+    solydxk_repo_url = None
 
     try:
         if (os.path.exists("/var/log/updatemanager.packlevel")):
@@ -1164,105 +1167,105 @@ def open_pack_info(widget):
 
         # Which repo do the sources use for the main archive?
         main_points_to_debian = False
-        main_points_to_latest = False
-        main_points_to_incoming = False
-        main_points_to_lm = False
+        main_points_to_production = False
+        main_points_to_testing = False
+        main_points_to_solydxk = False
 
         # Which repo do the sources use for multimedia?
         multimedia_points_to_debian = False
-        multimedia_points_to_latest = False
-        multimedia_points_to_incoming = False
+        multimedia_points_to_production = False
+        multimedia_points_to_testing = False
 
         # Which repo do the sources use for security?
         security_points_to_debian = False
-        security_points_to_latest = False
-        security_points_to_incoming = False
+        security_points_to_production = False
+        #security_points_to_testing = False
 
-        lm_is_here = False    # Is the repo itself present?
+        solydxk_is_here = False    # Is the repo itself present?
 
         for item in acquire.items:
             repo = item.desc_uri
             if repo.endswith('Packages.bz2'):
-                #Check LM
-                if '/dists/debian/upstream/' in repo:
-                    lm_is_here = True
+                #Check SOLYDXK
+                if '/dists/solydxk/upstream/' in repo:
+                    solydxk_is_here = True
                 #Check main archive
-                elif '/latest/dists/testing/' in repo:
-                    main_points_to_latest = True
-                    main_points_to_lm = True
-                    lm_debian_repo_url = "http://" + repurldebian + "/latest"
-                elif '/incoming/dists/testing/' in repo:
-                    main_points_to_incoming = True
-                    main_points_to_lm = True
-                    lm_debian_repo_url = "http://" + repurldebian + "/incoming"
+                elif '/production/dists/testing/' in repo:
+                    main_points_to_production = True
+                    main_points_to_solydxk = True
+                    solydxk_repo_url = "http://" + repurldebian + "/production"
+                elif '/testing/dists/testing/' in repo:
+                    main_points_to_testing = True
+                    main_points_to_solydxk = True
+                    solydxk_repo_url = "http://" + repurldebian + "/testing"
                 elif 'debian.org/debian/dists' in repo and '//ftp.' in repo:
                     main_points_to_debian = True
-                #Check multimedia
-                elif '/latest/multimedia/dists/testing/' in repo:
-                    multimedia_points_to_latest = True
-                elif '/incoming/multimedia/dists/testing/' in repo:
-                    multimedia_points_to_incoming = True
-                elif 'debian-multimedia.org' in repo:
+                #Check multimedia (multimedia is in UP process)
+                elif '/production/multimedia/dists/testing/' in repo:
+                    multimedia_points_to_production = True
+                elif '/testing/multimedia/dists/testing/' in repo:
+                    multimedia_points_to_testing = True
+                elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
                     multimedia_points_to_debian = True
-                #Check security
-                elif '/latest/security/dists/testing/' in repo:
-                    security_points_to_latest = True
-                elif '/incoming/security/dists/testing/' in repo:
-                    security_points_to_incoming = True
+                #Check security (security is NOT in UP process)
+                elif '/security/dists/testing/' in repo:
+                    security_points_to_production = True
+                #elif '/security/dists/testing/' in repo:
+                    #security_points_to_testing = True
                 elif 'security.debian.org' in repo:
                     security_points_to_debian = True
 
-        if main_points_to_debian and main_points_to_lm:
-            #Conflict between DEBIAN and LM_DEBIAN
-            config_str = _("Your system is pointing to " + repdebian + " and " + repurldebian) + "\n" + _("These repositories conflict with each others")
+        if main_points_to_debian and main_points_to_solydxk:
+            #Conflict between DEBIAN and SOLYDXK
+            config_str = _("Your system is pointing to " + repdebian + " and " + repurldebian) + "\n" + _("These repositories conflict with each other")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-        elif main_points_to_incoming and main_points_to_latest:
-            #Conflict between LM_DEBIAN_INCOMING and LM_DEBIAN_LATEST
-            config_str = _("Your system is pointing to " + repurldebian + "/latest and " + repurldebian + "/incoming") + "\n" + _("These repositories conflict with each others")
+        elif main_points_to_testing and main_points_to_production:
+            #Conflict between SOLYDXK_TESTING and SOLYDXK_PRODUCTION
+            config_str = _("Your system is pointing to " + repurldebian + "/production and " + repurldebian + "/testing") + "\n" + _("These repositories conflict with each other")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-        elif not lm_is_here:
-            #Missing LM
-            config_str = _("Your system is not pointing to the SolydXK repositories") + "\n" + _("Add \"deb http://" + repurl + "/ debian main upstream import \" to your APT sources")
+        elif not solydxk_is_here:
+            #Missing SOLYDXK
+            config_str = _("Your system is not pointing to the SolydXK repositories") + "\n" + _("Add \"deb http://" + repurl + "/ solydxk main upstream import \" to your APT sources")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-        elif not (main_points_to_lm or main_points_to_debian):
-            #Missing DEBIAN or LM_DEBIAN
-            config_str = _("Your system is not pointing to any Debian repository") + "\n" + _("Add \"deb http://" + repurldebian + "/latest testing main contrib non-free\" to your APT sources")
+        elif not (main_points_to_solydxk or main_points_to_debian):
+            #Missing DEBIAN or SOLYDXK
+            config_str = _("Your system is not pointing to any Debian repository") + "\n" + _("Add \"deb http://" + repurldebian + "/production testing main contrib non-free\" to your APT sources")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
         else:
             if main_points_to_debian:
                 config_str = _("Your system is pointing directly to Debian") + "\n" + _("This is only recommended for experienced users")
                 wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
-            elif main_points_to_incoming:
+            elif main_points_to_testing:
                 if multimedia_points_to_debian:
-                    config_str = _("Your system is pointing directly at debian-multimedia.org") + "\n" + _("Replace \"deb http://debian-multimedia.org testing main non-free\" with \"deb http://" + repurldebian + "/incoming/multimedia testing main non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + repurldebian + "/testing/multimedia testing main non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 elif security_points_to_debian:
-                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + repurldebian + "/incoming/security testing/updates main contrib non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + repurldebian + "/security testing/updates main contrib non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                elif (multimedia_points_to_latest or security_points_to_latest):
-                    config_str = _("Some of your repositories point to Latest, others point to Incoming") + "\n" + _("Please check your APT sources.")
+                elif (multimedia_points_to_production or security_points_to_production):
+                    config_str = _("Some of your repositories point to production, others point to testing") + "\n" + _("Please check your APT sources.")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 else:
-                    config_str = _("Your system is pointing to the \"SolydXK Debian Incoming\" repository") + "\n" + _("This is only recommend for experienced users")
+                    config_str = _("Your system is pointing to the \"SolydXK testing\" repository") + "\n" + _("This is only recommend for experienced users")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
-            elif main_points_to_latest:
+            elif main_points_to_production:
                 if multimedia_points_to_debian:
-                    config_str = _("Your system is pointing directly at debian-multimedia.org") + "\n" + _("Replace \"deb http://debian-multimedia.org testing main non-free\" with \"deb http://" + repurldebian + "/latest/multimedia testing main non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + repurldebian + "/production/multimedia testing main non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 elif security_points_to_debian:
-                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + repurldebian + "/latest/security testing/updates main contrib non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + repurldebian + "/security testing/updates main contrib non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                elif (multimedia_points_to_incoming or security_points_to_incoming):
-                    config_str = _("Some of your repositories point to Latest, others point to Incoming") + "\n" + _("Please check your APT sources.")
+                elif (multimedia_points_to_testing):
+                    config_str = _("Some of your repositories point to production, but multimedia to testing") + "\n" + _("Please check your APT sources.")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 else:
-                    config_str = _("Your system is pointing to the \"SolydXK Debian Latest\" repository")
+                    config_str = _("Your system is pointing to the \"SolydXK production\" repository")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_SMALL_TOOLBAR)
     except Exception, detail:
         print detail
 
-    if lm_debian_repo_url is not None:
-        url = "%s/update-pack-info.txt" % lm_debian_repo_url
+    if solydxk_repo_url is not None:
+        url = "%s/update-pack-info.txt" % solydxk_repo_url
         import urllib2
         html = urllib2.urlopen(url)
         for line in html.readlines():
@@ -1275,10 +1278,14 @@ def open_pack_info(widget):
 
         import webkit
         browser = webkit.WebView()
+        # Add browser to widget
         wTree.get_widget("scrolled_pack_info").add(browser)
+        # listen for clicks of links
+        browser.connect("new-window-policy-decision-requested", on_nav_request)
         browser.connect("button-press-event", lambda w, e: e.button == 3)
-        url = "%s/update-pack.html" % lm_debian_repo_url
+        url = "%s/update-pack.html" % solydxk_repo_url
         browser.open(url)
+
         browser.show()
 
     wTree.get_widget("label_system_configuration_value").set_markup("<b>%s</b>" % config_str)
@@ -1287,6 +1294,19 @@ def open_pack_info(widget):
 
     wTree.get_widget("button_close").connect("clicked", close_pack_info, wTree)
     wTree.get_widget("window_pack_info").show()
+
+
+def on_nav_request(browser, frame, request, action, decision, *args, **kwargs):
+    # User clicked on a <a href link: open uri in new tab or new default browser
+    reason = action.get_reason()
+    if (reason == 0):    # = WEBKIT_WEB_NAVIGATION_REASON_LINK_CLICKED
+        if decision is not None:
+            decision.ignore()
+            uri = request.get_uri()
+            webbrowser.open_new_tab(uri)
+    else:
+        if decision is not None:
+            decision.use()
 
 
 def close_pack_info(widget, tree):

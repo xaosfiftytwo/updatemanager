@@ -3,7 +3,13 @@
 import os
 import commands
 
-launcher = commands.getoutput("/usr/lib/solydxk/system/which-launcher.py")
+launcher = ''
+icon = '/usr/share/solydxk/updatemanager/icons/base.svg'
+if os.geteuid() > 0:
+    if os.path.exists('/usr/bin/kdesudo'):
+        launcher = 'kdesudo -i %s -d --comment "<b>Please enter your password</b>"' % icon
+    elif os.path.exists('/usr/bin/gksu'):
+        launcher = 'gksu --message "<b>Please enter your password</b>"'
 
 command = "%s /usr/lib/solydxk/updatemanager/updatemanager.py show 0 &" % launcher
 os.system(command)
