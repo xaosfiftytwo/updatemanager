@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 try:
+    import pygtk
+    pygtk.require("2.0")
     import os
     import commands
     import sys
@@ -14,19 +16,14 @@ try:
     import fnmatch
     import urllib2
     import webbrowser
+    import re
     from config import Config
+    from subprocess import Popen, PIPE
+    from datetime import date
 except Exception, detail:
     print detail
     pass
 
-try:
-    import pygtk
-    pygtk.require("2.0")
-except Exception, detail:
-    print detail
-    pass
-
-from subprocess import Popen, PIPE
 
 try:
     nrUpdMgr = commands.getoutput("ps -A | grep updatemanager$ | wc -l")
@@ -39,6 +36,7 @@ try:
 except Exception, detail:
     print detail
 
+# Rename the process (or it will be listed as "Python" instead of "updatemanager")
 architecture = commands.getoutput("uname -a")
 if (architecture.find("x86_64") >= 0):
     import ctypes
@@ -81,15 +79,10 @@ INDEX_HISTORY_PACKAGE_NAME = 1
 INDEX_HISTORY_OLD_VERSION = 2
 INDEX_HISTORY_NEW_VERSION = 3
 
-# Read from config file
+# Initiate config files
+# Set default settings in "def read_configuration"
 cfgignored = os.path.join(curdir, 'updatemanager.ignored')
 cfg = Config('updatemanager.conf')
-repurl = cfg.getValue('UPDATEMANAGER', 'repurl')
-repurldevsubdir = cfg.getValue('UPDATEMANAGER', 'repurldevsubdir')
-repurldebian = cfg.getValue('UPDATEMANAGER', 'repurldebian')
-repdebian = cfg.getValue('UPDATEMANAGER', 'repdebian')
-authors = cfg.getValue('UPDATEMANAGER', 'authors').split(',')
-testdomain = cfg.getValue('UPDATEMANAGER', 'testdomain')
 
 
 class ChangelogRetriever(threading.Thread):
@@ -105,10 +98,10 @@ class ChangelogRetriever(threading.Thread):
         gtk.gdk.threads_leave()
 
         changelog = ""
-        if ("solydxk" in self.version) or ("solydxk" in self.source_package):
-            #Get the solydxk change file for amd64
+        if ("solyd" in self.version) or ("solyd" in self.source_package):
+            #Get the solyd change file for amd64
             try:
-                url = urllib2.urlopen("http://" + repurl + "/" + repurldevsubdir + "/" + self.source_package + "_" + self.version + "_amd64.changes", None, 30)
+                url = urllib2.urlopen("http://" + prefs["repurl"] + "/" + prefs["repurldevsubdir"] + "/" + self.source_package + "_" + self.version + "_amd64.changes", None, 30)
                 source = url.read()
                 url.close()
                 changes = source.split("\n")
@@ -118,7 +111,7 @@ class ChangelogRetriever(threading.Thread):
                         changelog = changelog + change + "\n"
             except:
                 try:
-                    url = urllib2.urlopen("http://" + repurl + "/" + repurldevsubdir + "/" + self.source_package + "_" + self.version + "_i386.changes", None, 30)
+                    url = urllib2.urlopen("http://" + prefs["repurl"] + "/" + prefs["repurldevsubdir"] + "/" + self.source_package + "_" + self.version + "_i386.changes", None, 30)
                     source = url.read()
                     url.close()
                     changes = source.split("\n")
@@ -221,20 +214,20 @@ class InstallThread(threading.Thread):
             model = self.treeView.get_model()
             gtk.gdk.threads_leave()
 
-            iter = model.get_iter_first()
+            itr = model.get_iter_first()
             history = open("/var/log/updatemanager.history", "a")
-            while (iter is not None):
-                checked = model.get_value(iter, INDEX_UPGRADE)
+            while (itr is not None):
+                checked = model.get_value(itr, INDEX_UPGRADE)
                 if (checked == "true"):
                     installNeeded = True
-                    package = model.get_value(iter, INDEX_PACKAGE_NAME)
-                    oldVersion = model.get_value(iter, INDEX_OLD_VERSION)
-                    newVersion = model.get_value(iter, INDEX_NEW_VERSION)
+                    package = model.get_value(itr, INDEX_PACKAGE_NAME)
+                    oldVersion = model.get_value(itr, INDEX_OLD_VERSION)
+                    newVersion = model.get_value(itr, INDEX_NEW_VERSION)
                     history.write(commands.getoutput('date +"%Y.%m.%d %H:%M:%S"') + "\t" + package + "\t" + oldVersion + "\t" + newVersion + "\n")
                     packages.append(package)
                     log.writelines("++ Will install " + str(package) + "\n")
                     log.flush()
-                iter = model.iter_next(iter)
+                itr = model.iter_next(itr)
             history.close()
 
             if installNeeded:
@@ -280,8 +273,8 @@ class InstallThread(threading.Thread):
                                     model = gtk.TreeStore(str)
                                     removals.sort()
                                     for pkg in removals:
-                                        iter = model.insert_before(None, None)
-                                        model.set_value(iter, 0, pkg)
+                                        itr = model.insert_before(None, None)
+                                        model.set_value(itr, 0, pkg)
                                     treeview.set_model(model)
                                     treeview.show()
                                     scrolledWindow.add(treeview)
@@ -310,8 +303,8 @@ class InstallThread(threading.Thread):
                                     model = gtk.TreeStore(str)
                                     installations.sort()
                                     for pkg in installations:
-                                        iter = model.insert_before(None, None)
-                                        model.set_value(iter, 0, pkg)
+                                        itr = model.insert_before(None, None)
+                                        model.set_value(itr, 0, pkg)
                                     treeview.set_model(model)
                                     treeview.show()
                                     scrolledWindow.add(treeview)
@@ -369,7 +362,7 @@ class InstallThread(threading.Thread):
                     self.wTree.get_widget("window1").hide()
                     gtk.gdk.threads_leave()
 
-                    if ("updatemanager" in packages) or ("updatemanager" in packages):
+                    if ("updatemanager" in packages):
                         # Restart
                         try:
                             log.writelines("++ updatemanager was updated, restarting it in root mode...\n")
@@ -492,7 +485,7 @@ class RefreshThread(threading.Thread):
                 updates = commands.getoutput(curdir + "/checkAPT.py --use-synaptic %s | grep \"###\"" % self.wTree.get_widget("window1").window.xid)
 
             # Look for updatemanager
-            if ("UPDATE###updatemanager###" in updates) or ("UPDATE###updatemanager###" in updates):
+            if ("UPDATE###updatemanager###" in updates):
                 new_update = True
             else:
                 new_update = False
@@ -562,36 +555,44 @@ class RefreshThread(threading.Thread):
                         strSize = size_to_string(size)
 
                         if (new_update):
-                            if (package == "updatemanager") or (package == "updatemanager"):
+                            if (package == "updatemanager"):
                                 list_of_packages = list_of_packages + " " + package
-                                iter = model.insert_before(None, None)
-                                model.set_value(iter, INDEX_UPGRADE, "true")
-                                model.row_changed(model.get_path(iter), iter)
-                                model.set_value(iter, INDEX_PACKAGE_NAME, package)
-                                model.set_value(iter, INDEX_OLD_VERSION, oldVersion)
-                                model.set_value(iter, INDEX_NEW_VERSION, newVersion)
-                                model.set_value(iter, INDEX_SIZE, size)
-                                model.set_value(iter, INDEX_STR_SIZE, strSize)
-                                model.set_value(iter, INDEX_DESCRIPTION, description)
-                                model.set_value(iter, INDEX_SOURCE_PACKAGE, source_package)
+                                itr = model.insert_before(None, None)
+                                model.set_value(itr, INDEX_UPGRADE, "true")
+                                model.row_changed(model.get_path(itr), itr)
+                                model.set_value(itr, INDEX_PACKAGE_NAME, package)
+                                model.set_value(itr, INDEX_OLD_VERSION, oldVersion)
+                                model.set_value(itr, INDEX_NEW_VERSION, newVersion)
+                                model.set_value(itr, INDEX_SIZE, size)
+                                model.set_value(itr, INDEX_STR_SIZE, strSize)
+                                model.set_value(itr, INDEX_DESCRIPTION, description)
+                                model.set_value(itr, INDEX_SOURCE_PACKAGE, source_package)
                                 num_updates = num_updates + 1
                         else:
                             list_of_packages = list_of_packages + " " + package
-                            iter = model.insert_before(None, None)
-                            model.set_value(iter, INDEX_UPGRADE, "true")
+                            itr = model.insert_before(None, None)
+                            model.set_value(itr, INDEX_UPGRADE, "true")
                             download_size = download_size + size
-                            model.row_changed(model.get_path(iter), iter)
-                            model.set_value(iter, INDEX_PACKAGE_NAME, package)
-                            model.set_value(iter, INDEX_OLD_VERSION, oldVersion)
-                            model.set_value(iter, INDEX_NEW_VERSION, newVersion)
-                            model.set_value(iter, INDEX_SIZE, size)
-                            model.set_value(iter, INDEX_STR_SIZE, strSize)
-                            model.set_value(iter, INDEX_DESCRIPTION, description)
-                            model.set_value(iter, INDEX_SOURCE_PACKAGE, source_package)
+                            model.row_changed(model.get_path(itr), itr)
+                            model.set_value(itr, INDEX_PACKAGE_NAME, package)
+                            model.set_value(itr, INDEX_OLD_VERSION, oldVersion)
+                            model.set_value(itr, INDEX_NEW_VERSION, newVersion)
+                            model.set_value(itr, INDEX_SIZE, size)
+                            model.set_value(itr, INDEX_STR_SIZE, strSize)
+                            model.set_value(itr, INDEX_DESCRIPTION, description)
+                            model.set_value(itr, INDEX_SOURCE_PACKAGE, source_package)
                             num_updates = num_updates + 1
 
                 gtk.gdk.threads_enter()
-                if (new_update):
+                new_up = checkNewUpdate()
+                if new_up is not None:
+                    self.statusString = _("A new update pack is available (version: %s)" % new_up)
+                    self.statusIcon.set_from_file(icon_updates)
+                    self.statusIcon.set_tooltip(self.statusString)
+                    statusbar.push(context_id, self.statusString)
+                    log.writelines("++ %s\n" % self.statusString)
+                    log.flush()
+                elif (new_update):
                     self.statusString = _("A new version of the update manager is available")
                     self.statusIcon.set_from_file(icon_updates)
                     self.statusIcon.set_tooltip(self.statusString)
@@ -602,18 +603,18 @@ class RefreshThread(threading.Thread):
                     if (num_updates > 0):
                         if (num_updates == 1):
                             if (num_ignored == 0):
-                                self.statusString = _("1 recommended update available (%(size)s)") % {'size':size_to_string(download_size)}
+                                self.statusString = _("1 recommended update available (%(size)s)") % {'size': size_to_string(download_size)}
                             elif (num_ignored == 1):
-                                self.statusString = _("1 recommended update available (%(size)s), 1 ignored") % {'size':size_to_string(download_size)}
+                                self.statusString = _("1 recommended update available (%(size)s), 1 ignored") % {'size': size_to_string(download_size)}
                             elif (num_ignored > 1):
-                                self.statusString = _("1 recommended update available (%(size)s), %(ignored)d ignored") % {'size':size_to_string(download_size), 'ignored':num_ignored}
+                                self.statusString = _("1 recommended update available (%(size)s), %(ignored)d ignored") % {'size': size_to_string(download_size), 'ignored': num_ignored}
                         else:
                             if (num_ignored == 0):
-                                self.statusString = _("%(recommended)d recommended updates available (%(size)s)") % {'recommended':num_updates, 'size':size_to_string(download_size)}
+                                self.statusString = _("%(recommended)d recommended updates available (%(size)s)") % {'recommended': num_updates, 'size': size_to_string(download_size)}
                             elif (num_ignored == 1):
-                                self.statusString = _("%(recommended)d recommended updates available (%(size)s), 1 ignored") % {'recommended':num_updates, 'size':size_to_string(download_size)}
+                                self.statusString = _("%(recommended)d recommended updates available (%(size)s), 1 ignored") % {'recommended': num_updates, 'size': size_to_string(download_size)}
                             elif (num_ignored > 0):
-                                self.statusString = _("%(recommended)d recommended updates available (%(size)s), %(ignored)d ignored") % {'recommended':num_updates, 'size':size_to_string(download_size), 'ignored':num_ignored}
+                                self.statusString = _("%(recommended)d recommended updates available (%(size)s), %(ignored)d ignored") % {'recommended': num_updates, 'size': size_to_string(download_size), 'ignored': num_ignored}
                         self.statusIcon.set_from_file(icon_updates)
                         self.statusIcon.set_tooltip(self.statusString)
                         statusbar.push(context_id, self.statusString)
@@ -667,11 +668,91 @@ class RefreshThread(threading.Thread):
                                 newPkg = cache[o.name]
                                 changes.append(newPkg)
                                 foundSomething = True
-                    except Exception, detail:
+                    except Exception:
                         pass    # don't know why we get these..
         if (foundSomething):
             changes = self.checkDependencies(changes, cache)
         return changes
+
+
+# Run a command and return the output in an array
+def run_command(cmd):
+    lstOut = []
+    p = Popen(cmd, shell=True, stdout=PIPE)
+    while True:
+        # Strip the line, also from null spaces (strip() only strips white spaces)
+        line = p.stdout.readline().strip().strip("\0")
+        if line == '' and p.poll() is not None:
+            break
+        if line != '':
+            lstOut.append(line)
+    return lstOut
+
+
+def get_apt_repos():
+    repos = []
+    cmds = ['cat /etc/apt/sources.list', 'cat /etc/apt/sources.list.d/*.list']
+    for cmd in cmds:
+        lstOut = run_command(cmd)
+        for line in lstOut:
+            line = line.strip()
+            matchObj = re.search("^deb\s*(http[:\/a-z\.]*)", line)
+            if matchObj:
+                repos.append(matchObj.group(1))
+    return repos
+
+
+def checkNewUpdate():
+    new_up = None
+    installed_up_version = []
+    if (os.path.exists("/var/log/updatemanager.packlevel")):
+        installed_up_version = commands.getoutput("cat /var/log/updatemanager.packlevel").strip().split('.')
+    try:
+        #apt_pkg.init_config()
+        #apt_pkg.init_system()
+        #acquire = apt_pkg.Acquire()
+        #slist = apt_pkg.SourceList()
+        #slist.read_main_list()
+        #slist.get_indexes(acquire, True)
+        #solydxk_repo_url = None
+        #for item in acquire.items:
+            #repo = item.desc_uri
+            #if repo.endswith('Packages.bz2') and ('/production/dists/testing/' in repo or '/testing/dists/testing/' in repo):
+                #solydxk_repo_url = repo.partition('/dists/')[0]
+                #break
+
+        prefs = read_configuration()
+
+        solydxk_repo_url = None
+        repos = get_apt_repos()
+        for repo in repos:
+            if 'debian.solydxk.com/production' in repo:
+                solydxk_repo_url = "http://" + prefs["repurldebian"] + "/production"
+                break
+            if 'debian.solydxk.com/testing' in repo:
+                solydxk_repo_url = "http://" + prefs["repurldebian"] + "/testing"
+                break
+
+        if solydxk_repo_url is not None:
+            url = "%s/update-pack-info.txt" % solydxk_repo_url
+            html = urllib2.urlopen(url)
+            for line in html.readlines():
+                elements = line.split("=")
+                variable = elements[0].strip()
+                value = elements[1].strip().split('.')
+                if variable == "version":
+                    if len(installed_up_version) == len(value):
+                        instDate = date(installed_up_version[0], installed_up_version[1], installed_up_version[2])
+                        valDate = date(value[0], value[1], value[2])
+                        if valDate > instDate:
+                            # There's a new UP
+                            new_up = value
+                            break
+            html.close()
+    except Exception, detail:
+        print detail
+
+    return new_up
 
 
 def force_refresh(widget, treeview, statusIcon, wTree):
@@ -681,29 +762,29 @@ def force_refresh(widget, treeview, statusIcon, wTree):
 
 def clear(widget, treeView, statusbar, context_id):
     model = treeView.get_model()
-    iter = model.get_iter_first()
-    while (iter is not None):
-        model.set_value(iter, INDEX_UPGRADE, "false")
-        iter = model.iter_next(iter)
+    itr = model.get_iter_first()
+    while (itr is not None):
+        model.set_value(itr, INDEX_UPGRADE, "false")
+        itr = model.iter_next(itr)
     statusbar.push(context_id, _("No updates selected"))
 
 
 def select_all(widget, treeView, statusbar, context_id):
     model = treeView.get_model()
-    iter = model.get_iter_first()
-    while (iter is not None):
-        model.set_value(iter, INDEX_UPGRADE, "true")
-        iter = model.iter_next(iter)
-    iter = model.get_iter_first()
+    itr = model.get_iter_first()
+    while (itr is not None):
+        model.set_value(itr, INDEX_UPGRADE, "true")
+        itr = model.iter_next(itr)
+    itr = model.get_iter_first()
     download_size = 0
     num_selected = 0
-    while (iter is not None):
-        checked = model.get_value(iter, INDEX_UPGRADE)
+    while (itr is not None):
+        checked = model.get_value(itr, INDEX_UPGRADE)
         if (checked == "true"):
-            size = model.get_value(iter, INDEX_SIZE)
+            size = model.get_value(itr, INDEX_SIZE)
             download_size = download_size + size
             num_selected = num_selected + 1
-        iter = model.iter_next(iter)
+        itr = model.iter_next(itr)
     if num_selected == 0:
         statusbar.push(context_id, _("No updates selected"))
     elif num_selected == 1:
@@ -717,34 +798,9 @@ def install(widget, treeView, statusIcon, wTree):
     install = InstallThread(treeView, statusIcon, wTree)
     install.start()
     #Try to update the local update pack level
-    try:
-        import apt_pkg
-        apt_pkg.init_config()
-        apt_pkg.init_system()
-        acquire = apt_pkg.Acquire()
-        slist = apt_pkg.SourceList()
-        slist.read_main_list()
-        slist.get_indexes(acquire, True)
-        solydxk_repo_url = None
-        for item in acquire.items:
-            repo = item.desc_uri
-            if repo.endswith('Packages.bz2') and ('/production/dists/testing/' in repo or
-               '/testing/dists/testing/' in repo):
-                solydxk_repo_url = repo.partition('/dists/')[0]
-                break
-        if solydxk_repo_url is not None:
-            url = "%s/update-pack-info.txt" % solydxk_repo_url
-            import urllib2
-            html = urllib2.urlopen(url)
-            for line in html.readlines():
-                elements = line.split("=")
-                variable = elements[0].strip()
-                value = elements[1].strip()
-                if variable == "version":
-                    os.system("echo %s > /var/log/updatemanager.packlevel" % value)
-            html.close()
-    except Exception, detail:
-        print detail
+    new_up = checkNewUpdate()
+    if new_up is not None:
+        os.system("echo %s > /var/log/updatemanager.packlevel" % new_up)
 
 
 def change_icon(widget, button, prefs_tree, treeview, statusIcon, wTree):
@@ -795,7 +851,16 @@ def pref_apply(widget, prefs_tree, treeview, statusIcon, wTree):
     global icon_unknown
     global icon_apply
 
-    #Write refresh config
+    # Write updatemanager config
+    section = 'UPDATEMANAGER'
+    cfg.setValue(section, 'repurl', prefs["repurl"])
+    cfg.setValue(section, 'repurldevsubdir', prefs["repurldevsubdir"])
+    cfg.setValue(section, 'repurldebian', prefs["repurldebian"])
+    cfg.setValue(section, 'repdebian', prefs["repdebian"])
+    cfg.setValue(section, 'authors', prefs["authors"])
+    cfg.setValue(section, 'testdomain', prefs["testdomain"])
+
+    # Write refresh config
     section = 'refresh'
     cfg.setValue(section, 'timer_minutes', str(int(prefs_tree.get_widget("timer_minutes").get_value())))
     cfg.setValue(section, 'timer_hours', str(int(prefs_tree.get_widget("timer_hours").get_value())))
@@ -804,11 +869,11 @@ def pref_apply(widget, prefs_tree, treeview, statusIcon, wTree):
     #Write update config
     section = 'update'
     cfg.setValue(section, 'delay', str(int(prefs_tree.get_widget("spin_delay").get_value())))
-    cfg.setValue(section, 'ping_domain', prefs_tree.get_widget("text_ping").get_value())
-    cfg.setValue(section, 'dist_upgrade', prefs_tree.get_widget("checkbutton_dist_upgrade").get_value())
+    cfg.setValue(section, 'ping_domain', prefs_tree.get_widget("ping_domain").get_text())
+    cfg.setValue(section, 'dist_upgrade', prefs_tree.get_widget("checkbutton_dist_upgrade").get_active())
 
     #Write icons config
-    section = 'update'
+    section = 'icons'
     cfg.setValue(section, 'busy', icon_busy)
     cfg.setValue(section, 'up2date', icon_up2date)
     cfg.setValue(section, 'updates', icon_updates)
@@ -820,10 +885,10 @@ def pref_apply(widget, prefs_tree, treeview, statusIcon, wTree):
     ignored_list = open(cfgignored, "w")
     treeview_blacklist = prefs_tree.get_widget("treeview_blacklist")
     model = treeview_blacklist.get_model()
-    iter = model.get_iter_first()
-    while iter is not None:
-        pkg = model.get_value(iter, 0)
-        iter = model.iter_next(iter)
+    itr = model.get_iter_first()
+    while itr is not None:
+        pkg = model.get_value(itr, 0)
+        itr = model.iter_next(itr)
         ignored_list.writelines(pkg + "\n")
     ignored_list.close()
 
@@ -861,9 +926,26 @@ def read_configuration():
 
     prefs = {}
 
-    #Read refresh config
+    # Read updatemanager config
+    section = 'UPDATEMANAGER'
     try:
-        section = 'refresh'
+        prefs["repurl"] = cfg.getValue(section, 'repurl')
+        prefs["repurldevsubdir"] = cfg.getValue(section, 'repurldevsubdir')
+        prefs["repurldebian"] = cfg.getValue(section, 'repurldebian')
+        prefs["repdebian"] = cfg.getValue(section, 'repdebian')
+        prefs["authors"] = cfg.getValue(section, 'authors').split(',')
+        prefs["testdomain"] = cfg.getValue(section, 'testdomain')
+    except:
+        prefs["repurl"] = 'packages.solydxk.com'
+        prefs["repurldevsubdir"] = 'dev'
+        prefs["repurldebian"] = 'debian.solydxk.com'
+        prefs["repdebian"] = 'ftp.debian.org'
+        prefs["authors"] = ['Schoelje <schoelje@solydxk.com>', 'Clement Lefebvre <root@linuxmint.com>', 'Chris Hodapp <clhodapp@live.com>']
+        prefs["testdomain"] = 'google.com'
+
+    #Read refresh config
+    section = 'refresh'
+    try:
         prefs["timer_minutes"] = int(cfg.getValue(section, 'timer_minutes'))
         prefs["timer_hours"] = int(cfg.getValue(section, 'timer_hours'))
         prefs["timer_days"] = int(cfg.getValue(section, 'timer_days'))
@@ -873,19 +955,19 @@ def read_configuration():
         prefs["timer_days"] = 0
 
     #Read update config
+    section = 'update'
     try:
-        section = 'update'
         prefs["delay"] = int(cfg.getValue(section, 'delay'))
         prefs["ping_domain"] = cfg.getValue(section, 'ping_domain')
         prefs["dist_upgrade"] = (cfg.getValue(section, 'dist_upgrade') == "True")
     except:
         prefs["delay"] = 30
-        prefs["ping_domain"] = testdomain
+        prefs["ping_domain"] = prefs["testdomain"]
         prefs["dist_upgrade"] = True
 
     #Read icons config
+    section = 'icons'
     try:
-        section = 'icons'
         icon_busy = cfg.getValue(section, 'busy')
         icon_up2date = cfg.getValue(section, 'up2date')
         icon_updates = cfg.getValue(section, 'updates')
@@ -1001,7 +1083,7 @@ def open_preferences(widget, treeview, statusIcon, wTree):
     prefs_tree.get_widget("timer_hours").set_value(prefs["timer_hours"])
     prefs_tree.get_widget("timer_days").set_value(prefs["timer_days"])
 
-    prefs_tree.get_widget("text_ping").set_text(prefs["ping_domain"])
+    prefs_tree.get_widget("ping_domain").set_text(prefs["ping_domain"])
 
     prefs_tree.get_widget("spin_delay").set_value(prefs["delay"])
 
@@ -1031,8 +1113,8 @@ def open_preferences(widget, treeview, statusIcon, wTree):
     if os.path.exists(cfgignored):
         ignored_list = open(cfgignored, "r")
         for ignored_pkg in ignored_list:
-            iter = model.insert_before(None, None)
-            model.set_value(iter, 0, ignored_pkg.strip())
+            itr = model.insert_before(None, None)
+            model.set_value(itr, 0, ignored_pkg.strip())
         del model
         ignored_list.close()
 
@@ -1058,16 +1140,16 @@ def add_blacklisted_package(widget, treeview_blacklist):
     pkg = name.strip()
     if pkg != '':
         model = treeview_blacklist.get_model()
-        iter = model.insert_before(None, None)
-        model.set_value(iter, 0, pkg)
+        itr = model.insert_before(None, None)
+        model.set_value(itr, 0, pkg)
 
 
 def remove_blacklisted_package(widget, treeview_blacklist):
     selection = treeview_blacklist.get_selection()
-    (model, iter) = selection.get_selected()
-    if (iter is not None):
-        #pkg = model.get_value(iter, 0)
-        model.remove(iter)
+    (model, itr) = selection.get_selected()
+    if (itr is not None):
+        #pkg = model.get_value(itr, 0)
+        model.remove(itr)
 
 
 def open_history(widget):
@@ -1116,12 +1198,12 @@ def open_history(widget):
                 oldVersion = values[2]
                 newVersion = values[3]
 
-                iter = model.insert_before(None, None)
-                model.set_value(iter, INDEX_HISTORY_DATE, date)
-                model.row_changed(model.get_path(iter), iter)
-                model.set_value(iter, INDEX_HISTORY_PACKAGE_NAME, package)
-                model.set_value(iter, INDEX_HISTORY_OLD_VERSION, oldVersion)
-                model.set_value(iter, INDEX_HISTORY_NEW_VERSION, newVersion)
+                itr = model.insert_before(None, None)
+                model.set_value(itr, INDEX_HISTORY_DATE, date)
+                model.row_changed(model.get_path(itr), itr)
+                model.set_value(itr, INDEX_HISTORY_PACKAGE_NAME, package)
+                model.set_value(itr, INDEX_HISTORY_OLD_VERSION, oldVersion)
+                model.set_value(itr, INDEX_HISTORY_NEW_VERSION, newVersion)
 
     treeview_update.set_model(model)
     del model
@@ -1151,13 +1233,12 @@ def open_pack_info(widget):
         if (os.path.exists("/var/log/updatemanager.packlevel")):
             installed_update_pack = commands.getoutput("cat /var/log/updatemanager.packlevel")
 
-        import apt_pkg
-        apt_pkg.init_config()
-        apt_pkg.init_system()
-        acquire = apt_pkg.Acquire()
-        slist = apt_pkg.SourceList()
-        slist.read_main_list()
-        slist.get_indexes(acquire, True)
+        #apt_pkg.init_config()
+        #apt_pkg.init_system()
+        #acquire = apt_pkg.Acquire()
+        #slist = apt_pkg.SourceList()
+        #slist.read_main_list()
+        #slist.get_indexes(acquire, True)
 
         # There's 3 valid configurations (for main repo, multimedia and security):
         #
@@ -1183,53 +1264,55 @@ def open_pack_info(widget):
 
         solydxk_is_here = False    # Is the repo itself present?
 
-        for item in acquire.items:
-            repo = item.desc_uri
-            if repo.endswith('Packages.bz2'):
-                #Check SOLYDXK
-                if '/dists/solydxk/upstream/' in repo:
-                    solydxk_is_here = True
-                #Check main archive
-                elif '/production/dists/testing/' in repo:
-                    main_points_to_production = True
-                    main_points_to_solydxk = True
-                    solydxk_repo_url = "http://" + repurldebian + "/production"
-                elif '/testing/dists/testing/' in repo:
-                    main_points_to_testing = True
-                    main_points_to_solydxk = True
-                    solydxk_repo_url = "http://" + repurldebian + "/testing"
-                elif 'debian.org/debian/dists' in repo and '//ftp.' in repo:
-                    main_points_to_debian = True
-                #Check multimedia (multimedia is in UP process)
-                elif '/production/multimedia/dists/testing/' in repo:
-                    multimedia_points_to_production = True
-                elif '/testing/multimedia/dists/testing/' in repo:
-                    multimedia_points_to_testing = True
-                elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
-                    multimedia_points_to_debian = True
-                #Check security (security is NOT in UP process)
-                elif '/security/dists/testing/' in repo:
-                    security_points_to_production = True
-                #elif '/security/dists/testing/' in repo:
-                    #security_points_to_testing = True
-                elif 'security.debian.org' in repo:
-                    security_points_to_debian = True
+        repos = get_apt_repos()
+        #for item in acquire.items:
+            #repo = item.desc_uri
+        for repo in repos:
+            #if repo.endswith('Packages.bz2'):
+            #Check SOLYDXK
+            if 'packages.solydxk.com' in repo:
+                solydxk_is_here = True
+            #Check main archive
+            elif 'debian.solydxk.com/production' in repo:
+                main_points_to_production = True
+                main_points_to_solydxk = True
+                solydxk_repo_url = "http://" + prefs["repurldebian"] + "/production"
+            elif 'debian.solydxk.com/testing' in repo:
+                main_points_to_testing = True
+                main_points_to_solydxk = True
+                solydxk_repo_url = "http://" + prefs["repurldebian"] + "/testing"
+            elif 'debian.org/debian' in repo and '//ftp.' in repo:
+                main_points_to_debian = True
+            #Check multimedia (multimedia is in UP process)
+            elif 'debian.solydxk.com/production/multimedia' in repo:
+                multimedia_points_to_production = True
+            elif 'debian.solydxk.com/testing/multimedia' in repo:
+                multimedia_points_to_testing = True
+            elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
+                multimedia_points_to_debian = True
+            #Check security (security is NOT in UP process)
+            elif 'debian.solydxk.com/security' in repo:
+                security_points_to_production = True
+            #elif '/security/dists/testing/' in repo:
+                #security_points_to_testing = True
+            elif 'security.debian.org' in repo:
+                security_points_to_debian = True
 
         if main_points_to_debian and main_points_to_solydxk:
             #Conflict between DEBIAN and SOLYDXK
-            config_str = _("Your system is pointing to " + repdebian + " and " + repurldebian) + "\n" + _("These repositories conflict with each other")
+            config_str = _("Your system is pointing to " + prefs["repdebian"] + " and " + prefs["repurldebian"]) + "\n" + _("These repositories conflict with each other")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
         elif main_points_to_testing and main_points_to_production:
             #Conflict between SOLYDXK_TESTING and SOLYDXK_PRODUCTION
-            config_str = _("Your system is pointing to " + repurldebian + "/production and " + repurldebian + "/testing") + "\n" + _("These repositories conflict with each other")
+            config_str = _("Your system is pointing to " + prefs["repurldebian"] + "/production and " + prefs["repurldebian"] + "/testing") + "\n" + _("These repositories conflict with each other")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
         elif not solydxk_is_here:
             #Missing SOLYDXK
-            config_str = _("Your system is not pointing to the SolydXK repositories") + "\n" + _("Add \"deb http://" + repurl + "/ solydxk main upstream import \" to your APT sources")
+            config_str = _("Your system is not pointing to the SolydXK repositories") + "\n" + _("Add \"deb http://" + prefs["repurl"] + "/ solydxk main upstream import \" to your APT sources")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
         elif not (main_points_to_solydxk or main_points_to_debian):
             #Missing DEBIAN or SOLYDXK
-            config_str = _("Your system is not pointing to any Debian repository") + "\n" + _("Add \"deb http://" + repurldebian + "/production testing main contrib non-free\" to your APT sources")
+            config_str = _("Your system is not pointing to any Debian repository") + "\n" + _("Add \"deb http://" + prefs["repurldebian"] + "/production testing main contrib non-free\" to your APT sources")
             wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
         else:
             if main_points_to_debian:
@@ -1237,10 +1320,10 @@ def open_pack_info(widget):
                 wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
             elif main_points_to_testing:
                 if multimedia_points_to_debian:
-                    config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + repurldebian + "/testing/multimedia testing main non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + prefs["repurldebian"] + "/testing/multimedia testing main non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 elif security_points_to_debian:
-                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + repurldebian + "/security testing/updates main contrib non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + prefs["repurldebian"] + "/security testing/updates main contrib non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 elif (multimedia_points_to_production or security_points_to_production):
                     config_str = _("Some of your repositories point to production, others point to testing") + "\n" + _("Please check your APT sources.")
@@ -1250,10 +1333,10 @@ def open_pack_info(widget):
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
             elif main_points_to_production:
                 if multimedia_points_to_debian:
-                    config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + repurldebian + "/production/multimedia testing main non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + prefs["repurldebian"] + "/production/multimedia testing main non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 elif security_points_to_debian:
-                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + repurldebian + "/security testing/updates main contrib non-free\" in your APT sources")
+                    config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + prefs["repurldebian"] + "/security testing/updates main contrib non-free\" in your APT sources")
                     wTree.get_widget("image_system_config").set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
                 elif (multimedia_points_to_testing):
                     config_str = _("Some of your repositories point to production, but multimedia to testing") + "\n" + _("Please check your APT sources.")
@@ -1266,7 +1349,6 @@ def open_pack_info(widget):
 
     if solydxk_repo_url is not None:
         url = "%s/update-pack-info.txt" % solydxk_repo_url
-        import urllib2
         html = urllib2.urlopen(url)
         for line in html.readlines():
             elements = line.split("=")
@@ -1274,6 +1356,10 @@ def open_pack_info(widget):
             value = elements[1].strip()
             if variable == "version":
                 latest_update_pack = value
+                # Double check installed_update_pack format (very dirty)
+                if len(installed_update_pack) != 10:
+                    installed_update_pack = value
+                    os.system("echo %s > /var/log/updatemanager.packlevel" % value)
         html.close()
 
         import webkit
@@ -1353,7 +1439,7 @@ def open_about(widget):
     except Exception, detail:
         print detail
 
-    dlg.set_authors(authors)
+    dlg.set_authors(prefs["authors"])
     dlg.set_icon_from_file(os.path.join(sharedir, 'icons/base.svg'))
     dlg.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(sharedir, 'icons/base.svg')))
 
@@ -1447,33 +1533,33 @@ def save_window_size(window, vpaned):
 def display_selected_package(selection, wTree):
     wTree.get_widget("textview_description").get_buffer().set_text("")
     wTree.get_widget("textview_changes").get_buffer().set_text("")
-    (model, iter) = selection.get_selected()
-    if (iter is not None):
-        #selected_package = model.get_value(iter, INDEX_PACKAGE_NAME)
-        description_txt = model.get_value(iter, INDEX_DESCRIPTION)
+    (model, itr) = selection.get_selected()
+    if (itr is not None):
+        #selected_package = model.get_value(itr, INDEX_PACKAGE_NAME)
+        description_txt = model.get_value(itr, INDEX_DESCRIPTION)
         wTree.get_widget("notebook_details").set_current_page(0)
         wTree.get_widget("textview_description").get_buffer().set_text(description_txt)
 
 
 def switch_page(notebook, page, page_num, Wtree, treeView):
     selection = treeView.get_selection()
-    (model, iter) = selection.get_selected()
-    if (iter is not None):
-        selected_package = model.get_value(iter, INDEX_PACKAGE_NAME)
-        description_txt = model.get_value(iter, INDEX_DESCRIPTION)
+    (model, itr) = selection.get_selected()
+    if (itr is not None):
+        selected_package = model.get_value(itr, INDEX_PACKAGE_NAME)
+        description_txt = model.get_value(itr, INDEX_DESCRIPTION)
         if (page_num == 0):
             # Description tab
             wTree.get_widget("textview_description").get_buffer().set_text(description_txt)
         if (page_num == 1):
             # Changelog tab
-            version = model.get_value(iter, INDEX_NEW_VERSION)
+            version = model.get_value(itr, INDEX_NEW_VERSION)
             retriever = ChangelogRetriever(selected_package, version, wTree)
             retriever.start()
 
 
-def celldatafunction_checkbox(column, cell, model, iter):
+def celldatafunction_checkbox(column, cell, model, itr):
     cell.set_property("activatable", True)
-    checked = model.get_value(iter, INDEX_UPGRADE)
+    checked = model.get_value(itr, INDEX_UPGRADE)
     if (checked == "true"):
         cell.set_property("active", True)
     else:
@@ -1482,24 +1568,24 @@ def celldatafunction_checkbox(column, cell, model, iter):
 
 def toggled(renderer, path, treeview, statusbar, context_id):
     model = treeview.get_model()
-    iter = model.get_iter(path)
-    if (iter is not None):
-        checked = model.get_value(iter, INDEX_UPGRADE)
+    itr = model.get_iter(path)
+    if (itr is not None):
+        checked = model.get_value(itr, INDEX_UPGRADE)
         if (checked == "true"):
-            model.set_value(iter, INDEX_UPGRADE, "false")
+            model.set_value(itr, INDEX_UPGRADE, "false")
         else:
-            model.set_value(iter, INDEX_UPGRADE, "true")
+            model.set_value(itr, INDEX_UPGRADE, "true")
 
-    iter = model.get_iter_first()
+    itr = model.get_iter_first()
     download_size = 0
     num_selected = 0
-    while (iter is not None):
-        checked = model.get_value(iter, INDEX_UPGRADE)
+    while (itr is not None):
+        checked = model.get_value(itr, INDEX_UPGRADE)
         if (checked == "true"):
-            size = model.get_value(iter, INDEX_SIZE)
+            size = model.get_value(itr, INDEX_SIZE)
             download_size = download_size + size
             num_selected = num_selected + 1
-        iter = model.iter_next(iter)
+        itr = model.iter_next(itr)
     if num_selected == 0:
         statusbar.push(context_id, _("No updates selected"))
     elif num_selected == 1:
@@ -1542,7 +1628,14 @@ def add_to_ignore_list(widget, treeview_update, pkg, statusIcon, wTree):
     os.system("echo \"%s\" >> %s" % (pkg, cfgignored))
     force_refresh(widget, treeview_update, statusIcon, wTree)
 
-global app_hiden
+
+def repaintGui():
+    # Force repaint: ugly, but gui gets repainted so fast that gtk objects don't show it
+    while gtk.events_pending():
+        gtk.main_iteration(False)
+
+
+global app_hidden
 global log
 global logFile
 global mode
@@ -1803,21 +1896,24 @@ try:
             wTree.get_widget("vpaned1").set_position(prefs['dimensions_pane_position'])
             app_hidden = False
 
+            # Repaint before you continue, or else updatemanager in SolydX hangs
+            repaintGui()
+
     if os.getuid() != 0:
         #test the network connection to delay updatemanager in case we're not yet connected
         log.writelines("++ Testing initial connection\n")
         log.flush()
         try:
             from urllib import urlopen
-            url = urlopen('http://' + testdomain)
+            url = urlopen('http://' + prefs["testdomain"])
             url.read()
             url.close()
-            log.writelines("++ Connection to the Internet successful (tried to read http://www.google.com)\n")
+            log.writelines("++ Connection to the Internet successful (tried to read http://%s)\n" % prefs["testdomain"])
             log.flush()
         except Exception, detail:
             print detail
             if os.system("ping " + prefs["ping_domain"] + " -c1 -q"):
-                log.writelines("-- No connection found (tried to read http://www.google.com and to ping " + prefs["ping_domain"] + ") - sleeping for " + str(prefs["delay"]) + " seconds\n")
+                log.writelines("-- No connection found (tried to read http://" + prefs["testdomain"] + " and to ping " + prefs["ping_domain"] + ") - sleeping for " + str(prefs["delay"]) + " seconds\n")
                 log.flush()
                 time.sleep(prefs["delay"])
             else:
@@ -1831,6 +1927,7 @@ try:
 
     auto_refresh = AutomaticRefreshThread(treeview_update, statusIcon, wTree)
     auto_refresh.start()
+
     gtk.main()
 
 except Exception, detail:

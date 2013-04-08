@@ -3,5 +3,17 @@
 import os
 from user import home
 
-if (not os.path.exists('/live')) and (not os.path.exists('/rofs')):
-    os.system("/usr/lib/solydxk/updatemanager/updatemanager.py")
+curdir = os.path.dirname(os.path.realpath(__file__))
+
+# Check if we're running live
+def isRunningLive():
+    live = False
+    liveDirs = ['/live', '/lib/live', '/rofs']
+    for ld in liveDirs:
+        if os.path.exists(ld):
+            live = True
+            break
+    return live
+
+if not isRunningLive():
+    os.system(os.path.join(curdir, "../lib/solydxk/updatemanager/updatemanager.py"))

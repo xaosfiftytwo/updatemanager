@@ -1,5 +1,59 @@
+updatemanager (1.1.1) debian; urgency=high
+
+  * UM caused authentication warnings in apt
+
+ -- Schoelje <schoelje@solydxk.com>  Mon, 08 Apr 2013 00:00:00 +0100
+
+updatemanager (1.1.0) debian; urgency=high
+
+  * Some minor bugs resolved
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 03 Apr 2013 12:30:00 +0100
+
+updatemanager (1.0.9) debian; urgency=high
+
+  * Check on-line for new update pack
+
+ -- Schoelje <schoelje@solydxk.com>  Wed, 13 Mar 2013 11:30:00 +0100
+
+updatemanager (1.0.7) debian; urgency=high
+
+  * Custom icons were not saved correctly
+
+ -- Schoelje <schoelje@solydxk.com>  Fri, 08 Mar 2013 10:30:00 +0100
+
+updatemanager (1.0.6) debian; urgency=high
+
+  * Fix crash bug on SolydX and preferences not saving
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 07 Mar 2013 23:30:00 +0100
+ 
+updatemanager (1.0.4) debian; urgency=low
+
+  * Fix bug not saving preferences
+
+ -- Schoelje <schoelje@solydxk.com>  Sat, 02 Mar 2013 18:00:00 +0100
+
+updatemanager (1.0.3) debian; urgency=low
+
+  * Fix bug not seeing updates for some solydxk packages version 1.0.2
+
+ -- Schoelje <schoelje@solydxk.com>  Tue, 26 Feb 2013 18:30:00 +0100
+ 
+updatemanager (1.0.2) debian; urgency=low
+
+  * Replaces mintupdate-debian version 1.0.2
+
+ -- Schoelje <schoelje@solydxk.com>  Sat, 23 Feb 2013 19:30:00 +0100
+ 
+updatemanager (1.0.1) debian; urgency=low
+
+  * Fixed update pack handling version 1.0.1
+
+ -- Schoelje <schoelje@solydxk.com>  Tue, 19 Feb 2013 12:30:00 +0100
+
 updatemanager (1.0.0) debian; urgency=low
 
   * mintupdate-debian adapted and repackaged for SolydXK version 1.0.0
 
- -- Schoelje <schoelje@solydxk.com>  Tue, 23 Jan 2012 08:38:00 +0200
+ -- Schoelje <schoelje@solydxk.com>  Tue, 23 Jan 2013 08:38:00 +0100

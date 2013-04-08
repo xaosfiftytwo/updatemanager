@@ -14,13 +14,13 @@ class Config():
         firstChr = filePath[:1]
         if firstChr == '.' or firstChr != '/':
             # Assume only file name
-            curdir = os.path.dirname(os.path.realpath(__file__))
-            filePath = os.path.join(curdir, filePath)
+            curDir = os.path.dirname(os.path.realpath(__file__))
+            filePath = os.path.join(curDir, filePath)
+        else:
+            curDir = os.path.dirname(filePath)
+
+        self.curDir = curDir
         self.filePath = filePath
-        if not os.path.exists(self.filePath):
-            f = open(self.filePath, "w")
-            f.write("")
-            f.close()
         self.parser = ConfigParser.SafeConfigParser()
         self.parser.read([self.filePath])
 
@@ -35,11 +35,23 @@ class Config():
                 break
         return found
 
+    def removeSection(self, section):
+        self.parser.remove_section(section)
+        f = open(self.filePath, "w")
+        self.parser.write(f)
+        f.close()
+
     def getOptions(self, section):
         options = []
         if self.doesSectionExist(section):
             options = self.parser.items(section)
         return options
+
+    def removeOption(self, section, option):
+        self.parser.remove_option(section, option)
+        f = open(self.filePath, "w")
+        self.parser.write(f)
+        f.close()
 
     def getValue(self, section, option):
         value = ''
@@ -59,11 +71,23 @@ class Config():
         success = True
         value = str(value)
         try:
+            if not os.path.exists(self.curDir):
+                os.makedirs(self.curDir)
+
+            if not os.path.exists(self.filePath):
+                f = open(self.filePath, "w")
+                f.write("")
+                f.close()
+
             if not self.doesSectionExist(section):
                 # Create section first
                 self.parser.add_section(section)
+
             self.parser.set(section, option, value)
-            self.parser.write(self.filePath)
+            f = open(self.filePath, "w")
+            self.parser.write(f)
+            f.close()
+
         except Exception:
             success = False
         return success
