@@ -1,3 +1,21 @@
+updatemanager (1.1.4) debian; urgency=high
+
+  * Pre- and post-install scripts were not executed after an update of updatemanager
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 02 May 2013 15:30:00 +0100
+
+updatemanager (1.1.3) debian; urgency=high
+
+  * Pre- and post-install scripts for update packs
+
+ -- Schoelje <schoelje@solydxk.com>  Sat, 20 Apr 2013 11:00:00 +0100
+
+updatemanager (1.1.2) debian; urgency=high
+
+  * Automatically update apt cache (daily)
+
+ -- Schoelje <schoelje@solydxk.com>  Tue, 16 Apr 2013 14:00:00 +0100
+ 
 updatemanager (1.1.1) debian; urgency=high
 
   * UM caused authentication warnings in apt

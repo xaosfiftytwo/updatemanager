@@ -1,16 +1,17 @@
 Source: updatemanager
 Section: admin
 Priority: optional
-Maintainer: Schoelje <schoelje@schoelje.nl>
+Maintainer: Schoelje <schoelje@solydxk.com>
 Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
 Package: updatemanager
-Version: 1.0.0
 Architecture: all
-Maintainer: Schoelje <schoelje@schoelje.nl>
+Maintainer: Schoelje <schoelje@solydxk.com>
 Installed-Size: 720
-Depends: python (>= 2.4), python (<< 3), python-gtk2, python-glade2, synaptic
+Depends: python (>= 2.4), python (<< 3), python-gtk2, python-glade2, synaptic, apt, anacron
+Conflicts: mintupdate-debian
+Replaces: mintupdate-debian
 Section: admin
 Priority: optional
 Description: Update Manager

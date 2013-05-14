@@ -17,6 +17,7 @@ try:
     import urllib2
     import webbrowser
     import re
+    from glob import glob
     from config import Config
     from subprocess import Popen, PIPE
     from datetime import date
@@ -83,6 +84,8 @@ INDEX_HISTORY_NEW_VERSION = 3
 # Set default settings in "def read_configuration"
 cfgignored = os.path.join(curdir, 'updatemanager.ignored')
 cfg = Config('updatemanager.conf')
+
+new_updatemanager = False
 
 
 class ChangelogRetriever(threading.Thread):
@@ -195,11 +198,12 @@ class InstallThread(threading.Thread):
     global icon_unknown
     global icon_apply
 
-    def __init__(self, treeView, statusIcon, wTree):
+    def __init__(self, treeView, statusIcon, wTree, newUpVersion):
         threading.Thread.__init__(self)
         self.treeView = treeView
         self.statusIcon = statusIcon
         self.wTree = wTree
+        self.newUpVersion = newUpVersion
 
     def run(self):
         global log
@@ -331,6 +335,14 @@ class InstallThread(threading.Thread):
                     self.statusIcon.set_tooltip(_("Installing updates"))
                     gtk.gdk.threads_leave()
 
+                    # Check for pre-install script and execute if it exists
+                    if self.newUpVersion is not None:
+                        preScript = os.path.join(curdir, self.newUpVersion + '.pre')
+                        if os.path.exists(preScript):
+                            comnd = Popen(' ' + preScript, stdout=log, stderr=log, shell=True)
+                            returnCode = comnd.wait()
+                            log.writelines("++ Pre-install script return code:" + str(returnCode) + "\n")
+
                     log.writelines("++ Ready to launch synaptic\n")
                     log.flush()
                     cmd = ["sudo", "/usr/sbin/synaptic", "--hide-main-window",
@@ -353,6 +365,15 @@ class InstallThread(threading.Thread):
                     log.writelines("++ Return code:" + str(returnCode) + "\n")
                     #sts = os.waitpid(comnd.pid, 0)
                     f.close()
+
+                    # Check for post install script and execute if it exists
+                    if self.newUpVersion is not None:
+                        postScript = os.path.join(curdir, self.newUpVersion + '.post')
+                        if os.path.exists(postScript):
+                            comnd = Popen(' ' + postScript, stdout=log, stderr=log, shell=True)
+                            returnCode = comnd.wait()
+                            log.writelines("++ Post-install script return code:" + str(returnCode) + "\n")
+
                     log.writelines("++ Install finished\n")
                     log.flush()
 
@@ -486,9 +507,9 @@ class RefreshThread(threading.Thread):
 
             # Look for updatemanager
             if ("UPDATE###updatemanager###" in updates):
-                new_update = True
+                new_updatemanager = True
             else:
-                new_update = False
+                new_updatemanager = False
 
             updates = string.split(updates, "\n")
 
@@ -554,7 +575,7 @@ class RefreshThread(threading.Thread):
 
                         strSize = size_to_string(size)
 
-                        if (new_update):
+                        if (new_updatemanager):
                             if (package == "updatemanager"):
                                 list_of_packages = list_of_packages + " " + package
                                 itr = model.insert_before(None, None)
@@ -584,15 +605,8 @@ class RefreshThread(threading.Thread):
                             num_updates = num_updates + 1
 
                 gtk.gdk.threads_enter()
-                new_up = checkNewUpdate()
-                if new_up is not None:
-                    self.statusString = _("A new update pack is available (version: %s)" % new_up)
-                    self.statusIcon.set_from_file(icon_updates)
-                    self.statusIcon.set_tooltip(self.statusString)
-                    statusbar.push(context_id, self.statusString)
-                    log.writelines("++ %s\n" % self.statusString)
-                    log.flush()
-                elif (new_update):
+
+                if (new_updatemanager):
                     self.statusString = _("A new version of the update manager is available")
                     self.statusIcon.set_from_file(icon_updates)
                     self.statusIcon.set_tooltip(self.statusString)
@@ -600,7 +614,15 @@ class RefreshThread(threading.Thread):
                     log.writelines("++ Found a new version of updatemanager\n")
                     log.flush()
                 else:
-                    if (num_updates > 0):
+                    newUpVersion = checkNewUpdate()
+                    if newUpVersion is not None:
+                        self.statusString = _("A new update pack is available (version: %s)" % newUpVersion)
+                        self.statusIcon.set_from_file(icon_updates)
+                        self.statusIcon.set_tooltip(self.statusString)
+                        statusbar.push(context_id, self.statusString)
+                        log.writelines("++ %s\n" % self.statusString)
+                        log.flush()
+                    elif (num_updates > 0):
                         if (num_updates == 1):
                             if (num_ignored == 0):
                                 self.statusString = _("1 recommended update available (%(size)s)") % {'size': size_to_string(download_size)}
@@ -702,57 +724,92 @@ def get_apt_repos():
     return repos
 
 
+# Check for a new Update Pack
 def checkNewUpdate():
-    new_up = None
-    installed_up_version = []
-    if (os.path.exists("/var/log/updatemanager.packlevel")):
-        installed_up_version = commands.getoutput("cat /var/log/updatemanager.packlevel").strip().split('.')
-    try:
-        #apt_pkg.init_config()
-        #apt_pkg.init_system()
-        #acquire = apt_pkg.Acquire()
-        #slist = apt_pkg.SourceList()
-        #slist.read_main_list()
-        #slist.get_indexes(acquire, True)
-        #solydxk_repo_url = None
-        #for item in acquire.items:
-            #repo = item.desc_uri
-            #if repo.endswith('Packages.bz2') and ('/production/dists/testing/' in repo or '/testing/dists/testing/' in repo):
-                #solydxk_repo_url = repo.partition('/dists/')[0]
-                #break
+    newUpVersion = None
+    if not new_updatemanager:
+        installed_up_version = None
+        if (os.path.exists("/var/log/updatemanager.packlevel")):
+            installed_up_version = commands.getoutput("cat /var/log/updatemanager.packlevel").strip()
+        try:
+            #apt_pkg.init_config()
+            #apt_pkg.init_system()
+            #acquire = apt_pkg.Acquire()
+            #slist = apt_pkg.SourceList()
+            #slist.read_main_list()
+            #slist.get_indexes(acquire, True)
+            #solydxk_repo_url = None
+            #for item in acquire.items:
+                #repo = item.desc_uri
+                #if repo.endswith('Packages.bz2') and ('/production/dists/testing/' in repo or '/testing/dists/testing/' in repo):
+                    #solydxk_repo_url = repo.partition('/dists/')[0]
+                    #break
 
-        prefs = read_configuration()
+            prefs = read_configuration()
 
-        solydxk_repo_url = None
-        repos = get_apt_repos()
-        for repo in repos:
-            if 'debian.solydxk.com/production' in repo:
-                solydxk_repo_url = "http://" + prefs["repurldebian"] + "/production"
-                break
-            if 'debian.solydxk.com/testing' in repo:
-                solydxk_repo_url = "http://" + prefs["repurldebian"] + "/testing"
-                break
-
-        if solydxk_repo_url is not None:
-            url = "%s/update-pack-info.txt" % solydxk_repo_url
-            html = urllib2.urlopen(url)
-            for line in html.readlines():
-                elements = line.split("=")
-                variable = elements[0].strip()
-                value = elements[1].strip().split('.')
-                if variable == "version":
-                    if len(installed_up_version) == len(value):
-                        instDate = date(installed_up_version[0], installed_up_version[1], installed_up_version[2])
-                        valDate = date(value[0], value[1], value[2])
-                        if valDate > instDate:
-                            # There's a new UP
-                            new_up = value
+            solydxk_repo_url = None
+            repos = get_apt_repos()
+            for repo in repos:
+                if 'debian.solydxk.com/production' in repo:
+                    solydxk_repo_url = "http://" + prefs["repurldebian"] + "/production"
+                    break
+                if 'debian.solydxk.com/testing' in repo:
+                    solydxk_repo_url = "http://" + prefs["repurldebian"] + "/testing"
+                    break
+            if solydxk_repo_url is not None:
+                url = "%s/update-pack-info.txt" % solydxk_repo_url
+                html = urllib2.urlopen(url)
+                for line in html.readlines():
+                    elements = line.split("=")
+                    variable = elements[0].strip()
+                    value = elements[1].strip()
+                    if variable == "version":
+                        if len(installed_up_version) == len(value):
+                            instUpArr = installed_up_version.split('.')
+                            valArr = value.split('.')
+                            instDate = date(int(instUpArr[0]), int(instUpArr[1]), int(instUpArr[2]))
+                            valDate = date(int(valArr[0]), int(valArr[1]), int(valArr[2]))
+                            if valDate > instDate:
+                                # There's a new UP
+                                newUpVersion = value
+                                # Get the pre and post scripts
+                                getPrePostScripts(solydxk_repo_url, value)
+                                break
+                        else:
+                            newUpVersion = value
+                            getPrePostScripts(solydxk_repo_url, value)
                             break
-            html.close()
-    except Exception, detail:
-        print detail
+                html.close()
+        except Exception, detail:
+            print detail
 
-    return new_up
+    return newUpVersion
+
+
+# Get pre-install script and post-install script from the server
+def getPrePostScripts(repoUrl, upVersion):
+    if os.geteuid() == 0:
+        baseUrl = repoUrl + '/' + upVersion
+        basePath = os.path.join(curdir, upVersion)
+        extensions = ['pre', 'post']
+        for extension in extensions:
+            try:
+                # Delete old pre or post files
+                oldFiles = glob(curdir + '/*.' + extension)
+                for oldFile in oldFiles:
+                    os.remove(oldFile)
+                # Get the new scripts if they exist
+                url = baseUrl + '.' + extension
+                txt = urllib2.urlopen(url).read()
+                if txt != '':
+                    # Save to a file and make executable
+                    flePath = basePath + '.' + extension
+                    fle = open(flePath, 'w')
+                    fle.write(txt)
+                    fle.close()
+                    os.chmod(flePath, 0755)
+            except:
+                pass
 
 
 def force_refresh(widget, treeview, statusIcon, wTree):
@@ -794,13 +851,15 @@ def select_all(widget, treeView, statusbar, context_id):
 
 
 def install(widget, treeView, statusIcon, wTree):
-    #Launch the install
-    install = InstallThread(treeView, statusIcon, wTree)
-    install.start()
     #Try to update the local update pack level
-    new_up = checkNewUpdate()
-    if new_up is not None:
-        os.system("echo %s > /var/log/updatemanager.packlevel" % new_up)
+    newUpVersion = checkNewUpdate()
+    if newUpVersion is not None:
+        os.system("echo %s > /var/log/updatemanager.packlevel" % newUpVersion)
+
+    #Launch the install
+    install = InstallThread(treeView, statusIcon, wTree, newUpVersion)
+    install.start()
+
 
 
 def change_icon(widget, button, prefs_tree, treeview, statusIcon, wTree):
