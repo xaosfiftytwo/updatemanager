@@ -9,7 +9,7 @@ Package: updatemanager
 Architecture: all
 Maintainer: Schoelje <schoelje@solydxk.com>
 Installed-Size: 720
-Depends: python (>= 2.4), python (<< 3), python-gtk2, python-glade2, synaptic, apt, anacron
+Depends: python (>= 2.4), python (<< 3), python-gtk2, python-glade2, synaptic, apt, anacron, python-pycurl
 Conflicts: mintupdate-debian
 Replaces: mintupdate-debian
 Section: admin

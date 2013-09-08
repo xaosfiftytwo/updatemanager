@@ -1,0 +1,139 @@
+#!/bin/bash
+
+# Debug mode (set to true or false)
+DEBUG=false
+
+# Get the current release: solydx, solydk or solydkbo
+RELEASE='solydx'
+if [ -e /usr/bin/kdm ]; then
+    INFO=$(cat /etc/solydxk/info)
+    if [[ "$INFO" == *solydkbo* ]]; then
+      RELEASE='solydkbo'
+    else
+      RELEASE='solydk'
+    fi
+fi
+BITS=$(uname -m)
+echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tRelease: $RELEASE $BITS"
+
+# Function to install a given package
+# Parameters:
+# 1. package name
+# 2. action: install, reinstall, purge, remove, forceremove, forceinstall
+# 3. distribution: all, solydx, solydk, solydkbo
+function handle_pck {
+    PCK=$1
+    ACTION=$2
+    DISTRO=$3
+    CONTINUE=true
+    
+    if [ "$DISTRO" != "all" ] && [ "$DISTRO" != "$RELEASE" ]; then
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
+        CONTINUE=false
+    fi
+
+    if $CONTINUE; then
+	PCKINST=$(dpkg-query -l $PCK | grep ^i)
+	if [ "$PCKINST" == "" ]; then
+	    if [ "$ACTION" != "install" ] && [ "$ACTION" != "forceinstall" ]; then
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\t$ACTION not needed, $PCK not installed"
+		CONTINUE=false
+	    fi
+	    PCKINST=$PCK
+	else
+	    if [ "$ACTION" == "install" ]; then
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\t$ACTION not needed, $PCK already installed"
+		CONTINUE=false
+	    fi
+	fi
+	
+	if $CONTINUE; then
+	    if [ "$ACTION" == "forceremove" ]; then
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
+		if ! $DEBUG; then
+		    dpkg --force-remove-reinstreq -P $PCK
+		fi
+	    else
+		if [ "$ACTION" == "reinstall" ] || [ "$ACTION" == "forceinstall" ]; then
+		    ACTION="install --reinstall"
+		fi
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tapt-get $ACTION $PCK"
+		if ! $DEBUG; then
+		    apt-get $ACTION -y --force-yes $PCK
+		fi
+	    fi
+	fi
+    fi
+}
+
+# Function to handle a given configuration file
+# Parameters:
+# 1. full path to configuration file
+# 2. option name (before "=")
+# 3. optional: option value (after "=")
+# 4. optional: string to add option and value after (on a new line)
+# When (3) is left empty, (2) will be simply appended to the configuration file
+function handle_cnf {
+    CNF=$1
+    OPT=$2
+    VAL=''
+    if [ ! -z $3 ]; then
+        VAL=$3
+    fi
+    APPAFTER=''
+    if [ ! -z $4 ]; then
+        APPAFTER=$4
+    fi
+    
+    LINE=$OPT
+    if [ "$VAL" != "" ]; then
+        LINE="$OPT=$VAL"
+    fi
+    
+    ESCOPT=${OPT//\[/\\[}
+    ESCOPT=${ESCOPT//\]/\\]}
+    ESCOPT=${ESCOPT//\//\\/}
+        
+    if [ -e $CNF ]; then
+	if grep -Fq $OPT $CNF; then
+	    echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\t$CNF : replace $OPT with $LINE"
+	    if ! $DEBUG; then
+	        sed -i "\'/$ESCOPT/c $LINE\'" $CNF
+	    fi
+	else
+	    if [ "$APPAFTER" == "" ]; then
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tAppend $LINE to $CNF"
+	        if ! $DEBUG; then
+		    echo >> $CNF
+		    echo -e "$LINE" >> $CNF
+		fi
+	    else
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
+	        if ! $DEBUG; then
+	            sed -i "\'/\$APPAFTER/a \$LINE\'" $CNF
+	        fi
+	    fi
+	fi
+    fi
+}
+
+
+# Configure the individual packages, and configuration files here
+handle_pck 'solydk-info' 'forceremove' 'solydkbo'
+handle_pck 'solydkbo-info' 'forceinstall' 'solydkbo'
+handle_pck 'solydk-info' 'reinstall' 'solydk'
+handle_pck 'solydx-info' 'reinstall' 'solydx'
+handle_pck 'solydk-system-adjustments' 'reinstall' 'solydk'
+handle_pck 'solydkbo-system-adjustments' 'reinstall' 'solydkbo'
+handle_pck 'solydx-system-adjustments' 'reinstall' 'solydx'
+handle_pck 'solydkbo-letodms' 'reinstall' 'solydkbo'
+handle_pck 'solydkbo-typo3' 'reinstall' 'solydkbo'
+handle_pck 'solydkbo-zurmo' 'reinstall' 'solydkbo'
+handle_pck 'solydkbo-orangehrm' 'reinstall' 'solydkbo'
+handle_pck 'solydkbo-siwapp' 'reinstall' 'solydkbo'
+if [ "$RELEASE" = "solydkbo" ] && [ -e /etc/apache2/apache2.conf ]; then
+  echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tStop Apache server"
+  service apache2 stop
+  echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-InstallScript\tDEBUG\tComment LockFile parameter in /etc/apache2/apache2.conf"
+  sed -i 's/^LockFile/#LockFile/' /etc/apache2/apache2.conf
+fi

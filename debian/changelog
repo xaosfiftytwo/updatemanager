@@ -1,3 +1,63 @@
+updatemanager (1.3.8) debian; urgency=high
+
+  * Solved bug pre and post script throwing syntax error
+  * Improved logging
+    Replaced the now obsolete /var/log/updatemanager.log with /usr/lib/solydxk/updatemanager/updatemanager.log
+  * Log viewable from the menu: View > Log
+  * Progress information in statusbar
+  * Added UP history: /usr/lib/solydxk/updatemanager/up.hist
+    This replaces the now obsolete /var/lock/updatemanager.packlevel
+  * Added French translation
+
+ -- Schoelje <schoelje@solydxk.com>  Sat, 07 Sep 2013 10:00:00 +0100
+
+updatemanager (1.3.0) debian; urgency=high
+
+  * Solved info page bug not showing mirror info correctly
+
+ -- Schoelje <schoelje@solydxk.com>  Sat, 17 Aug 2013 18:00:00 +0100
+
+updatemanager (1.2.9) debian; urgency=high
+
+  * Added nluug.nl mirrors
+  * Changed repo check for info page to include mirrors list
+  * Improved mirror speed check
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 08 Aug 2013 03:00:00 +0100
+ 
+updatemanager (1.2.4) debian; urgency=high
+
+  * Bugs resolved:
+  * Not refreshing apt cache after changing mirrors
+  * Close button on info page not working
+
+ -- Schoelje <schoelje@solydxk.com>  Wed, 07 Aug 2013 11:30:00 +0100
+
+updatemanager (1.2.3) debian; urgency=high
+
+  * Reverted preferences window modus
+  * Only download environment language data on update (not all)
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 01 Jul 2013 21:00:00 +0100
+
+updatemanager (1.2.2) debian; urgency=high
+
+  * Added mirrors tab
+
+ -- Schoelje <schoelje@solydxk.com>  Tue, 30 Jul 2013 19:00:00 +0100
+
+updatemanager (1.1.6) debian; urgency=high
+
+  * Changed components in Software Sources
+
+ -- Schoelje <schoelje@solydxk.com>  Sun, 26 May 2013 14:00:00 +0100
+
+updatemanager (1.1.5) debian; urgency=high
+
+  * Added unknown icon
+
+ -- Schoelje <schoelje@solydxk.com>  Mon, 20 May 2013 16:30:00 +0100
+
 updatemanager (1.1.4) debian; urgency=high
 
   * Pre- and post-install scripts were not executed after an update of updatemanager

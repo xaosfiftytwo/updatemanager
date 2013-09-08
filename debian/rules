@@ -46,9 +46,9 @@ install: build
 	dh_prep 
 	dh_installdirs
 
-	mkdir -p $(CURDIR)/debian/solydxk-updatemanager
-	cp -r $(CURDIR)/etc $(CURDIR)/debian/solydxk-updatemanager/
-	cp -r $(CURDIR)/usr $(CURDIR)/debian/solydxk-updatemanager/
+	mkdir -p $(CURDIR)/debian/updatemanager
+	cp -r $(CURDIR)/etc $(CURDIR)/debian/updatemanager/
+	cp -r $(CURDIR)/usr $(CURDIR)/debian/updatemanager/
 
 # Build architecture-independent files here.
 binary-indep: build install
