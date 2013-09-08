@@ -3,7 +3,6 @@
 try:
     import sys
     import subprocess
-    import gettext
     import re
 except Exception, detail:
     print detail
@@ -13,10 +12,11 @@ except Exception, detail:
 # Class to execute a command and return the output in an array
 class ExecCmd(object):
 
-    def __init__(self, rtobject=None):
+    def __init__(self, rtobject=None, outputFile=None):
         self.rtobject = rtobject
         if self.rtobject:
             self.typeString = self.getTypeString(self.rtobject)
+        self.outputFile = outputFile
 
     def run(self, cmd, realTime=True, defaultMessage=''):
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -33,6 +33,9 @@ class ExecCmd(object):
                     sys.stdout.flush()
                     if self.rtobject:
                         self.rtobjectWrite(line)
+                    if self.outputFile is not None:
+                        with open(self.outputFile, "a") as fle:
+                            fle.write("%s\n" % line)
 
         return lstOut
 

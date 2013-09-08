@@ -25,47 +25,51 @@ class MirrorGetSpeed(threading.Thread):
                         mirror = mirror[:-1]
                     c = pycurl.Curl()
                     buff = cStringIO.StringIO()
+
                     if mirrorData[2].lower() == 'solydxk':
-                        c.setopt(pycurl.URL, "%s/.speedtest" % mirror)
+                        # http://ftp.nluug.nl/os/Linux/distr/solydxk/packages/dists/solydxk/kdenext/binary-amd64/Packages.gz
+                        c.setopt(pycurl.URL, "%s/dists/solydxk/kdenext/binary-amd64/Packages.gz" % mirror)
                     else:
-                        c.setopt(pycurl.URL, "%s/README.mirrors.html" % mirror)
+                        c.setopt(pycurl.URL, "%s/production/README.mirrors.html" % mirror)
+
                     c.setopt(pycurl.CONNECTTIMEOUT, 10)
                     c.setopt(pycurl.TIMEOUT, 10)
                     c.setopt(pycurl.FOLLOWLOCATION, 1)
                     c.setopt(pycurl.WRITEFUNCTION, buff.write)
+                    # Workaround for bug: http://sourceforge.net/p/pycurl/bugs/23/
+                    c.setopt(pycurl.NOSIGNAL, 1)
+
+                    curlErr = False
                     try:
                         c.perform()
                     except pycurl.error,error:
+                        curlErr = True
                         errno, errstr = error
-                        msg = "++ MirrorGetSpeed Error: %s" % errstr
-                        self.log.writelines("%s\n" % msg)
-                        self.log.flush()
-                        print msg
+                        choices.append([mirror,errstr])
+                        self.log.write(errstr, "MirrorGetSpeed.run", "error")
                         continue
-                    return_code = c.getinfo(pycurl.HTTP_CODE)
-                    download_speed = c.getinfo(pycurl.SPEED_DOWNLOAD)
-                    if (return_code == 200):
-                        download_speed = int(round(download_speed/1000))
-                        choices.append([mirror,download_speed])
-                        msg = "++ MirrorGetSpeed: Server %s - %dKbps" % (mirror, download_speed)
-                        self.log.writelines("%s\n" % msg)
-                        self.log.flush()
-                        print msg
-                    else:
-                        msg = "++ MirrorGetSpeed: Warning %s returns HTTP code %d" % (mirror, return_code)
-                        self.log.writelines("%s\n" % msg)
-                        self.log.flush()
-                        print msg
+
+                    if not curlErr:
+                        return_code = c.getinfo(pycurl.HTTP_CODE)
+                        download_speed = c.getinfo(pycurl.SPEED_DOWNLOAD)
+                        if (return_code == 200):
+                            download_speed = int(round(download_speed/1000))
+                            choices.append([mirror,download_speed])
+                            msg = _("Server %(mirror)s - %(speed)dKbps") % { "mirror": mirror, "speed": download_speed }
+                            self.log.write(msg, "MirrorGetSpeed.run", "debug")
+                        else:
+                            choices.append([mirror,"Error: %d" % return_code])
+                            msg = _("Server %(mirror)s returns HTTP code %(return_code)d") % { "mirror": mirror, "return_code": return_code }
+                            self.log.write(msg, "MirrorGetSpeed.run", "warning")
 
             self.queue.put(choices)
             self.queue.task_done()
 
         except Exception, detail:
             # This is a best-effort attempt, fail graciously
-            msg = "MirrorGetSpeed exception: %s" % detail
-            self.log.writelines("%s\n" % msg)
-            self.log.flush()
-            print msg
+            self.log.write(str(detail), "MirrorGetSpeed.run", "exception")
+            self.queue.put(choices)
+            self.queue.task_done()
 
 
 class Mirror():
@@ -78,10 +82,8 @@ class Mirror():
             src = '/etc/apt/sources.list'
             if os.path.exists(src):
                 dt = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-                msg = "Backup %s to %s.%s" % (src, src, dt)
-                self.log.writelines("%s\n" % msg)
-                self.log.flush()
-                print msg
+                msg = _("Backup %(src)s to %(src)s.%(date)s") % { "src": src, "src": src, "date": dt }
+                self.log.write(msg, "Mirror.save", "debug")
                 os.system("cp -f %s %s.%s" % (src, src, dt))
 
                 new_repos = []
@@ -104,7 +106,4 @@ class Mirror():
 
         except Exception, detail:
             # This is a best-effort attempt, fail graciously
-            msg = "Mirror exception: %s" % detail
-            self.log.writelines("%s\n" % msg)
-            self.log.flush()
-            print msg
+            self.log.write(str(detail), "Mirror.save", "exception")

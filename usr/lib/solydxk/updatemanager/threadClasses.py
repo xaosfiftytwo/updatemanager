@@ -13,7 +13,7 @@ try:
     import time
     import fnmatch
     import gettext
-    from subprocess import Popen
+    import subprocess
     from execcmd import ExecCmd
 except Exception, detail:
     print detail
@@ -47,7 +47,6 @@ class AutomaticRefreshThread(threading.Thread):
         self.prefs = prefs
         self.log = log
         self.app_hidden = app_hidden
-        print ">>>> AutomaticRefreshThread"
 
     def run(self):
 
@@ -56,8 +55,7 @@ class AutomaticRefreshThread(threading.Thread):
                 timer = (self.prefs["timer_minutes"] * 60) + (self.prefs["timer_hours"] * 60 * 60) + (self.prefs["timer_days"] * 24 * 60 * 60)
 
                 try:
-                    self.log.writelines("++ Auto-refresh timer is going to sleep for " + str(self.prefs["timer_minutes"]) + " minutes, " + str(self.prefs["timer_hours"]) + " hours and " + str(self.prefs["timer_days"]) + " days\n")
-                    self.log.flush()
+                    self.log.write(_("Auto-refresh timer is going to sleep for %(days)s days, %(hours)s hours, %(minutes)s.minutes") % { "days": str(self.prefs["timer_days"]), "hours": str(self.prefs["timer_hours"]), "minutes": str(self.prefs["timer_minutes"]) }, 'AutomaticRefreshThread.run', 'debug')
                 except:
                     pass    # cause it might be closed already
                 timetosleep = int(timer)
@@ -67,8 +65,7 @@ class AutomaticRefreshThread(threading.Thread):
                     time.sleep(timetosleep)
                     if self.app_hidden:
                         try:
-                            self.log.writelines("++ updatemanager is in tray mode, performing auto-refresh\n")
-                            self.log.flush()
+                            self.log.write(_("Updatemanager is in tray mode, performing auto-refresh"), "AutomaticRefreshThread.run", "debug")
                         except:
                             pass    # cause it might be closed already
                         # Refresh
@@ -76,14 +73,13 @@ class AutomaticRefreshThread(threading.Thread):
                         refresh.start()
                     else:
                         try:
-                            self.log.writelines("++ The updatemanager window is open, skipping auto-refresh\n")
-                            self.log.flush()
+                            self.log.write(_("The updatemanager window is open, skipping auto-refresh"), "AutomaticRefreshThread.run", "debug")
                         except:
                             pass    # cause it might be closed already
 
         except Exception, detail:
             try:
-                self.log.writelines("-- Exception occured in the auto-refresh thread.. so it's probably dead now: " + str(detail) + "\n")
+                self.log.write(str(detail), "AutomaticRefreshThread.run", "exception")
                 self.log.flush()
             except:
                 pass    # cause it might be closed already
@@ -91,33 +87,28 @@ class AutomaticRefreshThread(threading.Thread):
 
 class InstallThread(threading.Thread):
 
-    def __init__(self, treeView, statusIcon, builder, prefs, log, newUpVersion, rtobject=None):
+    def __init__(self, treeView, statusIcon, builder, prefs, log, newUpVersion, upHistFile, rtobject=None):
         threading.Thread.__init__(self)
         self.treeView = treeView
         self.statusIcon = statusIcon
         self.builder = builder
         self.window = self.builder.get_object("umWindow")
         self.newUpVersion = newUpVersion
+        self.upHistFile = upHistFile
         self.prefs = prefs
         self.log = log
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.sharedir = os.path.join(self.curdir.replace('/lib/', '/share/'))
-        self.ec = ExecCmd(rtobject)
-        print ">>>> InstallThread"
+        self.ec = ExecCmd(rtobject, self.log.logPath)
 
     def run(self):
-
         try:
-            self.log.writelines("++ Install requested by user\n")
-            self.log.flush()
-            gtk.gdk.threads_enter()
-            self.window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-            self.window.set_sensitive(False)
+            self.log.write(_("Install requested by user - check packages to install"), "InstallThread.run", "info")
+            self.setParent(False)
             installNeeded = False
+
             packages = []
             model = self.treeView.get_model()
-            gtk.gdk.threads_leave()
-
             itr = model.get_iter_first()
             history = open("/var/log/updatemanager.history", "a")
             while (itr is not None):
@@ -129,13 +120,11 @@ class InstallThread(threading.Thread):
                     newVersion = model.get_value(itr, INDEX_NEW_VERSION)
                     history.write(commands.getoutput('date +"%Y.%m.%d %H:%M:%S"') + "\t" + package + "\t" + oldVersion + "\t" + newVersion + "\n")
                     packages.append(package)
-                    self.log.writelines("++ Will install " + str(package) + "\n")
-                    self.log.flush()
+                    self.log.write(_("Install package request: %(pck)s") % { "pck": str(package) }, "InstallThread.run", "debug")
                 itr = model.iter_next(itr)
             history.close()
 
             if installNeeded:
-
                 proceed = True
                 try:
                     pkgs = ' '.join(str(pkg) for pkg in packages)
@@ -149,11 +138,10 @@ class InstallThread(threading.Thread):
                             gtk.gdk.threads_enter()
                             try:
                                 dialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK_CANCEL, None)
-                                dialog.log.set_title("")
-                                dialog.log.set_markup("<b>" + _("This upgrade will trigger additional changes") + "</b>")
-                                #dialog.log.format_secondary_markup("<i>" + _("All available upgrades for this package will be ignored.") + "</i>")
-                                dialog.log.set_icon_from_file(self.prefs["icon_busy"])
-                                dialog.log.set_default_size(640, 480)
+                                dialog.set_title("")
+                                dialog.set_markup("<b>" + _("This upgrade will trigger additional changes") + "</b>")
+                                dialog.set_icon_from_file(self.prefs["icon_busy"])
+                                dialog.set_default_size(640, 480)
 
                                 if len(removals) > 0:
                                     # Removals
@@ -182,8 +170,8 @@ class InstallThread(threading.Thread):
                                     treeview.set_model(model)
                                     treeview.show()
                                     scrolledWindow.add(treeview)
-                                    dialog.log.vbox.add(label)
-                                    dialog.log.vbox.add(scrolledWindow)
+                                    dialog.vbox.add(label)
+                                    dialog.vbox.add(scrolledWindow)
 
                                 if len(installations) > 0:
                                     # Installations
@@ -239,97 +227,103 @@ class InstallThread(threading.Thread):
                     if self.newUpVersion is not None:
                         preScript = os.path.join(self.curdir, self.newUpVersion + '.pre')
                         if os.path.exists(preScript):
-                            cmd = ". %s" % preScript
-                            retList = self.ec.run(cmd)
-                            #comnd = Popen(' ' + preScript, stdout=self.log, stderr=self.log, shell=True)
-                            #returnCode = comnd.wait()
-                            self.log.writelines("++ Pre-install script finished\n")
+                            cmd = "/bin/bash %s" % preScript
+                            self.log.write(_("Pre-install script started: %(pre)s") % { "pre": preScript }, "InstallThread.run", "info")
+                            self.ec.run(cmd)
+                            self.log.write(_("Pre-install script finished: %(pre)s") % { "pre": preScript }, "InstallThread.run", "debug")
 
-                    self.log.writelines("++ Ready to launch synaptic\n")
-                    self.log.flush()
+                    self.log.write(_("Launch Synaptic to start the upgrade"), "InstallThread.run", "info")
+                    closeSynaptic = str(self.prefs["close_synaptic"]).lower()
+                    if closeSynaptic != 'true' and closeSynaptic != 'false':
+                        closeSynaptic = 'true'
                     cmd = ["sudo", "/usr/sbin/synaptic", "--hide-main-window",
                             "--non-interactive", "--parent-window-id", "%s" % self.window.window.xid]
                     cmd.append("-o")
-                    cmd.append("Synaptic::closeZvt=true")
+                    cmd.append("Synaptic::closeZvt=%s" % closeSynaptic)
                     cmd.append("--progress-str")
                     cmd.append("\"" + _("Please wait, this can take some time") + "\"")
                     cmd.append("--finish-str")
                     cmd.append("\"" + _("Update is complete") + "\"")
                     f = tempfile.NamedTemporaryFile()
-
                     for pkg in packages:
                         f.write("%s\tinstall\n" % pkg)
                     cmd.append("--set-selections-file")
                     cmd.append("%s" % f.name)
                     f.flush()
-                    comnd = Popen(' '.join(cmd), stdout=self.log, stderr=self.log, shell=True)
-                    returnCode = comnd.wait()
-                    self.log.writelines("++ Return code:" + str(returnCode) + "\n")
-                    #sts = os.waitpid(comnd.pid, 0)
+                    self.log.write("Synaptic command = %(cmd)s" % { "cmd": ' '.join(cmd) }, "InstallThread.run", "debug")
+                    self.ec.run(' '.join(cmd))
+                    self.log.write(_("Synaptic has finished the upgrade"), "InstallThread.run", "info")
                     f.close()
 
                     # Check for post install script and execute if it exists
                     if self.newUpVersion is not None:
                         postScript = os.path.join(self.curdir, self.newUpVersion + '.post')
                         if os.path.exists(postScript):
-                            cmd = ". %s" % postScript
-                            retList = self.ec.run(cmd)
-                            #comnd = Popen(' ' + postScript, stdout=self.log, stderr=self.log, shell=True)
-                            #returnCode = comnd.wait()
-                            self.log.writelines("++ Post-install script finished\n")
+                            cmd = "/bin/bash %s" % postScript
+                            self.log.write(_("Post-install script started: %(post)s") % { "post": postScript }, "InstallThread.run", "info")
+                            self.ec.run(cmd)
+                            self.log.write(_("Post-install script finished: %(post)s") % { "post": postScript }, "InstallThread.run", "debug")
 
-                    self.log.writelines("++ Install finished\n")
-                    self.log.flush()
+                        # Save new UP version
+                        self.log.write(_("write new UP version %(newUpVersion)s to %(uphist)s/") % { "newUpVersion": self.newUpVersion, "uphist": self.upHistFile }, "InstallThread.run", "info")
+                        upHist = ""
+                        if os.path.exists(self.upHistFile):
+                            with open(self.upHistFile) as fle:
+                                upHist  = fle.read()
+                        if self.newUpVersion not in upHist:
+                            with open(self.upHistFile, "a") as fle:
+                                fle.write("%s\n" % self.newUpVersion)
 
-                    gtk.gdk.threads_enter()
-
-                    self.window.hide()
-                    gtk.gdk.threads_leave()
+                    self.log.write(_("Installation finished"), "InstallThread.run", "info")
 
                     if ("updatemanager" in packages):
                         # Restart
                         try:
-                            self.log.writelines("++ updatemanager was updated, restarting it in root mode...\n")
-                            self.log.flush()
-                            self.log.close()
+                            self.log.write(_("Updatemanager was updated, restarting it in root mode..."), 'InstallThread.run', 'info')
                         except:
                             pass    # cause we might have closed it already
                         os.system("gksudo --message \"" + _("Please enter your password to restart the update manager") + "\" " + self.curdir + "/updatemanager.py show &")
                     else:
                         # Refresh
-                        gtk.gdk.threads_enter()
-                        self.statusIcon.set_from_file(self.prefs["icon_busy"])
-                        self.statusIcon.set_tooltip(_("Checking for updates"))
-                        self.window.window.set_cursor(None)
-                        self.window.set_sensitive(True)
-                        gtk.gdk.threads_leave()
+                        msg = _("Checking for updates")
+                        self.setParent(True, self.prefs["icon_busy"], msg)
+                        self.log.write(msg, "InstallThread.run", "info")
                         refresh = RefreshThread(self.treeView, self.statusIcon, self.builder, self.prefs, self.log, True)
                         refresh.start()
                 else:
                     # Stop the blinking but don't refresh
-                    gtk.gdk.threads_enter()
-                    self.window.window.set_cursor(None)
-                    self.window.set_sensitive(True)
-                    gtk.gdk.threads_leave()
+                    self.log.write(_("Installation aborted"), "InstallThread.run", "info")
+                    self.setParent(True)
             else:
                 # Stop the blinking but don't refresh
-                gtk.gdk.threads_enter()
-                self.window.window.set_cursor(None)
-                self.window.set_sensitive(True)
-                gtk.gdk.threads_leave()
+                self.log.write(_("No installation needed"), "InstallThread.run", "info")
+                self.setParent(True)
 
         except Exception, detail:
-            self.log.writelines("-- Exception occured in the install thread: " + str(detail) + "\n")
-            self.log.flush()
-            gtk.gdk.threads_enter()
-            self.statusIcon.set_from_file(self.prefs["icon_error"])
-            self.statusIcon.set_tooltip(_("Could not install the security updates"))
-            self.log.writelines("-- Could not install security updates\n")
-            self.log.flush()
-            #self.statusIcon.set_blinking(False)
-            self.window.window.set_cursor(None)
-            self.window.set_sensitive(True)
-            gtk.gdk.threads_leave()
+            self.log.write(str(detail), "InstallThread.run", "exception")
+            msg = _("Could not install the security updates")
+            self.setParent(True, self.prefs["icon_error"], msg)
+            self.log.write(msg, "InstallThread.run", "error")
+
+    def setParent(self, enable, statusIcon=None, statusString=None):
+        cur = None
+        sensitive = True
+        if not enable:
+            cur = gtk.gdk.Cursor(gtk.gdk.WATCH)
+            sensitive = False
+
+        if statusIcon is not None:
+            self.statusIcon.set_from_file(statusIcon)
+        if statusString is not None:
+            self.statusIcon.set_tooltip(statusString)
+
+        gtk.gdk.threads_enter()
+        self.window.window.set_cursor(cur)
+        #self.window.set_sensitive(sensitive)
+        self.builder.get_object("menubar_main").set_sensitive(sensitive)
+        self.builder.get_object("toolbar_main").set_sensitive(sensitive)
+        self.builder.get_object("vpaned_main").set_sensitive(sensitive)
+        gtk.gdk.threads_leave()
 
 
 class RefreshThread(threading.Thread):
@@ -347,22 +341,16 @@ class RefreshThread(threading.Thread):
         self.curdir = os.path.dirname(os.path.realpath(__file__))
         self.cfgignored = os.path.join(self.curdir, 'updatemanager.ignored')
         self.ec = ExecCmd()
-        print ">>>> RefreshThread"
+        self.statusString = ""
 
     def run(self):
-
         gtk.gdk.threads_enter()
         vpaned_position = self.builder.get_object("vpaned_main").get_position()
         gtk.gdk.threads_leave()
         try:
-            self.log.writelines("++ Starting refresh\n")
-            self.log.flush()
+            self.log.write(_("Starting refresh..."), "RefreshThread.run", "info")
             gtk.gdk.threads_enter()
 
-            statusbar = self.builder.get_object("statusbar")
-            context_id = statusbar.get_context_id("updatemanager")
-
-            statusbar.push(context_id, _("Starting refresh..."))
             self.window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             self.window.set_sensitive(False)
             self.builder.get_object("label_error_detail").set_text("")
@@ -381,8 +369,6 @@ class RefreshThread(threading.Thread):
             model = gtk.TreeStore(str, str, str, str, int, str, str, str)    # upgrade, pkgname, oldversion, newversion, size, strsize, description, sourcePackage)
             model.set_sort_column_id(1, gtk.SORT_ASCENDING)
 
-            #self.prefs = read_configuration()
-
             # Check to see if no other APT process is running
             cmd = 'ps -U root -o comm'
             pslist = self.ec.run(cmd, False)
@@ -393,11 +379,10 @@ class RefreshThread(threading.Thread):
                     break
             if running:
                 gtk.gdk.threads_enter()
+                self.statusString = _("Another application is using APT")
                 self.statusIcon.set_from_file(self.prefs["icon_unknown"])
-                self.statusIcon.set_tooltip(_("Another application is using APT"))
-                statusbar.push(context_id, _("Another application is using APT"))
-                self.log.writelines("-- Another application is using APT\n")
-                self.log.flush()
+                self.statusIcon.set_tooltip(self.statusString)
+                self.log.write(self.statusString, "RefreshThread.run", "info")
                 #self.statusIcon.set_blinking(False)
                 self.window.window.set_cursor(None)
                 self.window.set_sensitive(True)
@@ -405,7 +390,8 @@ class RefreshThread(threading.Thread):
                 return False
 
             gtk.gdk.threads_enter()
-            statusbar.push(context_id, _("Finding the list of updates..."))
+            self.statusString = _("Finding the list of updates...")
+            self.log.write(self.statusString, "RefreshThread.run", "info")
             self.builder.get_object("vpaned_main").set_position(vpaned_position)
             gtk.gdk.threads_leave()
             if self.app_hidden:
@@ -435,10 +421,9 @@ class RefreshThread(threading.Thread):
 
             if (len(updates) is None):
                 self.statusIcon.set_from_file(self.prefs["icon_up2date"])
-                self.statusIcon.set_tooltip(_("Your system is up to date"))
-                statusbar.push(context_id, _("Your system is up to date"))
-                self.log.writelines("++ System is up to date\n")
-                self.log.flush()
+                self.statusString = _("Your system is up to date")
+                self.statusIcon.set_tooltip(self.statusString)
+                self.log.write(self.statusString, "RefreshThread.run", "info")
             else:
                 for pkg in updates:
                     values = string.split(pkg, "###")
@@ -448,10 +433,9 @@ class RefreshThread(threading.Thread):
                             error_msg = commands.getoutput(os.path.join(self.curdir, "checkAPT.py"))
                             gtk.gdk.threads_enter()
                             self.statusIcon.set_from_file(self.prefs["icon_error"])
-                            self.statusIcon.set_tooltip(_("Could not refresh the list of packages"))
-                            statusbar.push(context_id, _("Could not refresh the list of packages"))
-                            self.log.writelines("-- Error in checkAPT.py, could not refresh the list of packages\n")
-                            self.log.flush()
+                            self.statusString = _("Could not refresh the list of packages")
+                            self.statusIcon.set_tooltip(self.statusString)
+                            self.log.write(self.statusString, "RefreshThread.run", "info")
                             self.builder.get_object("label_error_detail").set_text(error_msg)
                             self.builder.get_object("label_error_detail").show()
                             self.builder.get_object("viewport1").show()
@@ -518,17 +502,13 @@ class RefreshThread(threading.Thread):
                     self.statusString = _("A new version of the update manager is available")
                     self.statusIcon.set_from_file(self.prefs["icon_updates"])
                     self.statusIcon.set_tooltip(self.statusString)
-                    statusbar.push(context_id, self.statusString)
-                    self.log.writelines("++ Found a new version of updatemanager\n")
-                    self.log.flush()
+                    self.log.write(self.statusString, "RefreshThread.run", "info")
                 else:
                     if self.newUpVersion is not None:
                         self.statusString = _("A new update pack is available (version: %s)" % self.newUpVersion)
                         self.statusIcon.set_from_file(self.prefs["icon_updates"])
                         self.statusIcon.set_tooltip(self.statusString)
-                        statusbar.push(context_id, self.statusString)
-                        self.log.writelines("++ %s\n" % self.statusString)
-                        self.log.flush()
+                        self.log.write(self.statusString, "RefreshThread.run", "info")
                     elif (num_updates > 0):
                         if (num_updates == 1):
                             if (num_ignored == 0):
@@ -546,18 +526,14 @@ class RefreshThread(threading.Thread):
                                 self.statusString = _("%(recommended)d recommended updates available (%(size)s), %(ignored)d ignored") % {'recommended': num_updates, 'size': self.size_to_string(download_size), 'ignored': num_ignored}
                         self.statusIcon.set_from_file(self.prefs["icon_updates"])
                         self.statusIcon.set_tooltip(self.statusString)
-                        statusbar.push(context_id, self.statusString)
-                        self.log.writelines("++ Found " + str(num_updates) + " recommended software updates\n")
-                        self.log.flush()
+                        self.log.write(self.statusString, "RefreshThread.run", "info")
                     else:
+                        self.statusString = _("Your system is up to date")
                         self.statusIcon.set_from_file(self.prefs["icon_up2date"])
-                        self.statusIcon.set_tooltip(_("Your system is up to date"))
-                        statusbar.push(context_id, _("Your system is up to date"))
-                        self.log.writelines("++ System is up to date\n")
-                        self.log.flush()
+                        self.statusIcon.set_tooltip(self.statusString)
+                        self.log.write(self.statusString, "RefreshThread.run", "info")
 
-            self.log.writelines("++ Refresh finished\n")
-            self.log.flush()
+            self.log.write(_("Refresh finished"), "RefreshThread.run", "info")
             # Stop the blinking
             #self.statusIcon.set_blinking(False)
             self.builder.get_object("notebook_details").set_current_page(0)
@@ -569,16 +545,15 @@ class RefreshThread(threading.Thread):
             gtk.gdk.threads_leave()
 
         except Exception, detail:
-            print "-- Exception occured in the refresh thread: " + str(detail)
-            self.log.writelines("-- Exception occured in the refresh thread: " + str(detail) + "\n")
-            self.log.flush()
+            self.log.write(str(detail), "RefreshThread.run", "exception")
             gtk.gdk.threads_enter()
+            msg = _("Could not refresh the list of packages")
             self.statusIcon.set_from_file(self.prefs["icon_error"])
-            self.statusIcon.set_tooltip(_("Could not refresh the list of packages"))
+            self.statusIcon.set_tooltip(msg)
+            self.log.write(msg, "RefreshThread.run", "error")
             #self.statusIcon.set_blinking(False)
             self.window.window.set_cursor(None)
             self.window.set_sensitive(True)
-            statusbar.push(context_id, _("Could not refresh the list of packages"))
             self.builder.get_object("vpaned_main").set_position(vpaned_position)
             gtk.gdk.threads_leave()
 

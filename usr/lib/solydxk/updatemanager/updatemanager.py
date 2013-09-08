@@ -9,7 +9,6 @@ try:
     import string
     import gtk
     import gtk.glade
-    import tempfile
     import time
     import gettext
     import urllib2
@@ -19,6 +18,7 @@ try:
     import csv
     import Queue
     import glib
+    import apt
     from execcmd import ExecCmd
     from mirror import MirrorGetSpeed, Mirror
     from treeview import TreeViewHandler
@@ -27,6 +27,8 @@ try:
     from datetime import date
     from changelogRetriever import ChangelogRetriever
     from threadClasses import AutomaticRefreshThread, InstallThread, RefreshThread
+    import functions
+    from logger import Logger
 except Exception, detail:
     print detail
     pass
@@ -91,8 +93,60 @@ class UM:
         self.prefWindow = self.builder.get_object('prefWindow')
         self.histWindow = self.builder.get_object('histWindow')
         self.infoWindow = self.builder.get_object('infoWindow')
+
+        # Initiate global variables
+        self.ec = ExecCmd()
+        self.historyLog = "/var/log/updatemanager.history"
+        self.cfgignored = os.path.join(self.curdir, 'updatemanager.ignored')
+        self.cfg = Config('updatemanager.conf')
+        self.new_updatemanager = False
+        self.app_hidden = True
+        self.prefs = self.read_configuration()
+        self.repos = self.get_apt_repos()
+        self.mode = "user"
+        if self.mode == 0:
+            self.mode = "root"
+
+        self.pid = os.getpid()
+        self.statusIcon = gtk.StatusIcon()
+        self.mirrors = self.getMirrors()
+        self.queue = Queue.Queue()
+        self.threads = {}
+        self.upHistFile = os.path.join(self.curdir, "up.hist")
+
         self.treeview_update = self.builder.get_object("treeview_update")
         self.btnCheckMirrorsSpeed = self.builder.get_object("btnCheckMirrorsSpeed")
+        self.statusIcon.set_from_file(self.prefs["icon_busy"])
+        self.statusIcon.set_tooltip(_("Checking for updates"))
+        self.statusIcon.set_visible(True)
+        self.umWindow.set_title(_("Update Manager"))
+        self.umWindow.set_default_size(self.prefs['dimensions_x'], self.prefs['dimensions_y'])
+        self.vpaned_main = self.builder.get_object('vpaned_main')
+        self.vpaned_main.set_position(self.prefs['dimensions_pane_position'])
+        self.statusbar = self.builder.get_object("statusbar")
+        self.context_id = self.statusbar.get_context_id("updatemanager")
+        self.vbox_main = self.builder.get_object("vbox_main")
+        self.umWindow.set_icon_from_file(self.prefs["icon_busy"])
+
+        # Initiate logging
+        self.logFile = os.path.join(self.curdir, "updatemanager.log")
+        if os.access(self.logFile, os.W_OK):
+            os.remove(self.logFile)
+        self.log = Logger(self.logFile, 'debug', True, self.statusbar, self.umWindow, 10240)
+        functions.log = self.log
+
+        # Version information
+        self.version = self.getPackageVersion('updatemanager')
+        self.candidateVersion = self.getPackageVersion('updatemanager', True)
+        self.serverUpVersion = None
+        self.localUpVersion = None
+        self.newUp = self.checkUpVersions()
+        self.newUpVersion = None
+        if self.newUp:
+            self.newUpVersion = self.serverUpVersion
+        self.log.write("self.newUp = %s" % str(self.newUp), "UM.init", "debug")
+        self.log.write("self.serverUpVersion = %s" % str(self.serverUpVersion), "UM.init", "debug")
+        self.log.write("self.localUpVersion = %s" % str(self.localUpVersion), "UM.init", "debug")
 
         # The blacklist treeview
         self.treeview_blacklist = self.builder.get_object("treeview_blacklist")
@@ -137,27 +191,6 @@ class UM:
         self.menuGenericName = _("Software Updates")
         self.menuComment = _("Show and install available updates")
 
-        # Initiate global variables
-        self.ec = ExecCmd()
-        self.logdir = "/tmp/"
-        self.historyLog = "/var/log/updatemanager.history"
-        self.packLevel = "/var/log/updatemanager.packlevel"
-        self.cfgignored = os.path.join(self.curdir, 'updatemanager.ignored')
-        self.cfg = Config('updatemanager.conf')
-        self.new_updatemanager = False
-        self.app_hidden = True
-        self.prefs = self.read_configuration()
-        self.repos = self.get_apt_repos()
-        self.newUpVersion = self.checkNewUpdate()
-        self.mode = "user"
-        self.log = tempfile.NamedTemporaryFile(prefix=self.logdir, delete=False)
-        self.logFile = self.log.name
-        self.pid = os.getpid()
-        self.statusIcon = gtk.StatusIcon()
-        self.mirrors = []
-        self.queue = Queue.Queue()
-        self.threads = {}
-
         # Add events
         signals = {
             'on_treeview_update_button_release_event': self.menuPopup,
@@ -170,7 +203,6 @@ class UM:
             'on_tool_pack_info_clicked': self.open_pack_info,
             'on_button_close_pack_clicked': self.close_pack_info,
             'on_pref_button_cancel_clicked': self.pref_cancel,
-            'on_prefWindow_delete_event': self.pref_cancel,
             'on_pref_button_apply_clicked': self.pref_apply,
             'on_toolbutton_add_clicked': self.add_blacklisted_package,
             'on_toolbutton_remove_clicked': self.remove_blacklisted_package,
@@ -184,6 +216,20 @@ class UM:
         self.builder.connect_signals(signals)
 
 
+    # Get the package version number
+    def getPackageVersion(self, packageName, candidate=False):
+        version = ''
+        try:
+            cache = apt.Cache()
+            pkg = cache[packageName]
+            if candidate:
+                version = pkg.candidate.version
+            elif pkg.installed is not None:
+                version = pkg.installed.version
+        except:
+            pass
+        return version
+
     def get_apt_repos(self):
         repos = []
         cmds = ['cat /etc/apt/sources.list']
@@ -194,34 +240,30 @@ class UM:
             lstOut = self.ec.run(cmd)
             for line in lstOut:
                 line = line.strip()
-                matchObj = re.search("^deb\s*(http[:\/a-z\.\-]*)", line)
+                matchObj = re.search("^deb\s*(http[:\/a-zA-Z0-9\.\-]*)", line)
                 if matchObj:
                     repos.append(matchObj.group(1))
         return repos
 
     # Check for a new Update Pack
-    def checkNewUpdate(self):
-        newUp = None
-        if not self.new_updatemanager:
-            installed_up_version = None
-            if (os.path.exists(self.packLevel)):
-                installed_up_version = commands.getoutput("cat %s" % self.packLevel).strip()
+    def checkUpVersions(self):
+        newUp = False
+        if self.candidateVersion == self.version:
+            if os.path.exists(self.upHistFile):
+                with open(self.upHistFile, 'r') as fle:
+                    self.localUpVersion = fle.readlines()[-1].decode()
+            elif os.path.exists("/var/log/updatemanager.packlevel"):
+                self.localUpVersion = commands.getoutput("cat /var/log/updatemanager.packlevel").strip()
+            else:
+                preFile = commands.getoutput("ls %s | grep '.pre'" % self.curdir)
+                self.log.write("preFile = %s" % str(preFile), "UM.checkUpVersion", "debug")
+                if preFile != "":
+                    self.localUpVersion = preFile.replace(".pre", "")
+                else:
+                    # Nothing found, just save a default value
+                    self.localUpVersion = "2000.01.01"
+
             try:
-                #apt_pkg.init_config()
-                #apt_pkg.init_system()
-                #acquire = apt_pkg.Acquire()
-                #slist = apt_pkg.SourceList()
-                #slist.read_main_list()
-                #slist.get_indexes(acquire, True)
-                #solydxk_repo_url = None
-                #for item in acquire.items:
-                    #repo = item.desc_uri
-                    #if repo.endswith('Packages.bz2') and ('/production/dists/testing/' in repo or '/testing/dists/testing/' in repo):
-                        #solydxk_repo_url = repo.partition('/dists/')[0]
-                        #break
-
-                #prefs = self.read_configuration()
-
                 solydxk_repo_url = None
                 for repo in self.repos:
                     if 'debian.solydxk.com/production' in repo:
@@ -238,20 +280,30 @@ class UM:
                         variable = elements[0].strip()
                         value = elements[1].strip()
                         if variable == "version":
-                            if len(installed_up_version) == len(value):
-                                instUpArr = installed_up_version.split('.')
-                                valArr = value.split('.')
+                            self.serverUpVersion = value
+                            self.log.write("len(installed_up_version) = %s | len(value) = %s" % (str(len(self.serverUpVersion)), str(len(self.serverUpVersion))), "UM.checkUpVersion", "debug")
+                            if len(self.localUpVersion) == len(self.serverUpVersion):
+                                instUpArr = self.localUpVersion.split('.')
+                                valArr = self.serverUpVersion.split('.')
                                 instDate = date(int(instUpArr[0]), int(instUpArr[1]), int(instUpArr[2]))
                                 valDate = date(int(valArr[0]), int(valArr[1]), int(valArr[2]))
+                                self.log.write("valDate %s > instDate %s" % (valDate, instDate), "UM.checkUpVersion", "debug")
                                 if valDate > instDate:
                                     # There's a new UP
-                                    newUp = value
+                                    newUp = True
                                     # Get the pre and post scripts
-                                    self.getPrePostScripts(solydxk_repo_url, value)
+                                    self.getPrePostScripts(solydxk_repo_url, self.serverUpVersion)
+                                    break
+                                elif valDate == instDate and not os.path.exists(self.upHistFile):
+                                    # Temporary hack for older updatemanagers that wrote the packlevel before the update
+                                    self.log.write("Old previous updatemanager", "UM.checkUpVersion", "debug")
+                                    newUp = True
+                                    self.getPrePostScripts(solydxk_repo_url, self.serverUpVersion)
                                     break
                             else:
-                                newUp = value
-                                self.getPrePostScripts(solydxk_repo_url, value)
+                                self.log.write("No packlevel", "UM.checkUpVersion", "debug")
+                                newUp = True
+                                self.getPrePostScripts(solydxk_repo_url, self.serverUpVersion)
                                 break
                     html.close()
             except Exception, detail:
@@ -320,11 +372,7 @@ class UM:
             self.statusbar.push(self.context_id, _("%(selected)d updates selected (%(size)s)") % {'selected': num_selected, 'size': self.size_to_string(download_size)})
 
     def install(self, widget):
-        #Try to update the local update pack level
-        if self.newUpVersion is not None:
-            os.system("echo %s > %s" % (self.newUpVersion, self.packLevel))
-        #Launch the install
-        instThread = InstallThread(self.treeview_update, self.statusIcon, self.builder, self.prefs, self.log, self.newUpVersion, self.statusbar)
+        instThread = InstallThread(self.treeview_update, self.statusIcon, self.builder, self.prefs, self.log, self.newUpVersion, self.upHistFile, self.statusbar)
         instThread.start()
 
     def change_icon(self, widget, button):
@@ -364,7 +412,6 @@ class UM:
         # Write updatemanager config
         section = 'UPDATEMANAGER'
         self.cfg.setValue(section, 'repurl', self.prefs["repurl"])
-        self.cfg.setValue(section, 'repurldevsubdir', self.prefs["repurldevsubdir"])
         self.cfg.setValue(section, 'repurldebian', self.prefs["repurldebian"])
         self.cfg.setValue(section, 'repdebian', self.prefs["repdebian"])
         self.cfg.setValue(section, 'authors', self.prefs["authors"])
@@ -372,15 +419,21 @@ class UM:
 
         # Write refresh config
         section = 'refresh'
-        self.cfg.setValue(section, 'timer_minutes', str(int(self.builder.get_object("timer_minutes").get_value())))
-        self.cfg.setValue(section, 'timer_hours', str(int(self.builder.get_object("timer_hours").get_value())))
-        self.cfg.setValue(section, 'timer_days', str(int(self.builder.get_object("timer_days").get_value())))
+        self.prefs["timer_minutes"] = int(self.builder.get_object("timer_minutes").get_value())
+        self.prefs["timer_hours"] = int(self.builder.get_object("timer_hours").get_value())
+        self.prefs["timer_days"] = int(self.builder.get_object("timer_days").get_value())
+        self.cfg.setValue(section, 'timer_minutes', self.prefs["timer_minutes"])
+        self.cfg.setValue(section, 'timer_hours', self.prefs["timer_hours"])
+        self.cfg.setValue(section, 'timer_days', self.prefs["timer_days"])
 
         #Write update config
         section = 'update'
-        self.cfg.setValue(section, 'delay', str(int(self.builder.get_object("spin_delay").get_value())))
-        self.cfg.setValue(section, 'ping_domain', self.builder.get_object("ping_domain").get_text())
-        self.cfg.setValue(section, 'dist_upgrade', self.builder.get_object("checkbutton_dist_upgrade").get_active())
+        self.prefs["delay"] = int(self.builder.get_object("spin_delay").get_value())
+        self.prefs["ping_domain"] = self.builder.get_object("ping_domain").get_text()
+        self.prefs["close_synaptic"] = self.builder.get_object("checkbutton_close_synaptic").get_active()
+        self.cfg.setValue(section, 'delay', self.prefs["delay"])
+        self.cfg.setValue(section, 'ping_domain', self.prefs["ping_domain"])
+        self.cfg.setValue(section, 'close_synaptic', self.prefs["close_synaptic"])
 
         #Write icons config
         section = 'icons'
@@ -413,7 +466,7 @@ class UM:
                 url = model.get_value(itr, 3)
                 # Get currently selected data
                 for mirror in self.mirrors:
-                    if mirror[0] and mirror[2] == repo:
+                    if mirror[0] and mirror[2] == repo and mirror[3] != url:
                         # Currently selected mirror
                         replaceRepos.append([mirror[3], url])
                         break
@@ -422,9 +475,11 @@ class UM:
         if replaceRepos:
             m = Mirror(self.log)
             m.save(replaceRepos)
+            self.repos = self.get_apt_repos()
+            self.mirrors = self.getMirrors()
 
         self.prefWindow.hide()
-        refresh = RefreshThread(self.treeview_update, self.statusIcon, self.builder, self.prefs. self.log, self.newUpVersion)
+        refresh = RefreshThread(self.treeview_update, self.statusIcon, self.builder, self.prefs, self.log, self.newUpVersion)
         refresh.start()
 
     def info_cancel(self, widget):
@@ -441,7 +496,7 @@ class UM:
 
     def pref_cancel(self, widget):
         self.prefWindow.hide()
-        return True
+        #return True
 
     def read_configuration(self):
         prefs = {}
@@ -449,17 +504,15 @@ class UM:
         section = 'UPDATEMANAGER'
         try:
             prefs["repurl"] = self.cfg.getValue(section, 'repurl')
-            prefs["repurldevsubdir"] = self.cfg.getValue(section, 'repurldevsubdir')
             prefs["repurldebian"] = self.cfg.getValue(section, 'repurldebian')
             prefs["repdebian"] = self.cfg.getValue(section, 'repdebian')
             prefs["authors"] = self.cfg.getValue(section, 'authors').split(',')
             prefs["testdomain"] = self.cfg.getValue(section, 'testdomain')
         except:
             prefs["repurl"] = 'packages.solydxk.com'
-            prefs["repurldevsubdir"] = 'dev'
             prefs["repurldebian"] = 'debian.solydxk.com'
             prefs["repdebian"] = 'ftp.debian.org'
-            prefs["authors"] = "Schoelje <schoelje@solydxk.com>, Clement Lefebvre <root@linuxmint.com>, Chris Hodapp <clhodapp@live.com>"
+            prefs["authors"] = "Schoelje <schoelje@solydxk.com>,Clement Lefebvre <root@linuxmint.com>,Chris Hodapp <clhodapp@live.com>"
             prefs["testdomain"] = 'google.com'
 
         #Read refresh config
@@ -478,11 +531,11 @@ class UM:
         try:
             prefs["delay"] = int(self.cfg.getValue(section, 'delay'))
             prefs["ping_domain"] = self.cfg.getValue(section, 'ping_domain')
-            prefs["dist_upgrade"] = (self.cfg.getValue(section, 'dist_upgrade') == "True")
+            prefs["close_synaptic"] = (self.cfg.getValue(section, 'close_synaptic') == "True")
         except:
             prefs["delay"] = 30
             prefs["ping_domain"] = prefs["testdomain"]
-            prefs["dist_upgrade"] = True
+            prefs["close_synaptic"] = True
 
         #Read icons config
         section = 'icons'
@@ -571,13 +624,9 @@ class UM:
         self.builder.get_object("lblMirrorsText").set_text(_("Select the fastest production repository"))
 
         self.btnCheckMirrorsSpeed.set_label(_("Check mirrors speed"))
-        self.builder.get_object("checkbutton_dist_upgrade").set_label(_("Include updates which require the installation or the removal of other packages"))
+        self.builder.get_object("checkbutton_close_synaptic").set_label(_("Close Synaptic progress window after upgrade"))
 
         self.prefWindow.set_icon_from_file(self.prefs["icon_busy"])
-        self.prefWindow.show()
-
-        #self.builder.get_object("pref_button_cancel").connect("clicked", self.pref_cancel, prefs_tree)
-        #self.builder.get_object("pref_button_apply").connect("clicked", self.pref_apply, prefs_tree, treeview, self.statusIcon, wTree)
 
         self.builder.get_object("button_icon_busy").connect("clicked", self.change_icon, "busy")
         self.builder.get_object("button_icon_up2date").connect("clicked", self.change_icon, "up2date")
@@ -596,7 +645,7 @@ class UM:
         self.builder.get_object("timer_days").set_value(self.prefs["timer_days"])
         self.builder.get_object("ping_domain").set_text(self.prefs["ping_domain"])
         self.builder.get_object("spin_delay").set_value(self.prefs["delay"])
-        self.builder.get_object("checkbutton_dist_upgrade").set_active(self.prefs["dist_upgrade"])
+        self.builder.get_object("checkbutton_close_synaptic").set_active(self.prefs["close_synaptic"])
 
         if os.path.exists(self.prefs["icon_busy"]):
             self.builder.get_object("image_busy").set_from_pixbuf(gtk.gdk.pixbuf_new_from_file_at_size(self.prefs["icon_busy"], 24, 24))
@@ -612,7 +661,7 @@ class UM:
             self.builder.get_object("image_apply").set_from_pixbuf(gtk.gdk.pixbuf_new_from_file_at_size(self.prefs["icon_apply"], 24, 24))
 
         # Blacklisted packages
-        self.treeview_blacklist.show()
+        #self.treeview_blacklist.show()
         model = gtk.TreeStore(str)
         model.set_sort_column_id(0, gtk.SORT_ASCENDING)
         self.treeview_blacklist.set_model(model)
@@ -626,25 +675,27 @@ class UM:
             ignored_list.close()
 
         # Fill mirror list
-        if not self.mirrors:
-            mirrorsList = os.path.join(self.curdir, 'mirrors.list')
-            if os.path.exists(mirrorsList):
-                reader = csv.reader(open(mirrorsList, "r"))
-                mirrorData = list(reader)
-                if mirrorData:
-                    self.mirrors = [[_("Current"), _("Country"), _("Repository"), _("URL"), _("Speed")]]
-                    for mirror in  mirrorData:
-                        blnCurrent = self.isUrlInSources(mirror[2])
-                        self.mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
-                    # Fill treeview
-                    #fillTreeview(contentList, columnTypesList, columnHideList=[-1], setCursor=0, setCursorWeight=400, firstItemIsColName=False, appendToExisting=False, appendToTop=False)
-                    columnTypesList = ['bool', 'str', 'str', 'str', 'str']
-                    self.treeview_mirrors_handler.fillTreeview(self.mirrors, columnTypesList, 0, 400, True)
-                    # Check speeds
-                    self.checkMirrorsSpeed(None)
+        if self.mirrors:
+            # Fill treeview
+            columnTypesList = ['bool', 'str', 'str', 'str', 'str']
+            self.treeview_mirrors_handler.fillTreeview(self.mirrors, columnTypesList, 0, 400, True)
 
-        #self.builder.get_object("toolbutton_add").connect("clicked", self.add_blacklisted_package, self.treeview_blacklist)
-        #self.builder.get_object("toolbutton_remove").connect("clicked", self.remove_blacklisted_package, self.treeview_blacklist)
+        self.prefWindow.show()
+
+    def getMirrors(self):
+        mirrors = None
+        mirrorsList = os.path.join(self.curdir, 'mirrors.list')
+        if os.path.exists(mirrorsList):
+            reader = csv.reader(open(mirrorsList, "r"))
+            mirrorData = list(reader)
+            if mirrorData:
+                mirrors = [[_("Current"), _("Country"), _("Repository"), _("URL"), _("Speed")]]
+                for mirror in  mirrorData:
+                    if mirror:
+                        #print ">>> mirror = %s" % str(mirror)
+                        blnCurrent = self.isUrlInSources(mirror[2])
+                        mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
+        return mirrors
 
     def isUrlInSources(self, url):
         blnRet = False
@@ -677,7 +728,10 @@ class UM:
                     repo = model.get_value(itr, 3)
                     for repoSpeed in speeds:
                         if repoSpeed[0] == repo:
-                            model.set_value(itr, 4, "%s Kb/s" % str(repoSpeed[1]))
+                            if self.isNumeric(repoSpeed[1]):
+                                model.set_value(itr, 4, "%s Kb/s" % str(repoSpeed[1]))
+                            else:
+                                model.set_value(itr, 4, str(repoSpeed[1]))
                             break
                     itr = model.iter_next(itr)
                 self.treeview_mirrors.set_model(model)
@@ -685,6 +739,21 @@ class UM:
         except Exception, detail:
             print detail
             self.btnCheckMirrorsSpeed.set_sensitive(True)
+
+    def isNumeric(self, n):
+        try:
+            n = complex(n)
+            return True
+        except:
+            try:
+                n = float(n, 0)
+                return True
+            except:
+                try:
+                    n = int(n, 0)
+                    return True
+                except:
+                    return False
 
     def add_blacklisted_package(self, widget):
         dialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_OK, None)
@@ -774,21 +843,9 @@ class UM:
 
         # Check APT configuration
         config_str = "<span color='red'><b>" + _("Could not identify your APT sources") + "</b></span>"
-        latest_update_pack = _("N/A")
-        installed_update_pack = _("N/A")
         solydxk_repo_url = None
 
         try:
-            if (os.path.exists(self.packLevel)):
-                installed_update_pack = commands.getoutput("cat %s" % self.packLevel)
-
-            #apt_pkg.init_config()
-            #apt_pkg.init_system()
-            #acquire = apt_pkg.Acquire()
-            #slist = apt_pkg.SourceList()
-            #slist.read_main_list()
-            #slist.get_indexes(acquire, True)
-
             # There's 3 valid configurations (for main repo, multimedia and security):
             #
             #      1. Not recommended, fully rolling: Debian Testing, multimedia, security
@@ -814,35 +871,58 @@ class UM:
             solydxk_is_here = False    # Is the repo itself present?
 
             for repo in self.repos:
+                repo = repo.strip().strip("/")
                 #if repo.endswith('Packages.bz2'):
-                #Check SOLYDXK
-                if 'packages.solydxk.com' in repo:
+                #Check SOLYDXK from mirror list
+                #print ">>> repo = %s" % repo
+                xk = False
+                for mirror in self.mirrors:
+                    #print "    mirror = %s" % mirror
+                    if mirror[3] in repo:
+                        #print "    repo found"
+                        xk = True
+                        break
+
+                if xk:
                     solydxk_is_here = True
-                #Check main archive
-                elif 'debian.solydxk.com/production' in repo:
-                    main_points_to_production = True
-                    main_points_to_solydxk = True
-                    solydxk_repo_url = "http://" + self.prefs["repurldebian"] + "/production"
-                elif 'debian.solydxk.com/testing' in repo:
-                    main_points_to_testing = True
-                    main_points_to_solydxk = True
-                    solydxk_repo_url = "http://" + self.prefs["repurldebian"] + "/testing"
-                elif 'debian.org/debian' in repo and '//ftp.' in repo:
-                    main_points_to_debian = True
-                #Check multimedia (multimedia is in UP process)
-                elif 'debian.solydxk.com/production/multimedia' in repo:
-                    multimedia_points_to_production = True
-                elif 'debian.solydxk.com/testing/multimedia' in repo:
-                    multimedia_points_to_testing = True
-                elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
-                    multimedia_points_to_debian = True
-                #Check security (security is NOT in UP process)
-                elif 'debian.solydxk.com/security' in repo:
-                    security_points_to_production = True
-                #elif '/security/dists/testing/' in repo:
-                    #security_points_to_testing = True
-                elif 'security.debian.org' in repo:
-                    security_points_to_debian = True
+                    #print "solydxk_is_here"
+                    #Check main archive
+                    if 'production' in repo:
+                        #print "solydxk production"
+                        main_points_to_production = True
+                        main_points_to_solydxk = True
+                        #Check multimedia (multimedia is in UP process)
+                        if 'multimedia' in repo:
+                            #print "solydxk production multimedia"
+                            multimedia_points_to_production = True
+                        else:
+                            solydxk_repo_url = repo
+                            #print "repo = %s" % repo
+                    elif 'testing' in repo:
+                        #print "solydxk testing"
+                        main_points_to_testing = True
+                        main_points_to_solydxk = True
+                        if 'multimedia' in repo:
+                            #print "solydxk testing multimedia"
+                            multimedia_points_to_testing = True
+                        else:
+                            solydxk_repo_url = repo
+                            #print "repo = %s" % repo
+                    #Check security (security is NOT in UP process)
+                    elif 'security' in repo:
+                        #print "solydxk security"
+                        security_points_to_production = True
+                else:
+                    #print "NOT solydxk"
+                    if 'debian.org/debian' in repo and '//ftp.' in repo:
+                        #print "debian"
+                        main_points_to_debian = True
+                    elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
+                        #print "debian multimedia"
+                        multimedia_points_to_debian = True
+                    elif 'security.debian.org' in repo:
+                        #print "debian security"
+                        security_points_to_debian = True
 
             isc = self.builder.get_object("image_system_config")
             if main_points_to_debian and main_points_to_solydxk:
@@ -895,35 +975,25 @@ class UM:
             print detail
 
         if solydxk_repo_url is not None:
-            url = "%s/update-pack-info.txt" % solydxk_repo_url
-            html = urllib2.urlopen(url)
-            for line in html.readlines():
-                elements = line.split("=")
-                variable = elements[0].strip()
-                value = elements[1].strip()
-                if variable == "version":
-                    latest_update_pack = value
-                    # Double check installed_update_pack format (very dirty)
-                    if len(installed_update_pack) != 10:
-                        installed_update_pack = value
-                        os.system("echo %s > /var/log/updatemanager.packlevel" % value)
-            html.close()
-
-            browser = webkit.WebView()
-            # Add browser to widget
-            self.builder.get_object("scrolled_pack_info").add(browser)
-            # listen for clicks of links
-            browser.connect("new-window-policy-decision-requested", self.on_nav_request)
-            browser.connect("button-press-event", lambda w, e: e.button == 3)
+            scrolledContainer = self.builder.get_object("scrolled_pack_info")
+            children = scrolledContainer.get_children()
+            if children:
+                browser = children[0]
+            else:
+                browser = webkit.WebView()
+                # Add browser to widget
+                scrolledContainer.add(browser)
+                # listen for clicks of links
+                browser.connect("new-window-policy-decision-requested", self.on_nav_request)
+                browser.connect("button-press-event", lambda w, e: e.button == 3)
             url = "%s/update-pack.html" % solydxk_repo_url
             browser.open(url)
             browser.show()
 
         self.builder.get_object("label_system_configuration_value").set_markup("<b>%s</b>" % config_str)
-        self.builder.get_object("label_update_pack_available_value").set_markup("<b>%s</b>" % latest_update_pack)
-        self.builder.get_object("label_update_pack_installed_value").set_markup("<b>%s</b>" % installed_update_pack)
+        self.builder.get_object("label_update_pack_available_value").set_markup("<b>%s</b>" % self.serverUpVersion)
+        self.builder.get_object("label_update_pack_installed_value").set_markup("<b>%s</b>" % self.localUpVersion)
 
-        #self.builder.get_object("button_close").connect("clicked", self.close_pack_info, wTree)
         self.packWindow.show()
 
     def on_nav_request(self, browser, frame, request, action, decision, *args, **kwargs):
@@ -938,15 +1008,12 @@ class UM:
             if decision is not None:
                 decision.use()
 
-    def close_pack_info(self, widget, tree):
+    def close_pack_info(self, widget):
         self.packWindow.hide()
 
     def open_information(self, widget):
-        self.infoWindow.set_title(_("Information") + " - " + _("Update Manager"))
+        self.infoWindow.set_title(_("Update Manager Log"))
         self.infoWindow.set_icon_from_file(self.prefs["icon_busy"])
-        #self.builder.get_object("info_close_button").connect("clicked", self.info_cancel, prefs_tree)
-        #self.builder.get_object("label1").set_text(_("Information"))
-        #self.builder.get_object("label2").set_text(_("Log file"))
         self.builder.get_object("lblPermissions").set_text(_("Permissions:"))
         self.builder.get_object("lblProcessID").set_text(_("Process ID:"))
         self.builder.get_object("lblLogFile").set_text(_("Log file:"))
@@ -954,15 +1021,22 @@ class UM:
         self.builder.get_object("mode_label").set_text(str(self.mode))
         self.builder.get_object("processid_label").set_text(str(self.pid))
         self.builder.get_object("log_filename").set_text(str(self.logFile))
+
+        if os.path.exists(self.logFile):
+            logText = commands.getoutput("cat %s" % self.logFile)
+        else:
+            logText = "No log file found"
+
         txtbuffer = gtk.TextBuffer()
-        txtbuffer.set_text(commands.getoutput("cat %s" % self.logFile))
+        txtbuffer.set_text(logText)
         self.builder.get_object("log_textview").set_buffer(txtbuffer)
+        self.infoWindow.show()
 
     def open_about(self, widget):
         dlg = gtk.AboutDialog()
         dlg.set_title(_("About") + " - " + _("Update Manager"))
         dlg.set_program_name("updatemanager")
-        dlg.set_comments(_("Update Manager"))
+        dlg.set_comments(_("Update Manager") + " %s" % self.version)
         try:
             h = open('/usr/share/common-licenses/GPL', 'r')
             s = h.readlines()
@@ -988,9 +1062,7 @@ class UM:
         if data:
             data.set_visible(False)
         try:
-            self.log.writelines("++ Exiting - requested by user\n")
-            self.log.flush()
-            self.log.close()
+            self.log.write(_("Exiting - requested by user"), 'UM.quit_cb', 'info')
             self.save_window_size(self.umWindow, self.vpaned_main)
         except:
             pass    # cause log might already been closed
@@ -1020,9 +1092,7 @@ class UM:
                 # check credentials
             if os.getuid() != 0:
                 try:
-                    self.log.writelines("++ Launching updatemanager in root mode...\n")
-                    self.log.flush()
-                    self.log.close()
+                    self.log.write(_("Launching updatemanager in root mode..."), 'UM.activate_icon_cb', 'info')
                 except:
                     pass    # cause we might have closed it already
                 os.system("gksudo --message \"" + _("Please enter your password to start the update manager") + "\" " + self.curdir + "/updatemanager.py show &")
@@ -1128,61 +1198,22 @@ class UM:
                 menu.popup(None, None, None, 3, 0)
 
     def add_to_ignore_list(self, widget, pkg):
-        os.system("echo \"%s\" >> %s" % (pkg, self.cfgignored))
+        with open(self.cfgignored, "a") as fle:
+            fle.write(pkg)
         self.force_refresh(widget)
-
-    def repaintGui(self):
-        # Force repaint: ugly, but gui gets repainted so fast that gtk objects don't show it
-        while gtk.events_pending():
-            gtk.main_iteration(False)
 
     # ===============================================
     # Main
     # ===============================================
 
     def main(self, argv):
-        # prepare the log
-        if not os.path.exists(self.logdir):
-            os.system("mkdir -p " + self.logdir)
-            os.system("chmod a+rwx " + self.logdir)
-
-        if os.getuid() == 0:
-            os.system("chmod a+rwx " + self.logdir)
-            self.mode = "root"
-
-        # Initiate logging
-        try:
-            os.system("chmod a+rw %s" % self.logFile)
-        except Exception, detail:
-            print detail
-
-        self.log.writelines("++ Launching updatemanager in " + self.mode + " mode\n")
-        self.log.flush()
+        self.log.write(_("Launching updatemanager in %(mode)s...") % { "mode": self.mode }, 'UM.main', 'info')
 
         # Initiate threading
         gtk.gdk.threads_init()
 
         try:
-            self.statusIcon.set_from_file(self.prefs["icon_busy"])
-            self.statusIcon.set_tooltip(_("Checking for updates"))
-            self.statusIcon.set_visible(True)
-
-            #Set the Glade file
-
-            self.umWindow.set_title(_("Update Manager"))
-            self.umWindow.set_default_size(self.prefs['dimensions_x'], self.prefs['dimensions_y'])
-            self.vpaned_main = self.builder.get_object('vpaned_main')
-            self.vpaned_main.set_position(self.prefs['dimensions_pane_position'])
-
-            self.statusbar = self.builder.get_object("statusbar")
-            self.context_id = self.statusbar.get_context_id("updatemanager")
-
-            self.vbox_main = self.builder.get_object("vbox_main")
-
-            self.umWindow.set_icon_from_file(self.prefs["icon_busy"])
-
             # Get the window socket (needed for synaptic later on)
-
             if os.getuid() != 0:
                 # If we're not in root mode do that (don't know why it's needed.. very weird)
                 socket = gtk.Socket()
@@ -1223,22 +1254,10 @@ class UM:
             self.treeview_update.set_reorderable(False)
             self.treeview_update.show()
 
-            #self.treeview_update.connect("button-release-event", self.menuPopup, self.treeview_update, self.statusIcon, wTree)
-
             model = gtk.TreeStore(str, str, str, str, int, str, str, str)    # upgrade, pkgname, oldversion, newversion, size, strsize, description, sourcePackage)
             model.set_sort_column_id(INDEX_PACKAGE_NAME, gtk.SORT_ASCENDING)
             self.treeview_update.set_model(model)
             del model
-
-            #selection = self.treeview_update.get_selection()
-            #selection.connect("changed", self.display_selected_package, wTree)
-            #self.builder.get_object("notebook_details").connect("switch-page", self.switch_page, wTree, treeview_update)
-            #self.umWindow.connect("delete_event", self.close_window, self.vpaned_main)
-            #self.builder.get_object("tool_apply").connect("clicked", self.install, treeview_update, self.statusIcon, wTree)
-            #self.builder.get_object("tool_clear").connect("clicked", self.clear, treeview_update, statusbar, context_id)
-            #self.builder.get_object("tool_select_all").connect("clicked", self.select_all, treeview_update, statusbar, context_id)
-            #self.builder.get_object("tool_refresh").connect("clicked", self.force_refresh, treeview_update, self.statusIcon, wTree)
-            #self.builder.get_object("tool_pack_info").connect("clicked", self.open_pack_info)
 
             # Build status icon menu
             menu = gtk.Menu()
@@ -1305,7 +1324,7 @@ class UM:
             historyMenuItem.get_child().set_text(_("History of updates"))
             historyMenuItem.connect("activate", self.open_history)
             infoMenuItem = gtk.ImageMenuItem(gtk.STOCK_DIALOG_INFO)
-            infoMenuItem.get_child().set_text(_("Information"))
+            infoMenuItem.get_child().set_text(_("Log"))
             infoMenuItem.connect("activate", self.open_information)
             visibleColumnsMenuItem = gtk.MenuItem(gtk.STOCK_DIALOG_INFO)
             visibleColumnsMenuItem.get_child().set_text(_("Visible columns"))
@@ -1369,28 +1388,26 @@ class UM:
                     self.app_hidden = False
 
                     # Repaint before you continue, or else updatemanager in SolydX hangs
-                    self.repaintGui()
+                    functions.repaintGui()
 
             if os.getuid() != 0:
                 #test the network connection to delay updatemanager in case we're not yet connected
-                self.log.writelines("++ Testing initial connection\n")
-                self.log.flush()
+                self.log.write(_("Testing initial connection"), 'UM.main', 'info')
                 try:
                     url = urllib2.urlopen('http://' + self.prefs["testdomain"])
                     url.read()
                     url.close()
-                    self.log.writelines("++ Connection to the Internet successful (tried to read http://%s)\n" % self.prefs["testdomain"])
-                    self.log.flush()
+                    self.log.write(_("Connection to the Internet successful (tried to read http://%(domain)s)") % { "domain": self.prefs["testdomain"] }, 'UM.main', 'info')
                 except Exception, detail:
                     print detail
                     if os.system("ping " + self.prefs["ping_domain"] + " -c1 -q"):
-                        self.log.writelines("-- No connection found (tried to read http://" + self.prefs["testdomain"] + " and to ping " + self.prefs["ping_domain"] + ") - sleeping for " + str(self.prefs["delay"]) + " seconds\n")
-                        self.log.flush()
+                        self.log.write(_("No connection found (tried to read http://%(domain)s), and to ping %(ping)s - sleeping for %(delay)s seconds") % { "domain": self.prefs["testdomain"], "ping": self.prefs["ping_domain"], "delay": str(self.prefs["delay"]) }, 'UM.main', 'info')
                         time.sleep(self.prefs["delay"])
                     else:
-                        self.log.writelines("++ Connection found - checking for updates\n")
-                        self.log.flush()
+                        self.log.write(_("Connection found - checking for updates..."), 'UM.main', 'info')
 
+            if os.geteuid() == 0:
+                self.umWindow.show()
             self.builder.get_object("notebook_details").set_current_page(0)
             refresh = RefreshThread(self.treeview_update, self.statusIcon, self.builder, self.prefs, self.log, self.newUpVersion)
             refresh.start()
@@ -1401,9 +1418,7 @@ class UM:
 
         except Exception, detail:
             print detail
-            self.log.writelines("-- Exception occured in main thread: " + str(detail) + "\n")
-            self.log.flush()
-            self.log.close()
+            self.log.write(_("Exception occured in main thread: %(error)s") % { "error": str(details) }, 'UM.main', 'error')
 
 
 if __name__ == '__main__':

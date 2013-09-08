@@ -376,13 +376,11 @@
   </object>
   <object class="GtkWindow" id="prefWindow">
     <property name="can_focus">False</property>
-    <property name="type">popup</property>
     <property name="title" translatable="yes" context="yes">updatemanager</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
-    <signal name="delete-event" handler="on_prefWindow_delete_event" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox18">
         <property name="visible">True</property>
@@ -624,8 +622,8 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkCheckButton" id="checkbutton_dist_upgrade">
-                    <property name="label" translatable="yes" context="yes">include dist-upgrade packages?</property>
+                  <object class="GtkCheckButton" id="checkbutton_close_synaptic">
+                    <property name="label" translatable="yes" context="yes">Close Synaptic progress window after upgrade</property>
                     <property name="use_action_appearance">False</property>
                     <property name="width_request">528</property>
                     <property name="height_request">32</property>
