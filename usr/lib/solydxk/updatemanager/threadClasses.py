@@ -69,7 +69,7 @@ class AutomaticRefreshThread(threading.Thread):
                         except:
                             pass    # cause it might be closed already
                         # Refresh
-                        refresh = RefreshThread(self.treeView, self.statusIcon, self.builder)
+                        refresh = RefreshThread(self.treeView, self.statusIcon, self.builder, self.prefs, self.log, self.app_hidden)
                         refresh.start()
                     else:
                         try:
