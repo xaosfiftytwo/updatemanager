@@ -55,7 +55,7 @@ class AutomaticRefreshThread(threading.Thread):
                 timer = (self.prefs["timer_minutes"] * 60) + (self.prefs["timer_hours"] * 60 * 60) + (self.prefs["timer_days"] * 24 * 60 * 60)
 
                 try:
-                    self.log.write(_("Auto-refresh timer is going to sleep for %(days)s days, %(hours)s hours, %(minutes)s.minutes") % { "days": str(self.prefs["timer_days"]), "hours": str(self.prefs["timer_hours"]), "minutes": str(self.prefs["timer_minutes"]) }, 'AutomaticRefreshThread.run', 'debug')
+                    self.log.write(_("Auto-refresh timer is going to sleep for %(days)s days, %(hours)s hours, %(minutes)s minutes") % { "days": str(self.prefs["timer_days"]), "hours": str(self.prefs["timer_hours"]), "minutes": str(self.prefs["timer_minutes"]) }, 'AutomaticRefreshThread.run', 'debug')
                 except:
                     pass    # cause it might be closed already
                 timetosleep = int(timer)
@@ -266,13 +266,19 @@ class InstallThread(threading.Thread):
 
                         # Save new UP version
                         self.log.write(_("write new UP version %(newUpVersion)s to %(uphist)s/") % { "newUpVersion": self.newUpVersion, "uphist": self.upHistFile }, "InstallThread.run", "info")
-                        upHist = ""
+                        upList = []
                         if os.path.exists(self.upHistFile):
                             with open(self.upHistFile) as fle:
-                                upHist  = fle.read()
-                        if self.newUpVersion not in upHist:
-                            with open(self.upHistFile, "a") as fle:
-                                fle.write("%s\n" % self.newUpVersion)
+                                upList  = fle.readlines()
+                        cleanList = []
+                        for version in upList:
+                            version = version.strip()
+                            version = version[len(version) - 10:]
+                            if version not in cleanList and version != self.newUpVersion:
+                                cleanList.append(version)
+                        cleanList.append(self.newUpVersion)
+                        with open(self.upHistFile, "w") as fle:
+                            fle.write("\n".join(cleanList))
 
                     self.log.write(_("Installation finished"), "InstallThread.run", "info")
 
@@ -399,79 +405,101 @@ class RefreshThread(threading.Thread):
             else:
                 updates = commands.getoutput(self.curdir + "/checkAPT.py --use-synaptic %s | grep \"###\"" % self.window.window.xid)
 
-            # Look for updatemanager
-            if ("UPDATE###updatemanager###" in updates):
-                new_updatemanager = True
+            if "ERROR###" in updates:
+                self.statusString = _("An error has occurred while updating the apt cache. Please, check your sources.list")
+                self.log.write(self.statusString, "RefreshThread.run", "error")
+                self.builder.get_object("notebook_details").set_current_page(0)
+                self.window.window.set_cursor(None)
+                self.window.set_sensitive(True)
+                gtk.gdk.threads_leave()
             else:
-                new_updatemanager = False
+                # Look for updatemanager
+                if ("UPDATE###updatemanager###" in updates):
+                    new_updatemanager = True
+                else:
+                    new_updatemanager = False
 
-            updates = string.split(updates, "\n")
+                updates = string.split(updates, "\n")
 
-            # Look at the packages one by one
-            list_of_packages = ""
-            num_updates = 0
-            download_size = 0
-            num_ignored = 0
-            ignored_list = []
-            if os.path.exists(self.cfgignored):
-                blacklist_file = open(self.cfgignored, "r")
-                for blacklist_line in blacklist_file:
-                    ignored_list.append(blacklist_line.strip())
-                blacklist_file.close()
+                # Look at the packages one by one
+                list_of_packages = ""
+                num_updates = 0
+                download_size = 0
+                num_ignored = 0
+                ignored_list = []
+                if os.path.exists(self.cfgignored):
+                    blacklist_file = open(self.cfgignored, "r")
+                    for blacklist_line in blacklist_file:
+                        ignored_list.append(blacklist_line.strip())
+                    blacklist_file.close()
 
-            if (len(updates) is None):
-                self.statusIcon.set_from_file(self.prefs["icon_up2date"])
-                self.statusString = _("Your system is up to date")
-                self.statusIcon.set_tooltip(self.statusString)
-                self.log.write(self.statusString, "RefreshThread.run", "info")
-            else:
-                for pkg in updates:
-                    values = string.split(pkg, "###")
-                    if len(values) == 7:
-                        status = values[0]
-                        if (status == "ERROR"):
-                            error_msg = commands.getoutput(os.path.join(self.curdir, "checkAPT.py"))
-                            gtk.gdk.threads_enter()
-                            self.statusIcon.set_from_file(self.prefs["icon_error"])
-                            self.statusString = _("Could not refresh the list of packages")
-                            self.statusIcon.set_tooltip(self.statusString)
-                            self.log.write(self.statusString, "RefreshThread.run", "info")
-                            self.builder.get_object("label_error_detail").set_text(error_msg)
-                            self.builder.get_object("label_error_detail").show()
-                            self.builder.get_object("viewport1").show()
-                            self.builder.get_object("scrolledwindow1").show()
-                            self.builder.get_object("main_image_error").show()
-                            self.builder.get_object("hbox_error").show()
-                            #self.statusIcon.set_blinking(False)
-                            self.window.window.set_cursor(None)
-                            self.window.set_sensitive(True)
-                            #statusbar.push(context_id, _(""))
-                            gtk.gdk.threads_leave()
-                            return False
-                        package = values[1]
-                        packageIsBlacklisted = False
-                        for blacklist in ignored_list:
-                            if fnmatch.fnmatch(package, blacklist):
-                                num_ignored = num_ignored + 1
-                                packageIsBlacklisted = True
-                                break
+                if (len(updates) is None):
+                    self.statusIcon.set_from_file(self.prefs["icon_up2date"])
+                    self.statusString = _("Your system is up to date")
+                    self.statusIcon.set_tooltip(self.statusString)
+                    self.log.write(self.statusString, "RefreshThread.run", "info")
+                else:
+                    for pkg in updates:
+                        values = string.split(pkg, "###")
+                        if len(values) == 7:
+                            status = values[0]
+                            if (status == "ERROR"):
+                                error_msg = commands.getoutput(os.path.join(self.curdir, "checkAPT.py"))
+                                gtk.gdk.threads_enter()
+                                self.statusIcon.set_from_file(self.prefs["icon_error"])
+                                self.statusString = _("Could not refresh the list of packages")
+                                self.statusIcon.set_tooltip(self.statusString)
+                                self.log.write(self.statusString, "RefreshThread.run", "info")
+                                self.builder.get_object("label_error_detail").set_text(error_msg)
+                                self.builder.get_object("label_error_detail").show()
+                                self.builder.get_object("viewport1").show()
+                                self.builder.get_object("scrolledwindow1").show()
+                                self.builder.get_object("main_image_error").show()
+                                self.builder.get_object("hbox_error").show()
+                                #self.statusIcon.set_blinking(False)
+                                self.window.window.set_cursor(None)
+                                self.window.set_sensitive(True)
+                                #statusbar.push(context_id, _(""))
+                                gtk.gdk.threads_leave()
+                                return False
+                            package = values[1]
+                            packageIsBlacklisted = False
+                            for blacklist in ignored_list:
+                                if fnmatch.fnmatch(package, blacklist):
+                                    num_ignored = num_ignored + 1
+                                    packageIsBlacklisted = True
+                                    break
 
-                        if packageIsBlacklisted:
-                            continue
+                            if packageIsBlacklisted:
+                                continue
 
-                        newVersion = values[2]
-                        oldVersion = values[3]
-                        size = int(values[4])
-                        source_package = values[5]
-                        description = values[6]
+                            newVersion = values[2]
+                            oldVersion = values[3]
+                            size = int(values[4])
+                            source_package = values[5]
+                            description = values[6]
 
-                        strSize = self.size_to_string(size)
+                            strSize = self.size_to_string(size)
 
-                        if (new_updatemanager):
-                            if (package == "updatemanager"):
+                            if (new_updatemanager):
+                                if (package == "updatemanager"):
+                                    list_of_packages = list_of_packages + " " + package
+                                    itr = model.insert_before(None, None)
+                                    model.set_value(itr, INDEX_UPGRADE, "true")
+                                    model.row_changed(model.get_path(itr), itr)
+                                    model.set_value(itr, INDEX_PACKAGE_NAME, package)
+                                    model.set_value(itr, INDEX_OLD_VERSION, oldVersion)
+                                    model.set_value(itr, INDEX_NEW_VERSION, newVersion)
+                                    model.set_value(itr, INDEX_SIZE, size)
+                                    model.set_value(itr, INDEX_STR_SIZE, strSize)
+                                    model.set_value(itr, INDEX_DESCRIPTION, description)
+                                    model.set_value(itr, INDEX_SOURCE_PACKAGE, source_package)
+                                    num_updates = num_updates + 1
+                            else:
                                 list_of_packages = list_of_packages + " " + package
                                 itr = model.insert_before(None, None)
                                 model.set_value(itr, INDEX_UPGRADE, "true")
+                                download_size = download_size + size
                                 model.row_changed(model.get_path(itr), itr)
                                 model.set_value(itr, INDEX_PACKAGE_NAME, package)
                                 model.set_value(itr, INDEX_OLD_VERSION, oldVersion)
@@ -481,76 +509,62 @@ class RefreshThread(threading.Thread):
                                 model.set_value(itr, INDEX_DESCRIPTION, description)
                                 model.set_value(itr, INDEX_SOURCE_PACKAGE, source_package)
                                 num_updates = num_updates + 1
-                        else:
-                            list_of_packages = list_of_packages + " " + package
-                            itr = model.insert_before(None, None)
-                            model.set_value(itr, INDEX_UPGRADE, "true")
-                            download_size = download_size + size
-                            model.row_changed(model.get_path(itr), itr)
-                            model.set_value(itr, INDEX_PACKAGE_NAME, package)
-                            model.set_value(itr, INDEX_OLD_VERSION, oldVersion)
-                            model.set_value(itr, INDEX_NEW_VERSION, newVersion)
-                            model.set_value(itr, INDEX_SIZE, size)
-                            model.set_value(itr, INDEX_STR_SIZE, strSize)
-                            model.set_value(itr, INDEX_DESCRIPTION, description)
-                            model.set_value(itr, INDEX_SOURCE_PACKAGE, source_package)
-                            num_updates = num_updates + 1
 
-                gtk.gdk.threads_enter()
+                    gtk.gdk.threads_enter()
 
-                if (new_updatemanager):
-                    self.statusString = _("A new version of the update manager is available")
-                    self.statusIcon.set_from_file(self.prefs["icon_updates"])
-                    self.statusIcon.set_tooltip(self.statusString)
-                    self.log.write(self.statusString, "RefreshThread.run", "info")
-                else:
-                    if self.newUpVersion is not None:
-                        self.statusString = _("A new update pack is available (version: %s)" % self.newUpVersion)
-                        self.statusIcon.set_from_file(self.prefs["icon_updates"])
-                        self.statusIcon.set_tooltip(self.statusString)
-                        self.log.write(self.statusString, "RefreshThread.run", "info")
-                    elif (num_updates > 0):
-                        if (num_updates == 1):
-                            if (num_ignored == 0):
-                                self.statusString = _("1 recommended update available (%(size)s)") % {'size': self.size_to_string(download_size)}
-                            elif (num_ignored == 1):
-                                self.statusString = _("1 recommended update available (%(size)s), 1 ignored") % {'size': self.size_to_string(download_size)}
-                            elif (num_ignored > 1):
-                                self.statusString = _("1 recommended update available (%(size)s), %(ignored)d ignored") % {'size': self.size_to_string(download_size), 'ignored': num_ignored}
-                        else:
-                            if (num_ignored == 0):
-                                self.statusString = _("%(recommended)d recommended updates available (%(size)s)") % {'recommended': num_updates, 'size': self.size_to_string(download_size)}
-                            elif (num_ignored == 1):
-                                self.statusString = _("%(recommended)d recommended updates available (%(size)s), 1 ignored") % {'recommended': num_updates, 'size': self.size_to_string(download_size)}
-                            elif (num_ignored > 0):
-                                self.statusString = _("%(recommended)d recommended updates available (%(size)s), %(ignored)d ignored") % {'recommended': num_updates, 'size': self.size_to_string(download_size), 'ignored': num_ignored}
+                    if (new_updatemanager):
+                        self.statusString = _("A new version of the update manager is available")
                         self.statusIcon.set_from_file(self.prefs["icon_updates"])
                         self.statusIcon.set_tooltip(self.statusString)
                         self.log.write(self.statusString, "RefreshThread.run", "info")
                     else:
-                        self.statusString = _("Your system is up to date")
-                        self.statusIcon.set_from_file(self.prefs["icon_up2date"])
-                        self.statusIcon.set_tooltip(self.statusString)
-                        self.log.write(self.statusString, "RefreshThread.run", "info")
+                        if self.newUpVersion is not None:
+                            self.statusString = _("A new update pack is available (version: %s)" % self.newUpVersion)
+                            self.statusIcon.set_from_file(self.prefs["icon_updates"])
+                            self.statusIcon.set_tooltip(self.statusString)
+                            self.log.write(self.statusString, "RefreshThread.run", "info")
+                        elif (num_updates > 0):
+                            if (num_updates == 1):
+                                if (num_ignored == 0):
+                                    self.statusString = _("1 recommended update available (%(size)s)") % {'size': self.size_to_string(download_size)}
+                                elif (num_ignored == 1):
+                                    self.statusString = _("1 recommended update available (%(size)s), 1 ignored") % {'size': self.size_to_string(download_size)}
+                                elif (num_ignored > 1):
+                                    self.statusString = _("1 recommended update available (%(size)s), %(ignored)d ignored") % {'size': self.size_to_string(download_size), 'ignored': num_ignored}
+                            else:
+                                if (num_ignored == 0):
+                                    self.statusString = _("%(recommended)d recommended updates available (%(size)s)") % {'recommended': num_updates, 'size': self.size_to_string(download_size)}
+                                elif (num_ignored == 1):
+                                    self.statusString = _("%(recommended)d recommended updates available (%(size)s), 1 ignored") % {'recommended': num_updates, 'size': self.size_to_string(download_size)}
+                                elif (num_ignored > 0):
+                                    self.statusString = _("%(recommended)d recommended updates available (%(size)s), %(ignored)d ignored") % {'recommended': num_updates, 'size': self.size_to_string(download_size), 'ignored': num_ignored}
+                            self.statusIcon.set_from_file(self.prefs["icon_updates"])
+                            self.statusIcon.set_tooltip(self.statusString)
+                            self.log.write(self.statusString, "RefreshThread.run", "info")
+                        else:
+                            self.statusString = _("Your system is up to date")
+                            self.statusIcon.set_from_file(self.prefs["icon_up2date"])
+                            self.statusIcon.set_tooltip(self.statusString)
+                            self.log.write(self.statusString, "RefreshThread.run", "info")
 
-            self.log.write(_("Refresh finished"), "RefreshThread.run", "info")
-            # Stop the blinking
-            #self.statusIcon.set_blinking(False)
-            self.builder.get_object("notebook_details").set_current_page(0)
-            self.window.window.set_cursor(None)
-            self.treeview_update.set_model(model)
-            del model
-            self.window.set_sensitive(True)
-            self.builder.get_object("vpaned_main").set_position(vpaned_position)
-            gtk.gdk.threads_leave()
+                self.log.write(_("Refresh finished"), "RefreshThread.run", "info")
+                # Stop the blinking
+                #self.statusIcon.set_blinking(False)
+                self.builder.get_object("notebook_details").set_current_page(0)
+                self.window.window.set_cursor(None)
+                self.treeview_update.set_model(model)
+                del model
+                self.window.set_sensitive(True)
+                self.builder.get_object("vpaned_main").set_position(vpaned_position)
+                gtk.gdk.threads_leave()
+
 
         except Exception, detail:
-            self.log.write(str(detail), "RefreshThread.run", "exception")
             gtk.gdk.threads_enter()
             msg = _("Could not refresh the list of packages")
             self.statusIcon.set_from_file(self.prefs["icon_error"])
             self.statusIcon.set_tooltip(msg)
-            self.log.write(msg, "RefreshThread.run", "error")
+            self.log.write("%s: %s" % (msg, detail), "RefreshThread.run", "exception")
             #self.statusIcon.set_blinking(False)
             self.window.window.set_cursor(None)
             self.window.set_sensitive(True)
@@ -587,3 +601,10 @@ class RefreshThread(threading.Thread):
         if (foundSomething):
             changes = self.checkDependencies(changes, cache)
         return changes
+
+class CustomException(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message

@@ -8,7 +8,6 @@ except Exception, detail:
     print detail
     exit(1)
 
-
 # Class to execute a command and return the output in an array
 class ExecCmd(object):
 

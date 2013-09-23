@@ -93,6 +93,7 @@ class UM:
         self.prefWindow = self.builder.get_object('prefWindow')
         self.histWindow = self.builder.get_object('histWindow')
         self.infoWindow = self.builder.get_object('infoWindow')
+        self.packWindow = self.builder.get_object('window_pack_info')
 
         # Initiate global variables
         self.ec = ExecCmd()
@@ -211,10 +212,29 @@ class UM:
             'on_info_close_button_clicked': self.info_cancel,
             'on_btnCheckMirrorsSpeed_clicked': self.checkMirrorsSpeed,
             'on_button_icon_busy_clicked': self.change_icon,
-            'on_umWindow_delete_event': self.close_window
+            'on_umWindow_delete_event': self.close_window,
+            'on_histWindow_delete_event': self.histWindow_hide,
+            'on_infoWindow_delete_event': self.infoWindow_hide,
+            'on_prefWindow_delete_event': self.prefWindow_hide,
+            'on_window_pack_info_delete_event': self.packWindow_hide
         }
         self.builder.connect_signals(signals)
 
+    def histWindow_hide(self, widget, data=None):
+        self.histWindow.hide()
+        return True
+
+    def infoWindow_hide(self, widget, data=None):
+        self.infoWindow.hide()
+        return True
+
+    def prefWindow_hide(self, widget, data=None):
+        self.prefWindow.hide()
+        return True
+
+    def packWindow_hide(self, widget, data=None):
+        self.packWindow.hide()
+        return True
 
     # Get the package version number
     def getPackageVersion(self, packageName, candidate=False):
@@ -251,17 +271,23 @@ class UM:
         if self.candidateVersion == self.version:
             if os.path.exists(self.upHistFile):
                 with open(self.upHistFile, 'r') as fle:
-                    self.localUpVersion = fle.readlines()[-1].decode()
+                    version = fle.readlines()[-1].strip()
+                    self.localUpVersion = version[len(version) - 10:]
+                    self.log.write("upHistFile = %s | lastUp = %s" % (str(self.upHistFile), self.localUpVersion), "UM.checkUpVersion", "debug")
             elif os.path.exists("/var/log/updatemanager.packlevel"):
                 self.localUpVersion = commands.getoutput("cat /var/log/updatemanager.packlevel").strip()
+                self.log.write("packlevel = /var/log/updatemanager.packlevel | lastUp = %s" % self.localUpVersion, "UM.checkUpVersion", "debug")
             else:
                 preFile = commands.getoutput("ls %s | grep '.pre'" % self.curdir)
-                self.log.write("preFile = %s" % str(preFile), "UM.checkUpVersion", "debug")
                 if preFile != "":
                     self.localUpVersion = preFile.replace(".pre", "")
                 else:
                     # Nothing found, just save a default value
                     self.localUpVersion = "2000.01.01"
+                self.log.write("preFile = %s | lastUp = %s" % (str(preFile), self.localUpVersion), "UM.checkUpVersion", "debug")
+
+            # Strip the local up version
+            self.localUpVersion = self.localUpVersion.strip().strip("\0")
 
             try:
                 solydxk_repo_url = None
@@ -278,10 +304,10 @@ class UM:
                     for line in html.readlines():
                         elements = line.split("=")
                         variable = elements[0].strip()
-                        value = elements[1].strip()
+                        value = elements[1].strip().strip("\0")
                         if variable == "version":
                             self.serverUpVersion = value
-                            self.log.write("len(installed_up_version) = %s | len(value) = %s" % (str(len(self.serverUpVersion)), str(len(self.serverUpVersion))), "UM.checkUpVersion", "debug")
+                            self.log.write("len(localUpVersion) = %s | len(serverUpVersion) = %s" % (str(len(self.localUpVersion)), str(len(self.serverUpVersion))), "UM.checkUpVersion", "debug")
                             if len(self.localUpVersion) == len(self.serverUpVersion):
                                 instUpArr = self.localUpVersion.split('.')
                                 valArr = self.serverUpVersion.split('.')
@@ -414,8 +440,9 @@ class UM:
         self.cfg.setValue(section, 'repurl', self.prefs["repurl"])
         self.cfg.setValue(section, 'repurldebian', self.prefs["repurldebian"])
         self.cfg.setValue(section, 'repdebian', self.prefs["repdebian"])
-        self.cfg.setValue(section, 'authors', self.prefs["authors"])
+        #self.cfg.setValue(section, 'authors', self.prefs["authors"])
         self.cfg.setValue(section, 'testdomain', self.prefs["testdomain"])
+        #self.cfg.setValue(section, 'mirrorsurl', self.prefs["mirrorsurl"])
 
         # Write refresh config
         section = 'refresh'
@@ -508,12 +535,13 @@ class UM:
             prefs["repdebian"] = self.cfg.getValue(section, 'repdebian')
             prefs["authors"] = self.cfg.getValue(section, 'authors').split(',')
             prefs["testdomain"] = self.cfg.getValue(section, 'testdomain')
+            prefs["mirrorsurl"] = self.cfg.getValue(section, 'mirrorsurl')
         except:
             prefs["repurl"] = 'packages.solydxk.com'
             prefs["repurldebian"] = 'debian.solydxk.com'
             prefs["repdebian"] = 'ftp.debian.org'
             prefs["authors"] = "Schoelje <schoelje@solydxk.com>,Clement Lefebvre <root@linuxmint.com>,Chris Hodapp <clhodapp@live.com>"
-            prefs["testdomain"] = 'google.com'
+            prefs["mirrorsurl"] = 'http://packages.solydxk.com/mirrors.list'
 
         #Read refresh config
         section = 'refresh'
@@ -685,6 +713,18 @@ class UM:
     def getMirrors(self):
         mirrors = None
         mirrorsList = os.path.join(self.curdir, 'mirrors.list')
+
+        try:
+            #print self.prefs["mirrorsurl"]
+            txt = urllib2.urlopen(self.prefs["mirrorsurl"]).read()
+            #print txt
+            if txt != '':
+                fle = open(mirrorsList, 'w')
+                fle.write(txt)
+                fle.close()
+        except:
+            pass
+
         if os.path.exists(mirrorsList):
             reader = csv.reader(open(mirrorsList, "r"))
             mirrorData = list(reader)
@@ -706,6 +746,7 @@ class UM:
         return blnRet
 
     def checkMirrorsSpeed(self, widget):
+        self.prefWindow.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         self.btnCheckMirrorsSpeed.set_sensitive(False)
         t = MirrorGetSpeed(self.mirrors, self.queue, self.log)
         self.threads['mirrorspeed'] = t
@@ -736,9 +777,11 @@ class UM:
                     itr = model.iter_next(itr)
                 self.treeview_mirrors.set_model(model)
             self.btnCheckMirrorsSpeed.set_sensitive(True)
+            self.prefWindow.window.set_cursor(None)
         except Exception, detail:
             print detail
             self.btnCheckMirrorsSpeed.set_sensitive(True)
+            self.prefWindow.window.set_cursor(None)
 
     def isNumeric(self, n):
         try:
@@ -832,7 +875,6 @@ class UM:
 
     def open_pack_info(self, widget):
         #Set the Glade file
-        self.packWindow = self.builder.get_object('window_pack_info')
         self.packWindow.set_icon_from_file(self.prefs["icon_busy"])
         self.packWindow.set_title(_("Update Pack Info") + " - " + _("Update Manager"))
 

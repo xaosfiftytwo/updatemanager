@@ -27,8 +27,8 @@ class MirrorGetSpeed(threading.Thread):
                     buff = cStringIO.StringIO()
 
                     if mirrorData[2].lower() == 'solydxk':
-                        # http://ftp.nluug.nl/os/Linux/distr/solydxk/packages/dists/solydxk/kdenext/binary-amd64/Packages.gz
-                        c.setopt(pycurl.URL, "%s/dists/solydxk/kdenext/binary-amd64/Packages.gz" % mirror)
+                        # http://ftp.nluug.nl/os/Linux/distr/solydxk/packages/production/dists/solydxk/kdenext/binary-amd64/Packages.gz
+                        c.setopt(pycurl.URL, "%s/production/dists/solydxk/kdenext/binary-amd64/Packages.gz" % mirror)
                     else:
                         c.setopt(pycurl.URL, "%s/production/README.mirrors.html" % mirror)
 
