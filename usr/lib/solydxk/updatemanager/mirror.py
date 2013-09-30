@@ -77,7 +77,7 @@ class Mirror():
         self.log = log
         self.ec = ExecCmd()
 
-    def save(self, replaceRepos):
+    def save(self, replaceRepos, excludeStrings=[]):
         try:
             src = '/etc/apt/sources.list'
             if os.path.exists(src):
@@ -94,7 +94,13 @@ class Mirror():
                     if not line.startswith('#'):
                         for repo in replaceRepos:
                             if repo[0] in line:
-                                line = line.replace(repo[0], repo[1])
+                                skip = False
+                                for excl in excludeStrings:
+                                    if excl in line:
+                                        skip = True
+                                        break
+                                if not skip:
+                                    line = line.replace(repo[0], repo[1])
                     new_repos.append(line)
 
                 if new_repos:

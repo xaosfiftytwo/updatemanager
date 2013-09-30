@@ -110,7 +110,8 @@ class UM:
 
         self.pid = os.getpid()
         self.statusIcon = gtk.StatusIcon()
-        self.mirrors = self.getMirrors()
+        self.excludeMirrors = ['security']
+        self.mirrors = self.getMirrors(self.excludeMirrors)
         self.queue = Queue.Queue()
         self.threads = {}
         self.upHistFile = os.path.join(self.curdir, "up.hist")
@@ -501,9 +502,9 @@ class UM:
 
         if replaceRepos:
             m = Mirror(self.log)
-            m.save(replaceRepos)
+            m.save(replaceRepos, self.excludeMirrors)
             self.repos = self.get_apt_repos()
-            self.mirrors = self.getMirrors()
+            self.mirrors = self.getMirrors(self.excludeMirrors)
 
         self.prefWindow.hide()
         refresh = RefreshThread(self.treeview_update, self.statusIcon, self.builder, self.prefs, self.log, self.newUpVersion)
@@ -710,7 +711,7 @@ class UM:
 
         self.prefWindow.show()
 
-    def getMirrors(self):
+    def getMirrors(self, excludeMirrors):
         mirrors = None
         mirrorsList = os.path.join(self.curdir, 'mirrors.list')
 
@@ -741,7 +742,14 @@ class UM:
         blnRet = False
         for repo in self.repos:
             if url in repo:
+                #print ">>> add %s" % url
                 blnRet = True
+                for excl in self.excludeMirrors:
+                    #print ">>> excl=%s - repo=%s" % (excl, repo)
+                    if excl in repo:
+                        #print ">>> skip"
+                        blnRet = False
+                        break
                 break
         return blnRet
 
