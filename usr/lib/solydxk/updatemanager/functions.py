@@ -27,7 +27,7 @@ packageStatus = ['installed', 'notinstalled', 'uninstallable']
 log = object
 
 # i18n
-gettext.install("ddm", "/usr/share/locale")
+gettext.install("updatemanager", "/usr/share/locale")
 
 
 # General ================================================
@@ -134,7 +134,7 @@ def sortListOnColumn(lst, columsList):
 # Return a list with images from a given path
 def getImgsFromDir(directoryPath):
     extensions = ['.png', '.jpg', '.jpeg', '.gif']
-    log.write(_("Search for extensions: %(ext)s") % { "ext": str(extensions) }, 'functions.getImgsFromDir', 'debug')
+    log.write("Search for extensions: %(ext)s" % { "ext": str(extensions) }, 'functions.getImgsFromDir', 'debug')
     imgs = getFilesFromDir(directoryPath, False, extensions)
     return imgs
 
@@ -152,12 +152,12 @@ def getFilesFromDir(directoryPath, recursive=False, extensionList=None):
                 if os.path.splitext(fle)[1] == ext:
                     path = os.path.join(directoryPath, fle)
                     files.append(path)
-                    log.write(_("File with extension found: %(path)s") % { "path": path }, 'functions.getFilesFromDir', 'debug')
+                    log.write("File with extension found: %(path)s" % { "path": path }, 'functions.getFilesFromDir', 'debug')
                     break
         else:
             path = os.path.join(directoryPath, fle)
             files.append(path)
-            log.write(_("File found: %(path)s") % { "path": path }, 'functions.getFilesFromDir', 'debug')
+            log.write("File found: %(path)s" % { "path": path }, 'functions.getFilesFromDir', 'debug')
     return files
 
 
@@ -252,14 +252,14 @@ def getKernelPackages(getLatest=False, includeLatestRegExp='', excludeLatestRegE
             # Already the latest kernel: get all linux-image packages of the current version
             kernelRelease = getKernelRelease()
             if 'amd64' in kernelRelease:
-                cmd = "aptitude search linux-image-%s" % kernelRelease
+                cmd = "aptitude search -w 150 linux-image-%s" % kernelRelease
             else:
                 pos = kernelRelease.find('486')
                 if pos == 0:
                     pos = kernelRelease.find('686')
                 if pos > 0:
                     kernelRelease = kernelRelease[0:pos - 1]
-                cmd = "aptitude search linux-image-%s" % kernelRelease
+                cmd = "aptitude search -w 150 linux-image-%s" % kernelRelease
 
             cmdList = ec.run(cmd, False)
 
@@ -344,9 +344,9 @@ def getDistribution(returnBaseDistribution=True):
         elif 'arm' in sysInfo:
             distribution = 'arm'
     else:
-        if os.path.exists('/etc/issue.net'):
+        if os.path.exists('/etc/solydxk/info'):
             ec = ExecCmd(log)
-            lst = ec.run('cat /etc/issue.net', False)
+            lst = ec.run("cat /etc/solydxk/info | grep EDITION | cut -d'=' -f 2", False)
             if lst:
                 distribution = lst[0]
     return distribution
@@ -449,7 +449,7 @@ def getResolutions(minRes='', maxRes='', reverseOrder=False, getVesaResolutions=
                 itemH = strToNumber(itemList[1], True)
                 # Check if it can be added
                 if itemW >= minW and itemH >= minH and (maxW == 0 or itemW <= maxW) and (maxH == 0 or itemH <= maxH):
-                    log.write(_("Resolution added: %(res)s") % { "res": item }, 'functions.getResolutions', 'debug')
+                    log.write("Resolution added: %(res)s" % { "res": item }, 'functions.getResolutions', 'debug')
                     avlResTmp.append([itemW, itemH])
 
     # Sort the list and return as readable resolution strings
@@ -467,19 +467,19 @@ def getPackageStatus(packageName):
         pkg = cache[packageName]
         if pkg.installed is not None:
             # Package is installed
-            log.write(_("Package is installed: %(package)s") % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
+            log.write("Package is installed: %(package)s" % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
             status = packageStatus[0]
         elif pkg.candidate is not None:
             # Package is not installed
-            log.write(_("Package not installed: %(package)s") % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
+            log.write("Package not installed: %(package)s" % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
             status = packageStatus[1]
         else:
             # Package is not found: uninstallable
-            log.write(_("Package not found: %(package)s") % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
+            log.write("Package not found: %(package)s" % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
             status = packageStatus[2]
     except:
         # If something went wrong: assume that package is uninstallable
-        log.write(_("Could not get status info for package: %(package)s") % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
+        log.write("Could not get status info for package: %(package)s" % { "package": str(packageName) }, 'drivers.getPackageStatus', 'debug')
         status = packageStatus[2]
 
     return status
@@ -491,7 +491,7 @@ def isPackageInstalled(packageName, alsoCheckVersion=True):
     try:
         cmd = 'dpkg-query -l %s | grep ^i' % packageName
         if '*' in packageName:
-            cmd = 'aptitude search %s | grep ^i' % packageName
+            cmd = 'aptitude search -w 150 %s | grep ^i' % packageName
         ec = ExecCmd(log)
         pckList = ec.run(cmd, False)
         for line in pckList:

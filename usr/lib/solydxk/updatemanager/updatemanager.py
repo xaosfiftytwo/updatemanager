@@ -103,6 +103,7 @@ class UM:
         self.new_updatemanager = False
         self.app_hidden = True
         self.prefs = self.read_configuration()
+        self.isLts = False
         self.repos = self.get_apt_repos()
         self.mode = "user"
         if self.mode == 0:
@@ -135,7 +136,6 @@ class UM:
         if os.access(self.logFile, os.W_OK):
             os.remove(self.logFile)
         self.log = Logger(self.logFile, 'debug', True, self.statusbar, self.umWindow, 10240)
-        functions.log = self.log
 
         # Version information
         self.version = self.getPackageVersion('updatemanager')
@@ -252,6 +252,7 @@ class UM:
         return version
 
     def get_apt_repos(self):
+        self.isLts = False
         repos = []
         cmds = ['cat /etc/apt/sources.list']
         #srcFiles = glob('/etc/apt/sources.list.d/*.list')
@@ -263,7 +264,10 @@ class UM:
                 line = line.strip()
                 matchObj = re.search("^deb\s*(http[:\/a-zA-Z0-9\.\-]*)", line)
                 if matchObj:
-                    repos.append(matchObj.group(1))
+                    repo = matchObj.group(1)
+                    if '/lts' in repo:
+                        self.isLts = True
+                    repos.append(repo)
         return repos
 
     # Check for a new Update Pack
@@ -712,7 +716,7 @@ class UM:
         self.prefWindow.show()
 
     def getMirrors(self, excludeMirrors):
-        mirrors = None
+        mirrors = []
         mirrorsList = os.path.join(self.curdir, 'mirrors.list')
 
         try:
@@ -734,8 +738,14 @@ class UM:
                 for mirror in  mirrorData:
                     if mirror:
                         #print ">>> mirror = %s" % str(mirror)
-                        blnCurrent = self.isUrlInSources(mirror[2])
-                        mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
+                        if self.isLts:
+                            if 'lts' in mirror[1].lower():
+                                blnCurrent = self.isUrlInSources(mirror[2])
+                                mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
+                        else:
+                            if not 'lts' in mirror[1].lower():
+                                blnCurrent = self.isUrlInSources(mirror[2])
+                                mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
         return mirrors
 
     def isUrlInSources(self, url):
@@ -878,8 +888,6 @@ class UM:
         self.treeview_history.set_model(model)
         del model
         self.histWindow.show()
-        #self.builder.get_object("hist_button_close").connect("clicked", self.history_cancel, wTree)
-        #self.builder.get_object("hist_button_clear").connect("clicked", self.history_clear, treeview_update)
 
     def open_pack_info(self, widget):
         #Set the Glade file
@@ -902,143 +910,156 @@ class UM:
             #      2. Recommended, Latest update packs: LM_Latest, LM_Latest_Multimedia, LM_Latest_Security
             #      3. For testers, Incoming update packs: LM_Incoming, LM_Incoming_Multimedia, LM_Incoming_Security
 
-            # Which repo do the sources use for the main archive?
-            main_points_to_debian = False
-            main_points_to_production = False
-            main_points_to_testing = False
-            main_points_to_solydxk = False
-
-            # Which repo do the sources use for multimedia?
-            multimedia_points_to_debian = False
-            multimedia_points_to_production = False
-            multimedia_points_to_testing = False
-
-            # Which repo do the sources use for security?
-            security_points_to_debian = False
-            security_points_to_production = False
-            #security_points_to_testing = False
-
-            solydxk_is_here = False    # Is the repo itself present?
-
-            for repo in self.repos:
-                repo = repo.strip().strip("/")
-                #if repo.endswith('Packages.bz2'):
-                #Check SOLYDXK from mirror list
-                #print ">>> repo = %s" % repo
-                xk = False
-                for mirror in self.mirrors:
-                    #print "    mirror = %s" % mirror
-                    if mirror[3] in repo:
-                        #print "    repo found"
-                        xk = True
-                        break
-
-                if xk:
-                    solydxk_is_here = True
-                    #print "solydxk_is_here"
-                    #Check main archive
-                    if 'production' in repo:
-                        #print "solydxk production"
-                        main_points_to_production = True
-                        main_points_to_solydxk = True
-                        #Check multimedia (multimedia is in UP process)
-                        if 'multimedia' in repo:
-                            #print "solydxk production multimedia"
-                            multimedia_points_to_production = True
-                        else:
-                            solydxk_repo_url = repo
-                            #print "repo = %s" % repo
-                    elif 'testing' in repo:
-                        #print "solydxk testing"
-                        main_points_to_testing = True
-                        main_points_to_solydxk = True
-                        if 'multimedia' in repo:
-                            #print "solydxk testing multimedia"
-                            multimedia_points_to_testing = True
-                        else:
-                            solydxk_repo_url = repo
-                            #print "repo = %s" % repo
-                    #Check security (security is NOT in UP process)
-                    elif 'security' in repo:
-                        #print "solydxk security"
-                        security_points_to_production = True
-                else:
-                    #print "NOT solydxk"
-                    if 'debian.org/debian' in repo and '//ftp.' in repo:
-                        #print "debian"
-                        main_points_to_debian = True
-                    elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
-                        #print "debian multimedia"
-                        multimedia_points_to_debian = True
-                    elif 'security.debian.org' in repo:
-                        #print "debian security"
-                        security_points_to_debian = True
-
             isc = self.builder.get_object("image_system_config")
-            if main_points_to_debian and main_points_to_solydxk:
-                #Conflict between DEBIAN and SOLYDXK
-                config_str = _("Your system is pointing to " + self.prefs["repdebian"] + " and " + self.prefs["repurldebian"]) + "\n" + _("These repositories conflict with each other")
-                isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-            elif main_points_to_testing and main_points_to_production:
-                #Conflict between SOLYDXK_TESTING and SOLYDXK_PRODUCTION
-                config_str = _("Your system is pointing to " + self.prefs["repurldebian"] + "/production and " + self.prefs["repurldebian"] + "/testing") + "\n" + _("These repositories conflict with each other")
-                isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-            elif not solydxk_is_here:
-                #Missing SOLYDXK
-                config_str = _("Your system is not pointing to the SolydXK repositories") + "\n" + _("Add \"deb http://" + self.prefs["repurl"] + "/ solydxk main upstream import \" to your APT sources")
-                isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-            elif not (main_points_to_solydxk or main_points_to_debian):
-                #Missing DEBIAN or SOLYDXK
-                config_str = _("Your system is not pointing to any Debian repository") + "\n" + _("Add \"deb http://" + self.prefs["repurldebian"] + "/production testing main contrib non-free\" to your APT sources")
-                isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+            if self.isLts:
+                config_str = _("Your system is pointing to the LTS repository")
+                isc.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                self.builder.get_object("label_update_pack_available").set_visible(False)
+                self.builder.get_object("label_update_pack_installed").set_visible(False)
+                self.builder.get_object("label_update_pack_available_value").set_visible(False)
+                self.builder.get_object("label_update_pack_installed_value").set_visible(False)
             else:
-                if main_points_to_debian:
-                    config_str = _("Your system is pointing directly to Debian") + "\n" + _("This is only recommended for experienced users")
-                    isc.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                elif main_points_to_testing:
-                    if multimedia_points_to_debian:
-                        config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/testing/multimedia testing main non-free\" in your APT sources")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                    elif security_points_to_debian:
-                        config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/security testing/updates main contrib non-free\" in your APT sources")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                    elif (multimedia_points_to_production or security_points_to_production):
-                        config_str = _("Some of your repositories point to production, others point to testing") + "\n" + _("Please check your APT sources.")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                # Which repo do the sources use for the main archive?
+                main_points_to_debian = False
+                main_points_to_production = False
+                main_points_to_testing = False
+                main_points_to_solydxk = False
+
+                # Which repo do the sources use for multimedia?
+                multimedia_points_to_debian = False
+                multimedia_points_to_production = False
+                multimedia_points_to_testing = False
+
+                # Which repo do the sources use for security?
+                security_points_to_debian = False
+                security_points_to_production = False
+                #security_points_to_testing = False
+
+                solydxk_is_here = False    # Is the repo itself present?
+
+                for repo in self.repos:
+                    repo = repo.strip().strip("/")
+                    #if repo.endswith('Packages.bz2'):
+                    #Check SOLYDXK from mirror list
+                    #print ">>> repo = %s" % repo
+                    xk = False
+                    for mirror in self.mirrors:
+                        #print "    mirror = %s" % mirror
+                        if mirror[3] in repo:
+                            #print "    repo found"
+                            xk = True
+                            break
+
+                    if xk:
+                        solydxk_is_here = True
+                        #print "solydxk_is_here"
+                        #Check main archive
+                        if 'production' in repo:
+                            #print "solydxk production"
+                            main_points_to_production = True
+                            main_points_to_solydxk = True
+                            #Check multimedia (multimedia is in UP process)
+                            if 'multimedia' in repo:
+                                #print "solydxk production multimedia"
+                                multimedia_points_to_production = True
+                            else:
+                                solydxk_repo_url = repo
+                                #print "repo = %s" % repo
+                        elif 'testing' in repo:
+                            #print "solydxk testing"
+                            main_points_to_testing = True
+                            main_points_to_solydxk = True
+                            if 'multimedia' in repo:
+                                #print "solydxk testing multimedia"
+                                multimedia_points_to_testing = True
+                            else:
+                                solydxk_repo_url = repo
+                                #print "repo = %s" % repo
+                        #Check security (security is NOT in UP process)
+                        elif 'security' in repo:
+                            #print "solydxk security"
+                            security_points_to_production = True
                     else:
-                        config_str = _("Your system is pointing to the \"SolydXK testing\" repository") + "\n" + _("This is only recommend for experienced users")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                elif main_points_to_production:
-                    if multimedia_points_to_debian:
-                        config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/production/multimedia testing main non-free\" in your APT sources")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                    elif security_points_to_debian:
-                        config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/security testing/updates main contrib non-free\" in your APT sources")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                    elif (multimedia_points_to_testing):
-                        config_str = _("Some of your repositories point to production, but multimedia to testing") + "\n" + _("Please check your APT sources.")
-                        isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                    else:
-                        config_str = _("Your system is pointing to the \"SolydXK production\" repository")
+                        #print "NOT solydxk"
+                        if 'debian.org/debian' in repo and '//ftp.' in repo:
+                            #print "debian"
+                            main_points_to_debian = True
+                        elif 'debian-multimedia.org' in repo or 'deb-multimedia.org' in repo:
+                            #print "debian multimedia"
+                            multimedia_points_to_debian = True
+                        elif 'security.debian.org' in repo:
+                            #print "debian security"
+                            security_points_to_debian = True
+
+                if main_points_to_debian and main_points_to_solydxk and not main_points_to_lts:
+                    #Conflict between DEBIAN and SOLYDXK
+                    config_str = _("Your system is pointing to " + self.prefs["repdebian"] + " and " + self.prefs["repurldebian"]) + "\n" + _("These repositories conflict with each other")
+                    isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                elif main_points_to_testing and main_points_to_production:
+                    #Conflict between SOLYDXK_TESTING and SOLYDXK_PRODUCTION
+                    config_str = _("Your system is pointing to " + self.prefs["repurldebian"] + "/production and " + self.prefs["repurldebian"] + "/testing") + "\n" + _("These repositories conflict with each other")
+                    isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                elif not solydxk_is_here:
+                    #Missing SOLYDXK
+                    config_str = _("Your system is not pointing to the SolydXK repositories") + "\n" + _("Add \"deb http://" + self.prefs["repurl"] + "/ solydxk main upstream import \" to your APT sources")
+                    isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                elif not (main_points_to_solydxk or main_points_to_debian):
+                    #Missing DEBIAN or SOLYDXK
+                    config_str = _("Your system is not pointing to any Debian repository") + "\n" + _("Add \"deb http://" + self.prefs["repurldebian"] + "/production testing main contrib non-free\" to your APT sources")
+                    isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                else:
+                    if main_points_to_debian:
+                        config_str = _("Your system is pointing directly to Debian")
                         isc.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                    elif main_points_to_testing:
+                        if multimedia_points_to_debian:
+                            config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/testing/multimedia testing main non-free\" in your APT sources")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                        elif security_points_to_debian:
+                            config_str = _("Your system is pointing directly at security.debian.org")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                        elif multimedia_points_to_production:
+                            config_str = _("Some of your repositories point to production, others point to testing") + "\n" + _("Please check your APT sources.")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                        else:
+                            config_str = _("Your system is pointing to the \"SolydXK testing\" repository") + "\n" + _("This is only recommend for experienced users")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                    elif main_points_to_production:
+                        if multimedia_points_to_debian:
+                            config_str = _("Your system is pointing directly at deb-multimedia.org") + "\n" + _("Replace \"deb http://deb-multimedia.org testing main non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/production/multimedia testing main non-free\" in your APT sources")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                        elif security_points_to_debian:
+                            config_str = _("Your system is pointing directly at security.debian.org") + "\n" + _("Replace \"deb http://security.debian.org testing/updates main contrib non-free\" with \"deb http://" + self.prefs["repurldebian"] + "/security testing/updates main contrib non-free\" in your APT sources")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                        elif multimedia_points_to_testing:
+                            config_str = _("Some of your repositories point to production, but multimedia to testing") + "\n" + _("Please check your APT sources.")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                        else:
+                            config_str = _("Your system is pointing to the \"SolydXK production\" repository")
+                            isc.set_from_stock(gtk.STOCK_DIALOG_INFO, gtk.ICON_SIZE_SMALL_TOOLBAR)
         except Exception, detail:
             print detail
 
-        if solydxk_repo_url is not None:
-            scrolledContainer = self.builder.get_object("scrolled_pack_info")
-            children = scrolledContainer.get_children()
-            if children:
-                browser = children[0]
-            else:
-                browser = webkit.WebView()
-                # Add browser to widget
-                scrolledContainer.add(browser)
-                # listen for clicks of links
-                browser.connect("new-window-policy-decision-requested", self.on_nav_request)
-                browser.connect("button-press-event", lambda w, e: e.button == 3)
+        url = os.path.join("file://" + self.curdir, "notfound.html")
+        if self.isLts:
+            url = os.path.join("file://" + self.curdir, "lts.html")
+        elif solydxk_repo_url is not None:
             url = "%s/update-pack.html" % solydxk_repo_url
-            browser.open(url)
-            browser.show()
+
+        scrolledContainer = self.builder.get_object("scrolled_pack_info")
+        children = scrolledContainer.get_children()
+        if children:
+            browser = children[0]
+        else:
+            browser = webkit.WebView()
+            # Add browser to widget
+            scrolledContainer.add(browser)
+            # listen for clicks of links
+            browser.connect("new-window-policy-decision-requested", self.on_nav_request)
+            browser.connect("button-press-event", lambda w, e: e.button == 3)
+
+        browser.open(url)
+        browser.show()
 
         self.builder.get_object("label_system_configuration_value").set_markup("<b>%s</b>" % config_str)
         self.builder.get_object("label_update_pack_available_value").set_markup("<b>%s</b>" % self.serverUpVersion)
@@ -1328,7 +1349,7 @@ class UM:
             self.statusIcon.connect('popup-menu', self.popup_menu_cb, menu)
 
             # Set text for all visible widgets (because of i18n)
-            self.builder.get_object("tool_pack_info").set_label(_("Update Pack Info"))
+            self.builder.get_object("tool_pack_info").set_label(_("Information"))
             self.builder.get_object("tool_apply").set_label(_("Install Updates"))
             self.builder.get_object("tool_refresh").set_label(_("Refresh"))
             self.builder.get_object("tool_select_all").set_label(_("Select All"))

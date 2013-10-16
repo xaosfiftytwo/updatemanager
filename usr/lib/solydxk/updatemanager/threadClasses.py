@@ -55,7 +55,7 @@ class AutomaticRefreshThread(threading.Thread):
                 timer = (self.prefs["timer_minutes"] * 60) + (self.prefs["timer_hours"] * 60 * 60) + (self.prefs["timer_days"] * 24 * 60 * 60)
 
                 try:
-                    self.log.write(_("Auto-refresh timer is going to sleep for %(days)s days, %(hours)s hours, %(minutes)s minutes") % { "days": str(self.prefs["timer_days"]), "hours": str(self.prefs["timer_hours"]), "minutes": str(self.prefs["timer_minutes"]) }, 'AutomaticRefreshThread.run', 'debug')
+                    self.log.write("Auto-refresh timer is going to sleep for %(days)s days, %(hours)s hours, %(minutes)s minutes" % { "days": str(self.prefs["timer_days"]), "hours": str(self.prefs["timer_hours"]), "minutes": str(self.prefs["timer_minutes"]) }, 'AutomaticRefreshThread.run', 'debug')
                 except:
                     pass    # cause it might be closed already
                 timetosleep = int(timer)
@@ -65,7 +65,7 @@ class AutomaticRefreshThread(threading.Thread):
                     time.sleep(timetosleep)
                     if self.app_hidden:
                         try:
-                            self.log.write(_("Updatemanager is in tray mode, performing auto-refresh"), "AutomaticRefreshThread.run", "debug")
+                            self.log.write("Updatemanager is in tray mode, performing auto-refresh", "AutomaticRefreshThread.run", "debug")
                         except:
                             pass    # cause it might be closed already
                         # Refresh
@@ -73,7 +73,7 @@ class AutomaticRefreshThread(threading.Thread):
                         refresh.start()
                     else:
                         try:
-                            self.log.write(_("The updatemanager window is open, skipping auto-refresh"), "AutomaticRefreshThread.run", "debug")
+                            self.log.write("The updatemanager window is open, skipping auto-refresh", "AutomaticRefreshThread.run", "debug")
                         except:
                             pass    # cause it might be closed already
 
@@ -120,7 +120,7 @@ class InstallThread(threading.Thread):
                     newVersion = model.get_value(itr, INDEX_NEW_VERSION)
                     history.write(commands.getoutput('date +"%Y.%m.%d %H:%M:%S"') + "\t" + package + "\t" + oldVersion + "\t" + newVersion + "\n")
                     packages.append(package)
-                    self.log.write(_("Install package request: %(pck)s") % { "pck": str(package) }, "InstallThread.run", "debug")
+                    self.log.write("Install package request: %(pck)s" % { "pck": str(package) }, "InstallThread.run", "debug")
                 itr = model.iter_next(itr)
             history.close()
 
@@ -230,7 +230,7 @@ class InstallThread(threading.Thread):
                             cmd = "/bin/bash %s" % preScript
                             self.log.write(_("Pre-install script started: %(pre)s") % { "pre": preScript }, "InstallThread.run", "info")
                             self.ec.run(cmd)
-                            self.log.write(_("Pre-install script finished: %(pre)s") % { "pre": preScript }, "InstallThread.run", "debug")
+                            self.log.write("Pre-install script finished: %(pre)s" % { "pre": preScript }, "InstallThread.run", "debug")
 
                     self.log.write(_("Launch Synaptic to start the upgrade"), "InstallThread.run", "info")
                     closeSynaptic = str(self.prefs["close_synaptic"]).lower()
@@ -262,7 +262,7 @@ class InstallThread(threading.Thread):
                             cmd = "/bin/bash %s" % postScript
                             self.log.write(_("Post-install script started: %(post)s") % { "post": postScript }, "InstallThread.run", "info")
                             self.ec.run(cmd)
-                            self.log.write(_("Post-install script finished: %(post)s") % { "post": postScript }, "InstallThread.run", "debug")
+                            self.log.write("Post-install script finished: %(post)s" % { "post": postScript }, "InstallThread.run", "debug")
 
                         # Save new UP version
                         self.log.write(_("write new UP version %(newUpVersion)s to %(uphist)s/") % { "newUpVersion": self.newUpVersion, "uphist": self.upHistFile }, "InstallThread.run", "info")

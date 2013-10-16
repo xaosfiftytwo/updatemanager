@@ -1,4 +1,43 @@
-updatemanager (1.3.8) debian; urgency=high
+updatemanager (1.4.9) debian; urgency=high
+
+  * Adapted for SolydXK LTS repository
+
+ -- Schoelje <schoelje@solydxk.com>  Wed, 02 Oct 2013 12:00:00 +0100
+
+updatemanager (1.4.6) debian; urgency=high
+
+  * Added Greek translation
+    Thanks to Stelios
+
+ -- Schoelje <schoelje@solydxk.com>  Sun, 29 Sep 2013 15:00:00 +0100
+
+updatemanager (1.4.5) debian; urgency=high
+
+  * Leave security mirror as-is when switching mirrors
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 26 Sep 2013 09:30:00 +0100
+
+updatemanager (1.4.4) debian; urgency=high
+
+  * Mirror check updated for new directory structure
+
+ -- Schoelje <schoelje@solydxk.com>  Sat, 21 Sep 2013 21:00:00 +0100
+
+updatemanager (1.4.3) debian; urgency=high
+
+  * Cleanup up.hist before saving
+    This will prevent a corrupt up.hist file
+
+ -- Schoelje <schoelje@solydxk.com>  Fri, 13 Sep 2013 10:00:00 +0100
+
+updatemanager (1.4.2) debian; urgency=high
+
+  * Solved child windows not re-showing correctly
+  * Solved incorrect detection of UP
+
+ -- Schoelje <schoelje@solydxk.com>  Wed, 11 Sep 2013 09:00:00 +0100
+
+updatemanager (1.3.9) debian; urgency=high
 
   * Solved bug pre and post script throwing syntax error
   * Improved logging

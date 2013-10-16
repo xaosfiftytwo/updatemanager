@@ -55,7 +55,7 @@ class MirrorGetSpeed(threading.Thread):
                         if (return_code == 200):
                             download_speed = int(round(download_speed/1000))
                             choices.append([mirror,download_speed])
-                            msg = _("Server %(mirror)s - %(speed)dKbps") % { "mirror": mirror, "speed": download_speed }
+                            msg = "Server %(mirror)s - %(speed)dKbps" % { "mirror": mirror, "speed": download_speed }
                             self.log.write(msg, "MirrorGetSpeed.run", "debug")
                         else:
                             choices.append([mirror,"Error: %d" % return_code])
@@ -82,7 +82,7 @@ class Mirror():
             src = '/etc/apt/sources.list'
             if os.path.exists(src):
                 dt = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-                msg = _("Backup %(src)s to %(src)s.%(date)s") % { "src": src, "src": src, "date": dt }
+                msg = "Backup %(src)s to %(src)s.%(date)s" % { "src": src, "src": src, "date": dt }
                 self.log.write(msg, "Mirror.save", "debug")
                 os.system("cp -f %s %s.%s" % (src, src, dt))
 
