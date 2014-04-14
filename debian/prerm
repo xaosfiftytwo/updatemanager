@@ -17,11 +17,13 @@ set -e
 case "$1" in
     remove|purge)
 	# Remove scripts
-	rm -f /usr/lib/solydxk/updatemanager/*.post
-	rm -f /usr/lib/solydxk/updatemanager/*.pre
+	rm -f /usr/lib/solydxk/updatemanager/post*
+	rm -f /usr/lib/solydxk/updatemanager/pre*
+	rm -f /usr/lib/solydxk/updatemanager/emergency*
 	rm -f /usr/lib/solydxk/updatemanager/*.pyc
 	rm -f /usr/lib/solydxk/updatemanager/*.log
-	rm -f /usr/lib/solydxk/updatemanager/*.ignored
+	rm -f /usr/lib/solydxk/updatemanager/*.hist
+	rm -f /usr/lib/solydxk/updatemanager/*.list
     ;;
     *)
 

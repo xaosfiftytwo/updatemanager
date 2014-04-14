@@ -1,17 +1,102 @@
-#!/usr/bin/python
+#! /usr/bin/env python3
+#-*- coding: utf-8 -*-
 
 import os
-import commands
+import sys
+import gettext
+import getopt
+from gi.repository import Gtk
+from os.path import join, abspath, dirname
 
+# i18n: http://docs.python.org/2/library/gettext.html
+gettext.install("updatemanager", "/usr/share/locale")
+#t = gettext.translation("updatemanager", "/usr/share/locale")
+#_ = t.lgettext
+
+
+msg = _('Please enter your password')
+scriptDir = join(abspath(dirname(__file__)), "../lib/solydxk/updatemanager")
+
+# Help
+def usage():
+    # Show usage
+    hlp = """updatemanager [options]
+
+Options:
+  -p (--pref): show the preference window
+  -t (--tray): load the tray icon only
+  -f (--force): force start in a live environment
+  -h (--help): show this help"""
+    print(hlp)
+
+# Handle arguments
+try:
+    opts, args = getopt.getopt(sys.argv[1:], 'hptfr', ['help', 'pref', 'tray', 'force', 'reload'])
+except getopt.GetoptError:
+    usage()
+    sys.exit(2)
+
+pref = False
+tray = False
+force = False
+args = ''
+for opt, arg in opts:
+    print(opt, arg)
+    if opt in ('-p', '--pref'):
+        pref = True
+    elif opt in ('-t', '--tray'):
+        tray = True
+    elif opt in ('-f', '--force'):
+        force = True
+    elif opt in ('-h', '--help'):
+        usage()
+        sys.exit()
+    elif opt in ('-r', '--reload'):
+        args += "reload "
+
+# Add launcher string, only when not root
 launcher = ''
-icon = '/usr/share/solydxk/updatemanager/icons/base.svg'
 if os.geteuid() > 0:
-    if os.path.exists('/usr/bin/kdesudo'):
-        launcher = 'kdesudo -i %s -d --comment "<b>Please enter your password</b>"' % icon
-    elif os.path.exists('/usr/bin/gksu'):
-        launcher = 'gksu --message "<b>Please enter your password</b>"'
+    launcher = "gksu --message \"<b>%s</b>\"" % msg
+    #if os.path.exists('/usr/bin/kdesudo'):
+        #launcher = "kdesudo -n -i /usr/share/solydxk/updatemanager/icons/base.svg -d --comment \"<b>%s</b>\"" % msg
 
-command = "%s /usr/lib/solydxk/updatemanager/updatemanager.py show 0 &" % launcher
-os.system(command)
+def isRunningLive():
+    if force:
+        return False
+    liveDirs = ['/live', '/lib/live', '/rofs']
+    for ld in liveDirs:
+        if os.path.exists(ld):
+            return True
+    return False
 
+def showMsg(title, message):
+        dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, message)
+        dialog.set_markup("<b>%s</b>" % title)
+        dialog.format_secondary_markup(message)
+        dialog.set_icon_from_file("/usr/share/solydxk/updatemanager/icons/base.svg")
+        dialog.run()
+        dialog.destroy()
 
+title = _("Update Manager")
+msg = _("Update Manager cannot be started in a live environment\n"
+        "You can use the --force argument to start UM in a live environment")
+if pref:
+    if isRunningLive():
+        showMsg(title, msg)
+    else:
+        cmd = "%(launcher)s '%(dir)s/updatemanagerpref.py %(args)s &'" % { "launcher": launcher, "dir": scriptDir, "args": args }
+        print(cmd)
+        os.system(cmd)
+else:
+    if not isRunningLive():
+        cmd = "%(dir)s/updatemanagertray.py %(args)s &" % { "dir": scriptDir, "args": args }
+        print(cmd)
+        os.system(cmd)
+    if not tray:
+        if isRunningLive():
+            showMsg(title, msg)
+        else:
+            cmd = "%(launcher)s '%(dir)s/updatemanager.py %(args)s &'" % { "launcher": launcher, "dir": scriptDir, "args": args }
+            print(cmd)
+            os.system(cmd)

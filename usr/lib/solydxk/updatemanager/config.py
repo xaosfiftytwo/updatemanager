@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python3
+#-*- coding: utf-8 -*-
 
 # Class to handle configuration files
 # Example:
@@ -6,7 +7,7 @@
 # OptionName = OptionValue
 
 import os
-import ConfigParser
+import configparser
 
 
 class Config():
@@ -21,7 +22,7 @@ class Config():
 
         self.curDir = curDir
         self.filePath = filePath
-        self.parser = ConfigParser.SafeConfigParser()
+        self.parser = configparser.SafeConfigParser()
         self.parser.read([self.filePath])
 
     def getSections(self):
@@ -37,9 +38,8 @@ class Config():
 
     def removeSection(self, section):
         self.parser.remove_section(section)
-        f = open(self.filePath, "w")
-        self.parser.write(f)
-        f.close()
+        with open(self.filePath, "w") as f:
+            self.parser.write(f)
 
     def getOptions(self, section):
         options = []
@@ -49,9 +49,8 @@ class Config():
 
     def removeOption(self, section, option):
         self.parser.remove_option(section, option)
-        f = open(self.filePath, "w")
-        self.parser.write(f)
-        f.close()
+        with open(self.filePath, "w") as f:
+            self.parser.write(f)
 
     def getValue(self, section, option):
         value = ''
@@ -75,18 +74,16 @@ class Config():
                 os.makedirs(self.curDir)
 
             if not os.path.exists(self.filePath):
-                f = open(self.filePath, "w")
-                f.write("")
-                f.close()
+                with open(self.filePath, "w") as f:
+                    f.write("")
 
             if not self.doesSectionExist(section):
                 # Create section first
                 self.parser.add_section(section)
 
             self.parser.set(section, option, value)
-            f = open(self.filePath, "w")
-            self.parser.write(f)
-            f.close()
+            with open(self.filePath, "w") as f:
+                self.parser.write(f)
 
         except Exception:
             success = False

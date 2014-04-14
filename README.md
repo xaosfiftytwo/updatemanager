@@ -1,7 +1,11 @@
-updatemanager
-=============
+SolydXK Update Manager
+======================
 
-Update manager (cloned and adapted from mintupdate-debian)
+Update Manager (UM) for SolydXK.
+This is a total rework of the previous UM where Apt is the update mechanism instead of Synaptic.
+Choosing Apt will prevent any discrepancies between Terminal upgrades and UM upgrades.
 
-Uses pre-, and post-update scripts to make the upgrade process as smooth as possible.
-See the content of /server_files for examples.
+For a detailed discription of the process flow, see updatemanager-processflow.png
+
+Upgrade information, including the pre- and post-scripts are stored on the server.
+See _serverfiles for examples.

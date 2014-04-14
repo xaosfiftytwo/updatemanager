@@ -1,63 +1,50 @@
-#!/usr/bin/env python
+#! /usr/bin/env python3
+#-*- coding: utf-8 -*-
 
-try:
-    import sys
-    import subprocess
-    import re
-except Exception, detail:
-    print detail
-    exit(1)
+import sys
+import subprocess
+from treeview import TreeViewHandler
+from gi.repository import Gtk
+
 
 # Class to execute a command and return the output in an array
 class ExecCmd(object):
 
-    def __init__(self, rtobject=None, outputFile=None):
-        self.rtobject = rtobject
-        if self.rtobject:
-            self.typeString = self.getTypeString(self.rtobject)
-        self.outputFile = outputFile
+    def __init__(self, loggerObject=None):
+        self.log = loggerObject
 
-    def run(self, cmd, realTime=True, defaultMessage=''):
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    def run(self, cmd, realTime=True, returnAsList=True, outputTreeView=None):
+        tvHandler = None
+        if outputTreeView is not None:
+            tvHandler = TreeViewHandler(outputTreeView)
+            tvHandler.fillTreeview([], columnTypesList=['str'])
+        msg = "Command to execute: %(cmd)s" % { "cmd": cmd }
+        if self.log:
+            self.log.write(msg, 'execcmd.run', 'debug')
+        else:
+            print(msg)
+
+        p = subprocess.Popen([cmd], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         lstOut = []
         while True:
-            # Strip the line, also from null spaces (strip() only strips white spaces)
-            line = p.stdout.readline().strip().strip("\0")
-            if line == '' and p.poll() is not None:
+            line = p.stdout.readline()
+            if not line:
                 break
+            # Strip the line, also from null spaces (strip() only strips white spaces)
+            line = line.decode('utf-8').rstrip().rstrip("\0")
+            lstOut.append(line)
+            if realTime:
+                if tvHandler is not None:
+                    tvHandler.fillTreeview([line], columnTypesList=['str'], appendToExisting=True, setCursor=tvHandler.getRowCount())
+                if self.log:
+                    self.log.write(line, 'execcmd.run', 'info')
+                else:
+                    print(line)
+            sys.stdout.flush()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
 
-            if line != '':
-                lstOut.append(line)
-                if realTime:
-                    sys.stdout.flush()
-                    if self.rtobject:
-                        self.rtobjectWrite(line)
-                    if self.outputFile is not None:
-                        with open(self.outputFile, "a") as fle:
-                            fle.write("%s\n" % line)
-
-        return lstOut
-
-    # Return messge to given object
-    def rtobjectWrite(self, message):
-        if self.rtobject is not None and self.typeString != '':
-            if self.typeString == 'gtk.Label':
-                self.rtobject.set_text(message)
-            elif self.typeString == 'gtk.Statusbar':
-                self.pushMessage(self.rtobject, message)
-            else:
-                # For obvious reasons: do not log this...
-                print 'Return object type not implemented: %s' % self.typeString
-
-    # Return the type string of a object
-    def getTypeString(self, object):
-        tpString = ''
-        tp = str(type(object))
-        matchObj = re.search("'(.*)'", tp)
-        if matchObj:
-            tpString = matchObj.group(1)
-        return tpString
-
-    def pushMessage(self, statusbar, message, contextString='message'):
-        context = statusbar.get_context_id(contextString)
-        statusbar.push(context, message)
+        ret = lstOut
+        if not returnAsList:
+            ret = "\n".join(lstOut).strip()
+        return ret

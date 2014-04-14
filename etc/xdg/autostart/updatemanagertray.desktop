@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=updatemanagertray
+Comment=Update Manager Tray
+Icon=stock_lock
+Exec=updatemanager -t
+Terminal=false
+Type=Application
+Categories=
+

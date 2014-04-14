@@ -1,176 +1,21 @@
-updatemanager (1.4.9) debian; urgency=high
+updatemanager (2.0.8) debian; urgency=low
 
-  * Adapted for SolydXK LTS repository
+  * Use dist-upgrade to extrapolate package information
+  * Added translations: ca, el, nl
+  * Improved debconf menu detection
+  * Minor GUI improvements
 
- -- Schoelje <schoelje@solydxk.com>  Wed, 02 Oct 2013 12:00:00 +0100
+ -- Schoelje <schoelje@solydxk.com>  Sun, 09 Apr 2014 19:00:00 +0100
 
-updatemanager (1.4.6) debian; urgency=high
+updatemanager (2.0.1) debian; urgency=low
 
-  * Added Greek translation
-    Thanks to Stelios
+  * Check for apt errors
+  * Resolve upgradable package discrepancy
 
- -- Schoelje <schoelje@solydxk.com>  Sun, 29 Sep 2013 15:00:00 +0100
+ -- Schoelje <schoelje@solydxk.com>  Sun, 06 Apr 2014 19:00:00 +0100
 
-updatemanager (1.4.5) debian; urgency=high
+updatemanager (2.0.0) debian; urgency=low
 
-  * Leave security mirror as-is when switching mirrors
+  * Total rework of the old Update Manager
 
- -- Schoelje <schoelje@solydxk.com>  Thu, 26 Sep 2013 09:30:00 +0100
-
-updatemanager (1.4.4) debian; urgency=high
-
-  * Mirror check updated for new directory structure
-
- -- Schoelje <schoelje@solydxk.com>  Sat, 21 Sep 2013 21:00:00 +0100
-
-updatemanager (1.4.3) debian; urgency=high
-
-  * Cleanup up.hist before saving
-    This will prevent a corrupt up.hist file
-
- -- Schoelje <schoelje@solydxk.com>  Fri, 13 Sep 2013 10:00:00 +0100
-
-updatemanager (1.4.2) debian; urgency=high
-
-  * Solved child windows not re-showing correctly
-  * Solved incorrect detection of UP
-
- -- Schoelje <schoelje@solydxk.com>  Wed, 11 Sep 2013 09:00:00 +0100
-
-updatemanager (1.3.9) debian; urgency=high
-
-  * Solved bug pre and post script throwing syntax error
-  * Improved logging
-    Replaced the now obsolete /var/log/updatemanager.log with /usr/lib/solydxk/updatemanager/updatemanager.log
-  * Log viewable from the menu: View > Log
-  * Progress information in statusbar
-  * Added UP history: /usr/lib/solydxk/updatemanager/up.hist
-    This replaces the now obsolete /var/lock/updatemanager.packlevel
-  * Added French translation
-
- -- Schoelje <schoelje@solydxk.com>  Sat, 07 Sep 2013 10:00:00 +0100
-
-updatemanager (1.3.0) debian; urgency=high
-
-  * Solved info page bug not showing mirror info correctly
-
- -- Schoelje <schoelje@solydxk.com>  Sat, 17 Aug 2013 18:00:00 +0100
-
-updatemanager (1.2.9) debian; urgency=high
-
-  * Added nluug.nl mirrors
-  * Changed repo check for info page to include mirrors list
-  * Improved mirror speed check
-
- -- Schoelje <schoelje@solydxk.com>  Thu, 08 Aug 2013 03:00:00 +0100
- 
-updatemanager (1.2.4) debian; urgency=high
-
-  * Bugs resolved:
-  * Not refreshing apt cache after changing mirrors
-  * Close button on info page not working
-
- -- Schoelje <schoelje@solydxk.com>  Wed, 07 Aug 2013 11:30:00 +0100
-
-updatemanager (1.2.3) debian; urgency=high
-
-  * Reverted preferences window modus
-  * Only download environment language data on update (not all)
-
- -- Schoelje <schoelje@solydxk.com>  Thu, 01 Jul 2013 21:00:00 +0100
-
-updatemanager (1.2.2) debian; urgency=high
-
-  * Added mirrors tab
-
- -- Schoelje <schoelje@solydxk.com>  Tue, 30 Jul 2013 19:00:00 +0100
-
-updatemanager (1.1.6) debian; urgency=high
-
-  * Changed components in Software Sources
-
- -- Schoelje <schoelje@solydxk.com>  Sun, 26 May 2013 14:00:00 +0100
-
-updatemanager (1.1.5) debian; urgency=high
-
-  * Added unknown icon
-
- -- Schoelje <schoelje@solydxk.com>  Mon, 20 May 2013 16:30:00 +0100
-
-updatemanager (1.1.4) debian; urgency=high
-
-  * Pre- and post-install scripts were not executed after an update of updatemanager
-
- -- Schoelje <schoelje@solydxk.com>  Thu, 02 May 2013 15:30:00 +0100
-
-updatemanager (1.1.3) debian; urgency=high
-
-  * Pre- and post-install scripts for update packs
-
- -- Schoelje <schoelje@solydxk.com>  Sat, 20 Apr 2013 11:00:00 +0100
-
-updatemanager (1.1.2) debian; urgency=high
-
-  * Automatically update apt cache (daily)
-
- -- Schoelje <schoelje@solydxk.com>  Tue, 16 Apr 2013 14:00:00 +0100
- 
-updatemanager (1.1.1) debian; urgency=high
-
-  * UM caused authentication warnings in apt
-
- -- Schoelje <schoelje@solydxk.com>  Mon, 08 Apr 2013 00:00:00 +0100
-
-updatemanager (1.1.0) debian; urgency=high
-
-  * Some minor bugs resolved
-
- -- Schoelje <schoelje@solydxk.com>  Thu, 03 Apr 2013 12:30:00 +0100
-
-updatemanager (1.0.9) debian; urgency=high
-
-  * Check on-line for new update pack
-
- -- Schoelje <schoelje@solydxk.com>  Wed, 13 Mar 2013 11:30:00 +0100
-
-updatemanager (1.0.7) debian; urgency=high
-
-  * Custom icons were not saved correctly
-
- -- Schoelje <schoelje@solydxk.com>  Fri, 08 Mar 2013 10:30:00 +0100
-
-updatemanager (1.0.6) debian; urgency=high
-
-  * Fix crash bug on SolydX and preferences not saving
-
- -- Schoelje <schoelje@solydxk.com>  Thu, 07 Mar 2013 23:30:00 +0100
- 
-updatemanager (1.0.4) debian; urgency=low
-
-  * Fix bug not saving preferences
-
- -- Schoelje <schoelje@solydxk.com>  Sat, 02 Mar 2013 18:00:00 +0100
-
-updatemanager (1.0.3) debian; urgency=low
-
-  * Fix bug not seeing updates for some solydxk packages version 1.0.2
-
- -- Schoelje <schoelje@solydxk.com>  Tue, 26 Feb 2013 18:30:00 +0100
- 
-updatemanager (1.0.2) debian; urgency=low
-
-  * Replaces mintupdate-debian version 1.0.2
-
- -- Schoelje <schoelje@solydxk.com>  Sat, 23 Feb 2013 19:30:00 +0100
- 
-updatemanager (1.0.1) debian; urgency=low
-
-  * Fixed update pack handling version 1.0.1
-
- -- Schoelje <schoelje@solydxk.com>  Tue, 19 Feb 2013 12:30:00 +0100
-
-updatemanager (1.0.0) debian; urgency=low
-
-  * mintupdate-debian adapted and repackaged for SolydXK version 1.0.0
-
- -- Schoelje <schoelje@solydxk.com>  Tue, 23 Jan 2013 08:38:00 +0100
+ -- Schoelje <schoelje@solydxk.com>  Thu, 27 Feb 2014 19:00:00 +0100

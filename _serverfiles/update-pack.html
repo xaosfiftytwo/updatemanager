@@ -1,0 +1,116 @@
+<html>
+
+<head>
+<style>
+body {
+	    font-family: Arial, Helvetica, Verdana, Sans-serif;
+	    font-size: 12px;
+	    color: #555555;
+	    background: #ffffff;
+	}
+.code {
+	background: #f1f1f1 url(http://packages.solydxk.com/pics/terminal.png) center no-repeat;
+	background-position: 15px 50%; /* x-pos y-pos */
+	text-align: left;
+	padding: 5px 20px 5px 45px;
+	border-top: 2px solid #5d5d5d;
+	border-bottom: 2px solid #5d5d5d;
+	font-family: monospace, courier;  
+	font-style: normal;
+	font-weight: bold;  
+	}
+.screenshot {
+	width: 500px;
+	height: 350px;
+	}
+</style>
+</head>
+<body>
+    
+<h1>Update Pack 2014.04.15</h1>
+
+<h2>Changes</h2>
+<p><strong>A whole new Update Manager</strong></p>
+<p>The Update Manager has been re-built from scratch making it better suited for SolydXK's update processes.<br>
+Apt instead of Synaptic is the core of the application which will prevent discrepancies between terminal upgrades and upgrades with the Update Manager.</p>
+<p><h3> >> After the Update Manager has updated itself, you need to manually start the Update Manager (or logout/login), and re-enter your blacklisted packages in the preferences window if needed. << </h3></p>
+<h2>Other changes</h2>
+<p>
+<ul>
+    <li><strong>KDE</strong><br>KDE has been updated to version 4.12.4</li>
+    <li><strong>Kernel</strong><br>Kernel updated to version 3.13-1</li>
+    <li><strong>Firefox and Thunderbird</strong><br>Firefox has been updated to version 28.0, and Thunderbird to version 24.4<br><br>
+        Both come with these add-ons:<br>
+		- Locale Switcher to switch installed language packs.<br>
+		- Firefox comes with Adblock Plus.<br>
+		- Thunderbird comes with the Lightning Calendar, and more.<br><br>
+		For existing users you need to enable these add-ons in the add-ons manager of Firefox and Thunderbird.<br><br>
+		If you don't like these add-ons, you can simply remove these packages: firefox-solydxk-adjustments, thunderbird-solydxk-adjustments<br>This will leave you with a pure Firefox and Thunderbird install for new users. For existing users you only have to disable these add-ons in the add-ons manager.</li>
+    <li><strong>LibreOffice</strong><br>LibreOffice has been updated to version 4.1.5-2.</li>
+    <li><strong>Plymouth</strong><br>The SolydXK Plymouth theme has been changed, and the Plymouth Manager has been adapted accordingly.</li>
+</ul>
+</p>
+
+<a name="info"></a><h2>Update information</h2>
+<h3>Read this whether you update with the Update Manager, or terminal.</h3>
+<p>
+<ul>
+	<li><strong>Restart</strong><br>After the upgrade has finished, restarting, or shutting down your system will just log you out, and back in again. The second time will work.</li>
+</ul>
+</p>
+
+<a name="um"></a><h2>Updating with the Update Manager</h2>
+<p>The Update Manager can be opened from the system tray by clicking on this icon: <img src="http://packages.solydxk.com/pics/um.png" />.<br>
+Most user choices are being done for you by the Update Manager. It uses the default selection within 5 seconds before continuing the upgrade.
+Only the selection menus need to be done manually.
+<ul>
+	<li><strong>Grub-pc</strong><br>Select the device where you installed GRUB (usually /dev/sda). Use the arrow keys to move, and the space bar to select (an asterisk marks the selected choice). When done, hit "Enter" to continue.<br><br>
+	<img class="screenshot" src="http://packages.solydxk.com/umfiles/pics/grub-pc-installdevices.png" /></li>
+</ul>
+
+<a name="terminal"></a><h2>Updating with the terminal</h2>
+<p>We recommend using the Update Manager to update your system, but if you prefer using the terminal, please read the below steps carefully.</p>
+<p>
+<ul>
+    <li><p><strong>Pre upgrade</strong><br>Download and run the following script <strong>as su</strong>: <a href="http://packages.solydxk.com/umfiles/tst/pre-up-2014.04.15" target="_blank">http://packages.solydxk.com/umfiles/tst/pre-up-2014.04.15</a><br>This will install, and configure the new Firefox, Thunderbird, and several other packages in preparation of the upgrade. It also copies the included add-ons to existing users directories if they do not already exist.</p>
+<p><strong>Now you can run dist-upgrade.</strong></p><br></li>
+    <li><strong>Configuration files</strong><br>You might be asked to replace '/etc/lightdm/lightdm-gtk-greeter.conf', and '/etc/bash.bashrc'. It is recommended to keep the currently installed file (default selected).<br><br></li>
+    <li><strong>Post upgrade</strong><br>If you're using Nvidia, you run the following command before reboot:<br><div class="code">sudo apt-get install --reinstall nvidia-kernel-dkms</div></li>
+</ul>
+</p>
+
+<p>&nbsp;</p>
+<hr>    
+
+<a name="up"></a><h1>SolydXK Update Packs explained</h1>
+
+<h2>Short description</h2>
+<p>SolydXK uses update packs to update the SolydX and SolydK systems at your home, organisation or company. These update packs are necessary to keep your system up-to-date and secure without jeopardising the stability of your system.</p>
+<p>Debian, by default, is a "rolling" distribution: its repositories are continuously changing which means you get system updates regularly. However, each update introduces a potential risk to your system.</p>
+<p>This is why SolydXK has introduced the Update Pack (UP) method to manage the way updates are brought to the users of SolydX and SolydK.</p>
+<h2>The UP Process explained</h2>
+<p>SolydXK increases stability and security by testing the incoming packages before they are released. To guarantee up-to-date security, the SolydXK Security repository is updated on a daily basis, and therefore the SolydXK security repository is not included in the UP process. Note that not all security updates are offered through the security repository. The testing team will decide if an update is necessary.</p>
+<p>The Update Pack is a quarterly process. The testing period is initiated on the first of the month, and will take two weeks of testing before making the Update Pack available for the public. The following dates are planned testing periods:
+<ul>
+	<li>Q1: Januari 1 - Januari 15</li>
+	<li>Q2: April 1 - April 15</li>
+	<li>Q3: Juli 1 - Juli 15</li>
+	<li>Q4: October 1 - October 15</li>
+</ul>
+During this testing period, the SolydXK testing team will test the Update Pack on breakages and security risks. The last day of the testing period is the day the Update Pack becomes available to the public.<p>
+<p>To further increase security both Firefox and Thunderbird are being built from source if there are new versions available. These packages do not necessarily follow the UP frequency, but will be released whenever they are available, tested, and found okay for release by the testing team.</p>
+<p>If testing breaks, the testing process is stopped until the next quarterly. This is then communicated to the SolydX and SolydK users stating the reason and a description of the rest of the process.<p>
+<p>The following channels are used to communicate to the SolydX and SolydK users:<br>
+<ol>
+	<li><strong>Blog</strong>: <a href="http://solydxk.com/news" target="_blank">http://solydxk.com/news</a></li>
+	<li><strong>RSS</strong>: <a href="http://solydxk.com/feed" target="_blank">http://solydxk.com/feed</a></li>
+	<li><strong>Facebook</strong>: <a href="http://www.facebook.com/solyd.xk" target="_blank">http://www.facebook.com/solyd.xk</a></li>
+	<li><strong>Twitter</strong>: <a href="https://twitter.com/solydxk" target="_blank">https://twitter.com/solydxk</a></li>
+	<li><strong>Google+</strong>: <a href="https://plus.google.com/112450904523917402004 target="_blank">https://plus.google.com/112450904523917402004</a></li>
+	<li><strong>Forum</strong> (this includes a breakages thread): <a href="http://forums.solydxk.com" target="_blank">http://forums.solydxk.com</a></li>
+</ol></p>
+<p>If a critical production breakage has been identified, this  has to be solved asap. Either by downgrading or upgrading that package or another workaround which will be communicated by the above mentioned channels.</p>
+<p>If testing is successful, this is also communicated by the above mentioned channels.</p>
+
+</body>
+</html>

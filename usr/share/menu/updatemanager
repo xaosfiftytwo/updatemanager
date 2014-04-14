@@ -1,0 +1,5 @@
+?package(updatemanager):needs="X11"\
+   section="Applications/System"\
+   title="SolydXK Update Manager"\
+   icon="/usr/share/solydxk/updatemanager/icons/base.png"\
+   command="updatemanager"
