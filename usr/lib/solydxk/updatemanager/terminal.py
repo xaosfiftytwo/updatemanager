@@ -16,17 +16,15 @@ GObject.threads_init()
 class TimerClass(GObject.GObject, threading.Thread):
 
     __gsignals__ = {
-        'waiting-for-answer': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_INT, GObject.TYPE_INT,))
+        'waiting-for-answer': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,))
         }
 
-    def __init__(self, line, col, row, maxWaitForAnswer):
+    def __init__(self, line, maxWaitForAnswer):
         GObject.GObject.__init__(self)
         threading.Thread.__init__(self)
         self.event = threading.Event()
         self.timerCnt = 0
         self.line = line
-        self.col = col
-        self.row = row
         self.maxWaitForAnswer = maxWaitForAnswer
 
     def run(self):
@@ -34,8 +32,7 @@ class TimerClass(GObject.GObject, threading.Thread):
         while not self.event.is_set():
             if self.timerCnt >= self.maxWaitForAnswer:
                 self.timerCnt = 0
-                #print((">> emit waiting-for-answer: line=%s, col=%d, row=%d" % (self.line, self.col, self.row)))
-                self.emit('waiting-for-answer', self.line, self.col, self.row)
+                self.emit('waiting-for-answer', self.line)
                 self.event.set()
             self.timerCnt += 1
             self.event.wait(1)
@@ -50,8 +47,8 @@ class VirtualTerminal(Vte.Terminal):
 
     __gsignals__ = {
         'command-done': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_INT, GObject.TYPE_STRING,)),
-        'line-added': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_INT, GObject.TYPE_INT,)),
-        'waiting-for-answer': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING, GObject.TYPE_INT, GObject.TYPE_INT,))
+        'line-added': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        'waiting-for-answer': (GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,))
         }
 
     def __init__(self, userInputAllowed=True, maxWaitForAnswer=0):
@@ -68,23 +65,28 @@ class VirtualTerminal(Vte.Terminal):
         self.pid = None
         self.nid = None
         self.uid = os.geteuid()
-        self.column = 0
-        self.row = 0
-        self.lastLine = ""
-        self.last_row_logged = 0
         self.maxWaitForAnswer = maxWaitForAnswer
         self.timerCnt = 0
-        self.checkRow = 0
         self.threads = {}
-        self.skipTimerCommands = []
-        self.skipTimerOnString = [
-                                 ["man-db"],
-                                 ["run-parts"]
-                                 ]
+        self.threadName = "timer"
+        self.lastLine = ""
         self.skipTimer = False
 
+        # Strings to skip starting the timer
+        # ==================================
+        # pos1 = position of search string:
+        #        None = anywhere in the string
+        #        Negative number = position from the end of the string
+        # pos2 = string list to search for
+        #        if a numerical position is given, the list can only contain 1 string
+        self.skipOnString = [
+                            [None, ["man-db"]],
+                            [None, ["run-parts"]],
+                            [-1, ["%"]],
+                            [-3, ["..."]]
+                            ]
+
         # Terminal settings
-        self.backgroundColor = "#FFFFFF"
         self.set_scroll_on_output(True)
         self.set_scroll_on_keystroke(True)
         self.set_visible(True)
@@ -94,22 +96,6 @@ class VirtualTerminal(Vte.Terminal):
         if not userInputAllowed:
             self.set_can_focus(False)
 
-        # Set colors (SolydXK terminal colors - use KColorChooser for hexadecimal values)
-        hexColors = ['#4A4A4A',
-                    '#BD1919',
-                    '#118011',
-                    '#CE6800',
-                    '#1919BC',
-                    '#8D138D',
-                    '#139494',
-                    '#A7A7A7']
-
-        palette = []
-        for hexColor in hexColors:
-            palette.append(Gdk.color_parse(hexColor))
-        # foreground, background, pallete
-        self.set_colors(Gdk.color_parse('#000000'), Gdk.color_parse(self.backgroundColor), palette)
-
         self.connect('eof', self.on_command_done)
         self.connect('child-exited', self.on_command_done)
         self.connect('cursor-moved', self.on_contents_changed)
@@ -117,135 +103,143 @@ class VirtualTerminal(Vte.Terminal):
         self.connect_after("popup-menu", self.on_popup_menu)
         self.connect("button-release-event", self.on_popup_menu)
 
-    def on_waiting_for_answer(self, obj, line, col, row):
-        self.emit('waiting-for-answer', line, col, row)
+    def setTerminalColors(self, foreground, background, palletList=[]):
+        # Set colors (SolydXK terminal colors - use KColorChooser for hexadecimal values)
+        # palletList = ['#4A4A4A', '#BD1919', '#118011', '#CE6800', '#1919BC', '#8D138D', '#139494', '#A7A7A7']
+        palette = []
+        for hexColor in palletList:
+            palette.append(Gdk.color_parse(hexColor))
+        # foreground, background, pallete
+        self.set_colors(Gdk.color_parse(foreground), Gdk.color_parse(background), palette)
+
+    def on_waiting_for_answer(self, obj, line):
+        self.emit('waiting-for-answer', line)
 
     def on_contents_changed(self, terminal):
-        # Gets the last line printed to the terminal
-        # On wheezy the python3, and vte libraries are rather buggy,
-        # and get_cursor_position or  get_text_range will fail
-        # even after recompiling those libraries from testing for wheezy
+        if self.startTimer():
+            # Start the timer
+            #print(("> start wait for timer (#threads=%d)" % threading.active_count()))
+            if self.threads:
+                if self.threads[self.threadName].is_alive():
+                    self.threads[self.threadName].stop()
+                    del self.threads[self.threadName]
+            t = TimerClass(self.lastLine, self.maxWaitForAnswer)
+            t.connect('waiting-for-answer', self.on_waiting_for_answer)
+            self.threads[self.threadName] = t
+            t.daemon = True
+            t.start()
+        else:
+            if self.threads:
+                if self.threads[self.threadName].is_alive():
+                    #print("> stop wait for timer")
+                    self.threads[self.threadName].stop()
+                    del self.threads[self.threadName]
+
+    def startTimer(self):
+        # Define variables
+        isDebConf = False
+        choiceCnt = 0
+
         try:
-            self.backgroundColor = "#FFFFFF"
-            self.set_color_background(Gdk.color_parse(self.backgroundColor))
+            # Get current visible text
+            termText = self.get_text(None, None)[0].split('\n')
 
-            self.column, self.row = self.get_cursor_position()
-            #print((self.column, self.row, self.last_row_logged))
-            if self.last_row_logged != self.row:
-                off = self.row - self.last_row_logged
-                if off < 0:
-                    off = 0
+            # Loop through all the lines in the terminal text in reverse
+            lastLineCnt = 0
+            for line in reversed(termText):
+                line = line.strip()
 
-                #print(("++ 1 - self.column:%d, self.row:%d, self.last_row_logged:%d, off:%d" % (self.column, self.row, self.last_row_logged, off)))
+                # Only count non-empty lines
+                if line != "":
+                    lastLineCnt += 1
 
-                # Next line throws error: NotImplementedError: <gi.CallbackInfo object (SelectionFunc) at 0x0x7f5a0f319440>
-                #text = self.get_text_range(row - off, 0, row - 1, -1, Vte.SelectionFunc(column, row), self.capture_text)
+                # Skip if set by user
+                if self.skipTimer:
+                    #print("> skipTimer")
+                    return False
 
-                text = self.get_text_range(self.row - off, 0, self.row, -1, None, None)
-                #print(("++ 2 - text = %s" % str(text)))
-                if text is not None:
-                    lst = text[0].split('\n')
-                    #print(("++ 3 - lst = %s" % str(lst)))
-                    for line in lst:
-                        line = line.rstrip()
-                        #print(("++ 4 - line = %s" % str(line)))
-                        chkLine = line.strip()
-                        if chkLine != "":
-                            self.lastLine = line
-                            #print(("++ 5 - lastLine = %s" % str(self.lastLine)))
+                # Skip if maxWaitForAnswer is not set
+                if self.maxWaitForAnswer == 0:
+                    #print("> maxWaitForAnswer == 0: skip timer")
+                    return False
 
-                        # Start the timer to check if user input is needed
-                        if self.doStartTimer():
-                            #print(("++ 6 - start timer - %d, %s" % (self.column, chkLine)))
-                            name = 'timer'
-                            if self.threads:
-                                if self.threads[name].is_alive():
-                                    self.threads[name].stop()
-                                    del self.threads[name]
-                            t = TimerClass(self.lastLine, self.column, self.row, self.maxWaitForAnswer)
-                            t.connect('waiting-for-answer', self.on_waiting_for_answer)
-                            self.threads[name] = t
-                            t.daemon = True
-                            t.start()
+                # Check the last line in the terminal
+                if lastLineCnt == 1:
+                    # Skip if line hasn't changed (this shouldn't be possible)
+                    if line == self.lastLine:
+                        #print("> line unchanged: skip timer")
+                        return False
+                    # Save the last line
+                    self.lastLine = line
+                    print((self.lastLine))
+                    self.emit('line-added', self.lastLine)
 
-                        if chkLine != "":
-                            self.emit('line-added', line, self.column, self.row)
+                    # Check on progression output
+                    # Difference in locale shows % downloaded in a different position
+                    matchObj = re.search("\d{1,2}%", line)
+                    if matchObj:
+                        if matchObj.group(0) != "":
+                            print("> progress indication found")
+                            return False
 
-                    self.last_row_logged = self.row
+                    # Skip on pre-defined strings
+                    for strings in self.skipOnString:
+                        cnt = 0
+                        pos = strings[0]
+                        for string in strings[1]:
+                            if pos is None:
+                                if string in self.lastLine:
+                                    cnt += 1
+                                    #print(("> %s found in %s (%d)" % (string, self.lastLine, cnt)))
+                            else:
+                                # There can only be one search string on a given position in the same line
+                                if pos < 0:
+                                    findString = self.lastLine[pos:(len(self.lastLine)+pos)+len(string)]
+                                    if findString == string:
+                                        print(("> str on pos %d = %s: skip timer" % (pos, findString)))
+                                        return False
+                                else:
+                                    findString = self.lastLine[pos:pos + len(string)]
+                                    if findString == string:
+                                        print(("> str on pos %d = %s: skip timer" % (pos, findString)))
+                                        return False
+                        if cnt == len(strings[1]):
+                            print("> strings found: skip timer")
+                            return False
+
+                # Skip on debconf menus that need user input
+                if not isDebConf:
+                    if '└' in line and '─────' in line and '┘' in line:
+                        isDebConf = True
+                else:
+                    # User input
+                    if "_____" in line:
+                        print("> user input: skip timer")
+                        return False
+                    # User choice
+                    if "[" in line and "]" in line:
+                        choiceCnt += 1
+                        if choiceCnt > 1:
+                            print("> user choice: skip timer")
+                            return False
+                    # Multiple choice buttons
+                    matchObj = re.search("<[a-zA-Z ]+> +<[a-zA-Z ]+>", line)
+                    if matchObj:
+                        if matchObj.group(0) != "":
+                            print("> more than one button: skip timer")
+                            return False
+
+            # If you've come this far, you can start the timer
+            return True
+
         except Exception as detail:
             # This is a best-effort attempt, fail graciously
-            print(("Error (VirtualTerminal.on_contents_changed): %s" % str(detail)))
+            print(("Warning (VirtualTerminal.on_contents_changed): %s" % str(detail)))
+            return False
 
-    def doStartTimer(self):
-        #print(">> doStartTimer 1")
-        if not self.skipTimer and self.maxWaitForAnswer > 0:
-            #print(">> doStartTimer 2")
-            if self.column > 0:
-                #print(">> doStartTimer 3")
-                for strings in self.skipTimerOnString:
-                    cnt = 0
-                    for string in strings:
-                        #print((">> doStartTimer 4 > string = %s, lastLine = %s" % (string, self.lastLine)))
-                        if string in self.lastLine:
-                            cnt += 1
-                    if cnt == len(strings):
-                        #print(">> doStartTimer 5: do NOT start timer")
-                        return False
-
-                # Check if we're looking at a debconf menu
-                debconf = self.checkDebConf()
-                if debconf == "debconfchoice":
-                    print(">> Debconf choice menu: wait for user to make a selection")
-                    self.backgroundColor = "#1919BC"
-                    self.set_color_background(Gdk.color_parse(self.backgroundColor))
-                    return False
-                elif debconf == "debconfok":
-                    if self.column == 0:
-                        print(">> Debconf menu OK: tab to OK button")
-                        cmd = "\t"
-                        self.feed_child(cmd, len(cmd))
-                    else:
-                        print(">> Debconf menu OK")
-                    self.backgroundColor = "#1919BC"
-                    self.set_color_background(Gdk.color_parse(self.backgroundColor))
-                    return True
-                elif debconf == "debconfyesno":
-                    print(">> Debconf menu: more than one choice")
-                    self.backgroundColor = "#1919BC"
-                    self.set_color_background(Gdk.color_parse(self.backgroundColor))
-                    return True
-                else:
-                    #print(">> doStartTimer 6: start timer")
-                    self.backgroundColor = "#FFFFFF"
-                    return True
-        #print(">> doStartTimer 7: do NOT start timer")
-        return False
-
-    # Check if we're waiting for a user choice: never feed an automated answer
-    def checkDebConf(self):
-        termText = self.get_text(None, None)[0]
-        matchObj = re.search("│ +(\[ +\])", termText)
-        if matchObj:
-            if matchObj.group(1) != "":
-                return "debconfchoice"
-        matchObj = re.search("│ +(<[a-zA-Z]*> +<[a-zA-Z]*>)", termText)
-        if matchObj:
-            if matchObj.group(1) != "":
-                return "debconfyesno"
-        matchObj = re.search("│ +(<[a-zA-Z]*>)", termText)
-        if matchObj:
-            if matchObj.group(1) != "":
-                return "debconfok"
-        return ""
-
-    def executeCommand(self, command_string, id_name, maxWaitForAnswer=None):
-        self.skipTimer = False
-        if maxWaitForAnswer is not None:
-            self.maxWaitForAnswer = maxWaitForAnswer
-        if self.maxWaitForAnswer is not None:
-            for cmd in self.skipTimerCommands:
-                if cmd in command_string:
-                    self.skipTimer = True
+    def executeCommand(self, command_string, id_name, skipTimer=False):
+        self.skipTimer = skipTimer
+        self.lastLine = ""
 
         '''executeCommand runs the command_string in the terminal. This
         function will only return when on_command_done has been triggered.'''
@@ -275,11 +269,10 @@ class VirtualTerminal(Vte.Terminal):
                                            None)[1]
 
     def on_command_done(self, terminal):
-        name = 'timer'
         if self.threads:
-            if self.threads[name].is_alive():
-                self.threads[name].stop()
-                del self.threads[name]
+            if self.threads[self.threadName].is_alive():
+                self.threads[self.threadName].stop()
+                del self.threads[self.threadName]
         self.emit('command-done', self.pid, self.nid)
         '''When called this function sets the pid to None, allowing
         the executeCommand function to exit'''

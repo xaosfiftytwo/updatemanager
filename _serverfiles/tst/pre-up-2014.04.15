@@ -147,6 +147,7 @@ handle_pck 'libc6' 'reinstall' 'all'
 handle_pck 'libc6:i386' 'reinstall' 'all'
 handle_pck 'g++-4.7' 'reinstall' 'all'
 handle_pck 'grub-pc' 'reinstall' 'all'
+/etc/init.d/cups stop
 handle_pck 'cups-daemon' 'reinstall' 'all'
 handle_pck 'steam' 'reinstall' 'all'
 
@@ -193,6 +194,7 @@ fi
 if [ "$FF" != "" ]; then
   echo "> Firefox installed"
   FFL10N=$(dpkg-query -l firefox-l10n-* | grep ^i | awk '{print$2}')
+
   echo "> FF: l10n = $FFL10N"
   if [[ $FFL10N == *dpkg-query* ]]; then
     FFL10N=$(dpkg-query -l firefox-esr-l10n-* | grep ^i | awk '{print$2}')
@@ -212,6 +214,55 @@ if [ "$FF" != "" ]; then
   if [ "$FFL10N" == "$FF-l10n-en-us" ]; then
     FFL10N=""
   fi
+     
+  # Some packages have new names
+  if [ "$FFL10N" == "firefox-l10n-es" ]; then
+    FFL10N="firefox-l10n-es-es"
+  elif [ "$FFL10N" == "firefox-l10n-fy" ]; then
+    FFL10N="firefox-l10n-fy-nl"
+  elif [ "$FFL10N" == "firefox-l10n-ga" ]; then
+    FFL10N="firefox-l10n-ga-ie"
+  elif [ "$FFL10N" == "firefox-l10n-gu" ]; then
+    FFL10N="firefox-l10n-gu-in"
+  elif [ "$FFL10N" == "firefox-l10n-hi" ]; then
+    FFL10N="firefox-l10n-hi-in"
+  elif [ "$FFL10N" == "firefox-l10n-nb" ]; then
+    FFL10N="firefox-l10n-nb-no"
+  elif [ "$FFL10N" == "firefox-l10n-nn" ]; then
+    FFL10N="firefox-l10n-nn-no"
+  elif [ "$FFL10N" == "firefox-l10n-pa" ]; then
+    FFL10N="firefox-l10n-pa-in"
+  elif [ "$FFL10N" == "firefox-l10n-pt" ]; then
+    FFL10N="firefox-l10n-pt-pt"
+  elif [ "$FFL10N" == "firefox-l10n-sv" ]; then
+    FFL10N="firefox-l10n-sv-se"
+  elif [ "$FFL10N" == "firefox-l10n-zh" ]; then
+    FFL10N="firefox-l10n-zh-cn"
+  elif [ "$FFL10N" == "firefox-esr-l10n-es" ]; then
+    FFL10N="firefox-esr-l10n-es-es"
+  elif [ "$FFL10N" == "firefox-esr-l10n-fy" ]; then
+    FFL10N="firefox-esr-l10n-fy-nl"
+  elif [ "$FFL10N" == "firefox-esr-l10n-ga" ]; then
+    FFL10N="firefox-esr-l10n-ga-ie"
+  elif [ "$FFL10N" == "firefox-esr-l10n-gu" ]; then
+    FFL10N="firefox-esr-l10n-gu-in"
+  elif [ "$FFL10N" == "firefox-esr-l10n-hi" ]; then
+    FFL10N="firefox-esr-l10n-hi-in"
+  elif [ "$FFL10N" == "firefox-esr-l10n-nb" ]; then
+    FFL10N="firefox-esr-l10n-nb-no"
+  elif [ "$FFL10N" == "firefox-esr-l10n-nn" ]; then
+    FFL10N="firefox-esr-l10n-nn-no"
+  elif [ "$FFL10N" == "firefox-esr-l10n-pa" ]; then
+    FFL10N="firefox-esr-l10n-pa-in"
+  elif [ "$FFL10N" == "firefox-esr-l10n-pt" ]; then
+    FFL10N="firefox-esr-l10n-pt-pt"
+  elif [ "$FFL10N" == "firefox-esr-l10n-sv" ]; then
+    FFL10N="firefox-esr-l10n-sv-se"
+  elif [ "$FFL10N" == "firefox-esr-l10n-zh" ]; then
+    FFL10N="firefox-esr-l10n-zh-cn"
+  fi
+  
+  
   echo "> FF: Install $FF $FF-solydxk-adjustments $FFL10N"
   apt-get install -y --force-yes $FF $FF-solydxk-adjustments $FFL10N
 
@@ -246,6 +297,7 @@ fi
 if [ "$TB" != "" ]; then
   echo "> Thunderbird installed"
   TBL10N=$(dpkg-query -l thunderbird-l10n-* | grep ^i | awk '{print$2}')
+  
   echo "> TB: l10n = $TBL10N"
   if [[ $TBL10N == *dpkg-query* ]]; then
     TBL10N=""
@@ -258,6 +310,32 @@ if [ "$TB" != "" ]; then
   if [ "$TBL10N" == "$TB-l10n-en-us" ]; then
     TBL10N=""
   fi
+  
+    # Some packages have new names
+  if [ "$TBL10N" == "thunderbird-l10n-es" ]; then
+    TBL10N="thunderbird-l10n-es-es"
+  elif [ "$TBL10N" == "thunderbird-l10n-fy" ]; then
+    TBL10N="thunderbird-l10n-fy-nl"
+  elif [ "$TBL10N" == "thunderbird-l10n-ga" ]; then
+    TBL10N="thunderbird-l10n-ga-ie"
+  elif [ "$TBL10N" == "thunderbird-l10n-gu" ]; then
+    TBL10N="thunderbird-l10n-gu-in"
+  elif [ "$TBL10N" == "thunderbird-l10n-hi" ]; then
+    TBL10N="thunderbird-l10n-hi-in"
+  elif [ "$TBL10N" == "thunderbird-l10n-nb" ]; then
+    TBL10N="thunderbird-l10n-nb-no"
+  elif [ "$TBL10N" == "thunderbird-l10n-nn" ]; then
+    TBL10N="thunderbird-l10n-nn-no"
+  elif [ "$TBL10N" == "thunderbird-l10n-pa" ]; then
+    TBL10N="thunderbird-l10n-pa-in"
+  elif [ "$TBL10N" == "thunderbird-l10n-pt" ]; then
+    TBL10N="thunderbird-l10n-pt-pt"
+  elif [ "$TBL10N" == "thunderbird-l10n-sv" ]; then
+    TBL10N="thunderbird-l10n-sv-se"
+  elif [ "$TBL10N" == "thunderbird-l10n-zh" ]; then
+    TBL10N="thunderbird-l10n-zh-cn"
+  fi
+  
   echo "> TB: Install $TB $TB-solydxk-adjustments $TBL10N"
   apt-get install -y --force-yes $TB $TB-solydxk-adjustments $TBL10N
 

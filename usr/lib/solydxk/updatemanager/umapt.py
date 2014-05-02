@@ -60,7 +60,7 @@ class UmApt(object):
         for line in lst:
             matchObj = re.search("([a-z0-9-]+):([.\S]+)\s+(\d[.\S]*)[a-z ]+(.*)", line)
             if not matchObj:
-                # For stable - not used (too many bugs to work out)
+                # For stable
                 matchObj = re.search("([a-z0-9-]+)/([.\S]+)[a-z ]+(\d[.\S]*)[a-z ]*(.*)", line)
             if matchObj:
                 self.packagesVersionInfo.append([matchObj.group(1),
@@ -191,6 +191,9 @@ class UmApt(object):
         lst = self.ec.run(cmd, False)
         for line in lst:
             matchObj = re.search("([a-z0-9-]+):([.\S]+)\s+(\d[.\S]*)[a-z ]+(.*)", line)
+            if not matchObj:
+                # For stable
+                matchObj = re.search("([a-z0-9-]+)/([.\S]+)[a-z ]+(\d[.\S]*)[a-z ]*(.*)", line)
             if matchObj:
                 if candidate:
                     return matchObj.group(4)

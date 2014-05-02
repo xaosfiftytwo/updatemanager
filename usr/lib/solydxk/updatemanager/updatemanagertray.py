@@ -27,6 +27,7 @@ class UpdateManagerTray(object):
     def __init__(self):
         # Check if script is running
         self.scriptDir = abspath(dirname(__file__))
+        self.filesDir = join(self.scriptDir, "files")
         self.scriptName = basename(__file__)
         self.umglobal = UmGlobal()
         self.ec = ExecCmd()
@@ -35,7 +36,7 @@ class UpdateManagerTray(object):
         pid = self.umglobal.getScriptPid(self.scriptName, True)
         #print((">>> tray pid: %d" % pid))
         if pid > 0:
-            #print((sys.argv[1:]))
+            print((sys.argv[1:]))
             if 'reload' in sys.argv[1:]:
                 print(("Kill UM tray with pid: %d" % pid))
                 os.system("kill %d" % pid)
@@ -108,7 +109,7 @@ class UpdateManagerTray(object):
         MessageDialogSafe(title, message, Gtk.MessageType.INFO, None).show()
 
     def quit_tray(self, widget):
-        if exists(join(self.scriptDir, ".uminstall")):
+        if exists(join(self.filesDir, ".uminstall")):
             self.showInfoDlg(self.quitText, _("Cannot quit: upgrade in progress"))
         else:
             msg = _('Please enter your password')
@@ -117,7 +118,7 @@ class UpdateManagerTray(object):
             pids.append(self.umglobal.getScriptPid("updatemanagerpref.py"))
             if pids:
                 execCmd = False
-                cmd = "gksu --message \"<b>%s</b>\" kill" % msg
+                cmd = "gksudo --message \"<b>%s</b>\" kill" % msg
                 for pid in pids:
                     if pid > 0:
                         execCmd = True

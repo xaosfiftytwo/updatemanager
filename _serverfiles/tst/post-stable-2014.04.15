@@ -7,13 +7,13 @@ DEBUG=false
 RELEASE=$(cat /etc/solydxk/info | grep EDITION= | cut -d'=' -f2)
 
 BITS=$(uname -m)
-echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\tRelease: $RELEASE $BITS"
+echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tRelease: $RELEASE $BITS"
 
 # Function to install a given package
 # Parameters:
 # 1. package name
 # 2. action: install, reinstall, purge, remove, forceremove, forceinstall
-# 3. distribution: all, solydx, solydk, solydkbo, solydkbe
+# 3. distribution: all, solydx32, solydx64, solydk32, solydk64, solydkbo, solydkbe
 function handle_pck {
     PCK=$1
     ACTION=$2
@@ -21,28 +21,28 @@ function handle_pck {
     CONTINUE=true
     
     if [ "$DISTRO" != "all" ] && [ "$DISTRO" != "$RELEASE" ]; then
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
         CONTINUE=false
     fi
 
     if $CONTINUE; then
 	PCKINST=$(dpkg-query -l $PCK | grep ^i)
-	if [ "$PCKINST" == "" ]; then
+	if [ "${PCKINST:0:1}" != "i" ]; then
 	    if [ "$ACTION" != "install" ] && [ "$ACTION" != "forceinstall" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\t$ACTION not needed, $PCK not installed"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\t$ACTION not needed, $PCK not installed"
 		CONTINUE=false
 	    fi
 	    PCKINST=$PCK
 	else
 	    if [ "$ACTION" == "install" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\t$ACTION not needed, $PCK already installed"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\t$ACTION not needed, $PCK already installed"
 		CONTINUE=false
 	    fi
 	fi
 	
 	if $CONTINUE; then
 	    if [ "$ACTION" == "forceremove" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
 		if ! $DEBUG; then
 		    dpkg --force-remove-reinstreq -P $PCK
 		fi
@@ -50,7 +50,7 @@ function handle_pck {
 		if [ "$ACTION" == "reinstall" ] || [ "$ACTION" == "forceinstall" ]; then
 		    ACTION="install --reinstall"
 		fi
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\tapt-get $ACTION $PCK"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tapt-get $ACTION $PCK"
 		if ! $DEBUG; then
 		    apt-get $ACTION -y --force-yes $PCK
 		fi
@@ -90,20 +90,20 @@ function handle_cnf {
     if [ -e $CNF ]; then
 	if grep -Fq $OPT $CNF; then
 	    if [ "$OPT" != "$LINE" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\t$CNF : replace $OPT with $LINE"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\t$CNF : replace $OPT with $LINE"
 		if ! $DEBUG; then
 		    sed -i "s/$ESCOPT/$LINE/" $CNF
 		fi
 	    fi
 	else
 	    if [ "$APPAFTER" == "" ]; then
-	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\tAppend $LINE to $CNF"
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tAppend $LINE to $CNF"
 	        if ! $DEBUG; then
 		    echo >> $CNF
 		    echo -e "$LINE" >> $CNF
 		fi
 	    else
-	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tEmergencyScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
 	        if ! $DEBUG; then
 	            sed -i "\'/\$APPAFTER/a \$LINE\'" $CNF
 	        fi
@@ -126,8 +126,14 @@ function unhold_pck {
   fi
 }
 
+# ==============================================================
+# Leave these as-is
+# ==============================================================
+#handle_pck 'nvidia-kernel-dkms' 'reinstall' 'all'
+handle_cnf '/usr/share/applications/display.im6.desktop' 'NoDisplay=true'
+handle_cnf '/usr/share/applications/debian-uxterm.desktop' 'NoDisplay=true'
+handle_cnf '/usr/share/applications/debian-xterm.desktop' 'NoDisplay=true'
+# ==============================================================
+
 
 # Configure the individual packages, and configuration files here
-TST='>> emergency started'
-echo $TST
-echo $TST > debug.log

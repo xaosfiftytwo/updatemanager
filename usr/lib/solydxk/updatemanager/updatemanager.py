@@ -7,8 +7,8 @@
 from gi.repository import Gtk, Gdk, GObject
 import sys
 import os
-import re
-from os import remove, access, chmod
+from os import remove, access, chmod, makedirs
+from shutil import move
 import gettext
 import threading
 # abspath, dirname, join, expanduser, exists, basename
@@ -40,6 +40,10 @@ class UpdateManager(object):
         # Check if script is running
         self.scriptName = basename(__file__)
         self.umglobal = UmGlobal()
+        print((sys.argv[1:]))
+        self.user = sys.argv[1:][0].strip()
+        if self.user == "root" or self.user == "reload":
+            self.user = ""
 
         # Kill previous instance of UM if it exists
         pid = self.umglobal.getScriptPid(self.scriptName, True)
@@ -55,8 +59,12 @@ class UpdateManager(object):
 
         # Load window and widgets
         self.scriptDir = abspath(dirname(__file__))
+        self.filesDir = join(self.scriptDir, "files")
         self.builder = Gtk.Builder()
         self.builder.add_from_file(join(self.scriptDir, '../../../share/solydxk/updatemanager/updatemanager.glade'))
+
+        # Make sure the files directory is set correctly
+        self.checkFilesDir()
 
         # Main window objects
         go = self.builder.get_object
@@ -85,7 +93,7 @@ class UpdateManager(object):
         self.uptodateText = _("Your system is up to date")
 
         # Cleanup first
-        os.system("rm -f %s" % join(self.scriptDir, ".um*"))
+        os.system("rm -f %s" % join(self.filesDir, ".um*"))
 
         # Initiate logging
         self.logFile = join('/var/log', self.umglobal.settings['log'])
@@ -102,7 +110,12 @@ class UpdateManager(object):
         self.terminal.connect('command-done', self.on_command_done)
         self.terminal.connect('line-added', self.on_line_added)
         self.terminal.connect('waiting-for-answer', self.on_waiting_for_answer)
-        self.swTerminal.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse(self.terminal.backgroundColor))
+        if self.umglobal.isStable:
+            self.terminal.setTerminalColors("#000000", "#FFFFFF")
+        else:
+            palletList = ['#4A4A4A', '#BD1919', '#118011', '#CE6800', '#1919BC', '#8D138D', '#139494', '#A7A7A7']
+            self.terminal.setTerminalColors("#000000", "#FFFFFF", palletList)
+        self.swTerminal.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse("#FFFFFF"))
 
         # Disable all buttons
         self.btnInfo.set_sensitive(False)
@@ -143,12 +156,15 @@ class UpdateManager(object):
         self.log.write("==============================================", "UM.init", "debug")
         self.log.write("UM version = %s" % self.version, "UM.init", "debug")
         if self.umglobal.isStable:
-            self.log.write("UM localStable = %s, serverStable = %s, newStable = %s" % (self.umglobal.localStableVersion, self.umglobal.serverStableVersion, str(self.umglobal.newStable)), "UM.init", "debug")
+            if self.umglobal.newNewStable:
+                self.log.write("UM localNewStable = %s, serverNewStable = %s, newNewStable = %s" % (self.umglobal.localNewStableVersion, self.umglobal.serverNewStableVersion, str(self.umglobal.newNewStable)), "UM.init", "debug")
+            else:
+                self.log.write("UM localStable = %s, serverStable = %s, newStable = %s" % (self.umglobal.localStableVersion, self.umglobal.serverStableVersion, str(self.umglobal.newStable)), "UM.init", "debug")
         else:
             self.log.write("UM localUp = %s, serverUp = %s, newUp = %s" % (self.umglobal.localUpVersion, self.umglobal.serverUpVersion, str(self.umglobal.newUp)), "UM.init", "debug")
         self.log.write("UM localEmergency = %s, serverEmergency = %s, newEmergency = %s" % (self.umglobal.localEmergencyVersion, self.umglobal.serverEmergencyVersion, str(self.umglobal.newEmergency)), "UM.init", "debug")
         self.log.write("==============================================", "UM.init", "debug")
-        mirrorsList = join(self.scriptDir, basename(self.umglobal.settings["mirrors-list"]))
+        mirrorsList = join(self.filesDir, basename(self.umglobal.settings["mirrors-list"]))
         if exists(mirrorsList):
             self.log.write("Mirrors list", "UM.init", "debug")
             with open(mirrorsList, 'r') as f:
@@ -185,7 +201,7 @@ class UpdateManager(object):
                     if self.umglobal.newEmergency:
                         dialog = QuestionDialog(self.btnInfo.get_label(), contEmMsg, self.window)
                         if (dialog.show()):
-                            em = join(self.scriptDir, self.umglobal.settings['emergency-stable'].replace("[VERSION]", self.umglobal.serverEmergencyVersion))
+                            em = join(self.filesDir, self.umglobal.settings['emergency-stable'].replace("[VERSION]", self.umglobal.serverEmergencyVersion))
                             cmd = "/bin/bash %(em)s" % { "em": em }
                             nid = 'uminstall'
                             self.prepForCommand(nid)
@@ -194,7 +210,7 @@ class UpdateManager(object):
                             # Save emergency version in hist file
                             self.umglobal.saveHistVersion("emergency", self.umglobal.serverEmergencyVersion)
                             self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_btnInstall_clicked", "debug")
-                    elif self.umglobal.newStable:
+                    elif self.umglobal.newNewStable:
                         msg = self.apt.getDistUpgradeInfo()
                         answer = True
                         if msg != "":
@@ -202,9 +218,27 @@ class UpdateManager(object):
                         if answer:
                             # Pre and post scripts for stable
                             cmd = "apt-get -y --force-yes dist-upgrade"
+                            # We can't have a new stable upgrade and a stable upgrade at the same time: use the same pre/post-stable variables
+                            pre = join(self.filesDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
+                            post = join(self.filesDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
+                            if exists(pre):
+                                cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
+                            if exists(post):
+                                cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
+                            nid = 'uminstall'
+                            self.prepForCommand(nid)
+                            self.terminal.executeCommand(cmd, nid)
+                            self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
+                            # Save newstable version in hist file
+                            self.umglobal.saveHistVersion("newstable", self.umglobal.serverNewStableVersion)
+                            self.log.write("Save history newstable= %s" % self.umglobal.serverNewStableVersion, "UM.on_btnInstall_clicked", "debug")
+                    else:
+                        dialog = QuestionDialog(self.btnInstall.get_label(), contMsg, self.window)
+                        if (dialog.show()):
+                            cmd = "apt-get -y --force-yes upgrade"
                             if self.umglobal.newStable:
-                                pre = join(self.scriptDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
-                                post = join(self.scriptDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
+                                pre = join(self.filesDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
+                                post = join(self.filesDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
                                 if exists(pre):
                                     cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
                                 if exists(post):
@@ -212,23 +246,14 @@ class UpdateManager(object):
                             nid = 'uminstall'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
-                            self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
                             # Save stable version in hist file
                             self.umglobal.saveHistVersion("stable", self.umglobal.serverStableVersion)
-                            self.log.write("Save history stable= %s" % self.umglobal.serverStableVersion, "UM.on_btnInstall_clicked", "debug")
-                    else:
-                        dialog = QuestionDialog(self.btnInstall.get_label(), contMsg, self.window)
-                        if (dialog.show()):
-                            cmd = "apt-get -y --force-yes upgrade"
-                            nid = 'uminstall'
-                            self.prepForCommand(nid)
-                            self.terminal.executeCommand(cmd, nid)
                             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
                 else:
                     if self.umglobal.newEmergency:
                         dialog = QuestionDialog(self.btnInfo.get_label(), contEmMsg, self.window)
                         if (dialog.show()):
-                            em = join(self.scriptDir, self.umglobal.settings['emergency'].replace("[VERSION]", self.umglobal.serverEmergencyVersion))
+                            em = join(self.filesDir, self.umglobal.settings['emergency'].replace("[VERSION]", self.umglobal.serverEmergencyVersion))
                             cmd = "/bin/bash %(em)s" % { "em": em }
                             nid = 'uminstall'
                             self.prepForCommand(nid)
@@ -245,8 +270,8 @@ class UpdateManager(object):
                         if answer:
                             cmd = "apt-get -y --force-yes dist-upgrade"
                             if self.umglobal.newUp:
-                                pre = join(self.scriptDir, self.umglobal.settings['pre-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
-                                post = join(self.scriptDir, self.umglobal.settings['post-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
+                                pre = join(self.filesDir, self.umglobal.settings['pre-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
+                                post = join(self.filesDir, self.umglobal.settings['post-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
                                 if exists(pre):
                                     cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
                                 if exists(post):
@@ -275,22 +300,26 @@ class UpdateManager(object):
 
     def on_btnPreferences_clicked(self, widget):
         # Run preferences in its own thread
-        pref_thread = threading.Thread(target=self.ec.run, args=(join(self.scriptDir, "updatemanagerpref.py &"),))
+        pref_thread = threading.Thread(target=self.openPreferences)
         pref_thread.setDaemon(True)
         pref_thread.start()
+
+    def openPreferences(self):
+        print("> openPreferences")
+        os.system(join(self.scriptDir, "updatemanagerpref.py %s &" % self.user))
 
     # ===============================================
     # General functions
     # ===============================================
 
     def prepForCommand(self, nid):
-        os.system("touch %s" % join(self.scriptDir, ".%s" % nid))
+        os.system("touch %s" % join(self.filesDir, ".%s" % nid))
         self.btnRefresh.set_sensitive(False)
         self.btnInstall.set_sensitive(False)
 
-    def on_waiting_for_answer(self, obj, line, col, row):
+    def on_waiting_for_answer(self, obj, line):
         # Feed the terminal with an answer (only when safe)
-        self.log.write("Waiting for answer: %s (col=%d, row=%d)" % (line, col, row), "UM.on_waiting_for_answer", "info")
+        self.log.write("Waiting for answer on line: %s" % line, "UM.on_waiting_for_answer", "info")
         line = line.strip()
         if line == ":" or line == "(":
             cmd = 'q\r\n'
@@ -302,8 +331,8 @@ class UpdateManager(object):
             # Just hit enter (use default selection)
             self.terminal.feed_child(cmd, len(cmd))
 
-    def on_line_added(self, terminal, line, col, row):
-        self.log.write("Lined added: %s (col=%d, row=%d)" % (line, col, row), "UM.on_line_added", "info")
+    def on_line_added(self, terminal, line):
+        self.log.write(line, "UM.on_line_added", "info")
 
     def on_command_done(self, terminal, pid, nid):
         if nid != "init":
@@ -314,12 +343,18 @@ class UpdateManager(object):
                 pid = self.umglobal.getScriptPid("updatemanagerpref.py")
                 if pid > 0:
                     os.system("kill %d" % pid)
-                os.system(join(self.scriptDir, "updatemanagertray.py reload &"))
-                os.system("gksudo --message \"%s\" %s/updatemanager.py reload &" % (_("Please enter your password to restart the update manager"), self.scriptDir))
+                # Reload tray as user
+                if self.user != "":
+                    cmd = "sudo -u %s %s" % (self.user, join(self.scriptDir, "updatemanagertray.py reload &"))
+                    os.system(cmd)
+                # Reload UM window
+                path = self.ec.run(cmd="which python3", returnAsList=False)
+                if path != "":
+                    os.execl(path, path, "%s/updatemanager.py" % self.scriptDir, self.user)
                 # Execution of this script ends here: a new instance was started after the update
 
             # Cleanup name file
-            os.system("rm -f %s" % join(self.scriptDir, ".%s" % nid))
+            os.system("rm -f %s" % join(self.filesDir, ".%s" % nid))
 
             if nid == "umrefresh":
                 # Run post update when needed
@@ -335,7 +370,7 @@ class UpdateManager(object):
                 self.btnRefresh.set_sensitive(True)
                 self.btnPackages.set_sensitive(True)
             self.loadInfo()
-            if self.umglobal.newEmergency or self.umglobal.newStable or self.umglobal.newUp:
+            if self.umglobal.newEmergency or self.umglobal.newStable or self.umglobal.newNewStable or self.umglobal.newUp:
                 self.showInfo()
             else:
                 aptHasErrors = self.apt.aptHasErrors()
@@ -369,7 +404,7 @@ class UpdateManager(object):
             cmd = "dpkg --configure -a; apt-get -y --force-yes -f install; apt-get update"
             nid = 'umrefresh'
             self.prepForCommand(nid)
-            self.terminal.executeCommand(cmd, nid)
+            self.terminal.executeCommand(cmd, nid, True)
             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.refresh", "debug")
 
     def postUpdate(self):
@@ -377,7 +412,10 @@ class UpdateManager(object):
         if self.umglobal.isStable:
             if self.umglobal.newEmergency and self.umglobal.serverEmergencyVersion is not None:
                 self.getScripts([self.umglobal.settings['emergency-stable'].replace("[VERSION]", self.umglobal.serverEmergencyVersion)])
-            elif self.umglobal.serverStableVersion is not None:
+            elif self.umglobal.newNewStable and self.umglobal.serverNewStableVersion is not None:
+                self.getScripts([self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverNewStableVersion),
+                                self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverNewStableVersion)])
+            elif self.umglobal.newStable and self.umglobal.serverStableVersion is not None:
                 self.getScripts([self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion),
                                 self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion)])
         else:
@@ -431,7 +469,7 @@ class UpdateManager(object):
     # Get pre-install script and post-install script from the server
     def getScripts(self, files):
         # Delete old pre or post files
-        oldFiles = glob(join(self.scriptDir, 'pre-*')) + glob(join(self.scriptDir, 'post-*')) + glob(join(self.scriptDir, 'emergency-*'))
+        oldFiles = glob(join(self.filesDir, 'pre-*')) + glob(join(self.filesDir, 'post-*')) + glob(join(self.filesDir, 'emergency-*'))
         for fle in oldFiles:
             remove(fle)
         for fle in files:
@@ -441,7 +479,7 @@ class UpdateManager(object):
                 txt = urlopen(url).read().decode('utf-8')
                 if txt != '':
                     # Save to a file and make executable
-                    flePath = join(self.scriptDir, fle)
+                    flePath = join(self.filesDir, fle)
                     self.log.write("Save script = %s" % flePath, "UM.getScripts", "debug")
                     with open(flePath, 'w') as f:
                         f.write(txt)
@@ -461,14 +499,14 @@ class UpdateManager(object):
                     url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['emergency-info'])
             else:
                 if self.umglobal.isStable:
-                    if self.umglobal.newStable:
+                    if self.umglobal.newNewStable:
                         url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['new-stable-info'])
                     else:
-                        url = join("file://%s" % self.scriptDir, self.umglobal.settings['stable-info'])
+                        url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['stable-info'])
                 else:
                     url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['up-info'])
         elif self.umglobal.isStable:
-            url = os.path.join("file://%s" % self.scriptDir, self.umglobal.settings['stable-info'])
+            url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['stable-info'])
 
         self.log.write("Load info url: %s" % url, "UM.loadInfo", "debug")
 
@@ -482,6 +520,22 @@ class UpdateManager(object):
         if message is not None:
             context = self.statusbar.get_context_id('message')
             self.statusbar.push(context, message)
+
+    def checkFilesDir(self):
+        if not exists(self.filesDir):
+            makedirs(self.filesDir)
+        oldFiles = glob(join(self.filesDir, 'pre-*')) + \
+                   glob(join(self.filesDir, 'post-*')) + \
+                   glob(join(self.filesDir, 'emergency-*')) + \
+                   [join(self.filesDir, 'updatemanager.hist')] + \
+                   [join(self.filesDir, 'mirrors.list')]
+        for fle in oldFiles:
+            fleName = basename(fle)
+            if not exists(join(self.filesDir, fleName)):
+                move(fle, self.filesDir)
+            else:
+                remove(fle)
+        chmod(self.filesDir, 0o777)
 
     # Close the gui
     def on_windowMain_destroy(self, widget):

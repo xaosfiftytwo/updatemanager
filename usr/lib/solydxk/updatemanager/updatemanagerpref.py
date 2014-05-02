@@ -36,6 +36,10 @@ class UpdateManagerPref(object):
         # Check if script is running
         self.scriptName = basename(__file__)
         self.umglobal = UmGlobal()
+        print((sys.argv[1:]))
+        self.user = sys.argv[1:][0].strip()
+        if self.user == "root" or self.user == "reload":
+            self.user = ""
 
         # Kill previous instance of UM preferences if it exists
         pid = self.umglobal.getScriptPid(self.scriptName, True)
@@ -55,6 +59,7 @@ class UpdateManagerPref(object):
 
         # Load window and widgets
         self.scriptDir = abspath(dirname(__file__))
+        self.filesDir = join(self.scriptDir, "files")
         self.builder = Gtk.Builder()
         self.builder.add_from_file(join(self.scriptDir, '../../../share/solydxk/updatemanager/updatemanagerpref.glade'))
 
@@ -71,6 +76,14 @@ class UpdateManagerPref(object):
         self.btnAddBlackList = go("btnAddBlacklist")
         self.tvBlacklist = go("tvBlacklist")
         self.tvAvailable = go("tvAvailable")
+        self.lblGeneral = go("lblGeneral")
+        self.txtUserWait = go("txtUserWait")
+        self.txtCheckStatus = go("txtCheckStatus")
+        self.btnSaveGeneral = go("btnSaveGeneral")
+
+        # Only allow numbers
+        self.filterText(self.txtUserWait)
+        self.filterText(self.txtCheckStatus)
 
         # GUI translations
         self.window.set_title(_("Update Manager Preferfences"))
@@ -79,10 +92,16 @@ class UpdateManagerPref(object):
         self.btnRemoveBlackList.set_label(_("Remove"))
         self.btnAddBlackList.set_label(_("Blacklist"))
         self.lblMirrors.set_label(_("Repository mirrors"))
+        self.lblGeneral.set_label(_("General"))
         go("lblBlacklist").set_label(_("Blacklisted packages"))
         go("lblMirrorsText").set_label(_("Select the fastest production repository"))
         go("lblBlacklistText").set_label(_("Blacklisted packages"))
         go("lblAvailableText").set_label(_("Available packages"))
+        go("lblGlobalSettings").set_label(_("Global settings"))
+        go("lblUserWait").set_label(_("Wait for user input for"))
+        go("lblUserWaitSecs").set_label(_("seconds (0 = disable automatic answering)"))
+        go("lblCheckStatus").set_label(_("Check status every"))
+        go("lblCheckStatusHour").set_label(_("hours"))
 
         # Initiate the treeview handler and connect the custom toggle event with on_tvMirrors_toggle
         self.tvMirrorsHandler = TreeViewHandler(self.tvMirrors)
@@ -95,12 +114,12 @@ class UpdateManagerPref(object):
         self.ec = ExecCmd(loggerObject=self.log)
         self.queue = Queue()
         self.excludeMirrors = ['security']
-        self.mirrorsFile = basename(self.umglobal.settings["mirrors-list"])
         self.mirrors = self.getMirrors()
         self.threads = {}
         self.blacklist = []
         self.available = []
 
+        self.fillGeneralSettings()
         self.fillTreeViewMirrors()
         self.fillTreeViewBlackList()
         self.fillTreeViewAvailable()
@@ -112,6 +131,9 @@ class UpdateManagerPref(object):
     # ===============================================
     # Main window functions
     # ===============================================
+
+    def on_btnSaveGeneral_clicked(self, widget):
+        self.saveGeneralSettings()
 
     def on_btnCheckMirrorsSpeed_clicked(self, widget):
         self.checkMirrorsSpeed()
@@ -132,6 +154,10 @@ class UpdateManagerPref(object):
     # ===============================================
     # Blacklist functions
     # ===============================================
+
+    def fillGeneralSettings(self):
+        self.txtCheckStatus.set_text(str(self.umglobal.settings["hrs-check-status"]))
+        self.txtUserWait.set_text(str(self.umglobal.settings["secs-wait-user-input"]))
 
     def fillTreeViewBlackList(self):
         self.blacklist = []
@@ -188,14 +214,14 @@ class UpdateManagerPref(object):
                         "Only production repositories do have mirrors.\n"
                         "Please change to production manually.")
                 self.showInfo(self.lblMirrors.get_label(), msg, self.window)
-                self.nbPref.get_nth_page(0).set_visible(False)
+                self.nbPref.get_nth_page(1).set_visible(False)
             else:
                 # Fill treeview
                 columnTypesList = ['bool', 'str', 'str', 'str', 'str']
                 self.tvMirrorsHandler.fillTreeview(self.mirrors, columnTypesList, 0, 400, True)
-                self.nbPref.get_nth_page(0).set_visible(True)
+                self.nbPref.get_nth_page(1).set_visible(True)
         else:
-            self.nbPref.get_nth_page(0).set_visible(False)
+            self.nbPref.get_nth_page(1).set_visible(False)
 
     def saveMirrors(self):
         # Safe mirror settings
@@ -219,7 +245,7 @@ class UpdateManagerPref(object):
         if replaceRepos:
             self.btnSaveMirrors.set_sensitive(False)
             self.btnCheckMirrorsSpeed.set_sensitive(False)
-            cmd = "touch %s" % join(self.scriptDir, ".umrefresh")
+            cmd = "touch %s" % join(self.filesDir, ".umrefresh")
             os.system(cmd)
 
             m = Mirror()
@@ -229,7 +255,7 @@ class UpdateManagerPref(object):
             self.mirrors = self.getMirrors()
             self.fillTreeViewMirrors()
 
-            cmd = "rm -f %s" % join(self.scriptDir, ".umrefresh")
+            cmd = "rm -f %s" % join(self.filesDir, ".umrefresh")
             os.system(cmd)
             self.btnSaveMirrors.set_sensitive(True)
             self.btnCheckMirrorsSpeed.set_sensitive(True)
@@ -322,6 +348,37 @@ class UpdateManagerPref(object):
     # ===============================================
     # General functions
     # ===============================================
+
+    def saveGeneralSettings(self):
+        #print("> saveGeneralSettings")
+        ui_saved = False
+        cs_saved = False
+        secs = self.umglobal.strToNumber(self.txtUserWait.get_text(), True)
+        #print(secs)
+        if self.umglobal.settings["secs-wait-user-input"] != secs:
+            #print("> save secs-wait-user-input 1")
+            self.umglobal.saveSettings('misc', 'secs-wait-user-input', secs)
+            ui_saved = True
+            #print("> save secs-wait-user-input 2")
+        hrs = self.umglobal.strToNumber(self.txtCheckStatus.get_text(), True)
+        #print(hrs)
+        if self.umglobal.settings["hrs-check-status"] != hrs:
+            #print("> save hrs-check-status 1")
+            self.umglobal.saveSettings('misc', 'hrs-check-status', hrs)
+            cs_saved = True
+            #print("> save hrs-check-status 2")
+        if ui_saved or cs_saved:
+            msg = _("The new settings will take effect after UM restart.")
+            self.showInfo(self.lblGeneral.get_label(), msg, self.window)
+        else:
+            msg = _("No changes were made.")
+            self.showInfo(self.lblGeneral.get_label(), msg, self.window)
+
+    def filterText(self, widget):
+        def filter(entry, *args):
+            text = entry.get_text().strip().lower()
+            entry.set_text(''.join([i for i in text if i in '0123456789']))
+        widget.connect('changed', filter)
 
     def showInfo(self, title, message, parent):
         MessageDialogSafe(title, message, Gtk.MessageType.INFO, parent).show()

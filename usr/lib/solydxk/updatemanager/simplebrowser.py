@@ -28,7 +28,7 @@ class SimpleBrowser(WebKit.WebView):
         self.open(url)
 
     def showHtml(self, html):
-        print(("show HTML: %s" % html))
+        #print(("show HTML: %s" % html))
         self.load_string(html, "text/html", "UTF-8", 'file://')
 
     def on_nav_request(self, browser, frame, request, action, decision, *args, **kwargs):

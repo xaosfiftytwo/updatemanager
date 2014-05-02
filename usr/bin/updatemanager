@@ -3,6 +3,7 @@
 
 import os
 import sys
+import pwd
 import gettext
 import getopt
 from gi.repository import Gtk
@@ -39,7 +40,7 @@ except getopt.GetoptError:
 pref = False
 tray = False
 force = False
-args = ''
+args = pwd.getpwuid(os.getuid()).pw_name
 for opt, arg in opts:
     print(opt, arg)
     if opt in ('-p', '--pref'):
@@ -52,14 +53,14 @@ for opt, arg in opts:
         usage()
         sys.exit()
     elif opt in ('-r', '--reload'):
-        args += "reload "
+        args += " reload"
 
 # Add launcher string, only when not root
 launcher = ''
 if os.geteuid() > 0:
-    launcher = "gksu --message \"<b>%s</b>\"" % msg
-    #if os.path.exists('/usr/bin/kdesudo'):
-        #launcher = "kdesudo -n -i /usr/share/solydxk/updatemanager/icons/base.svg -d --comment \"<b>%s</b>\"" % msg
+    launcher = "gksudo --message \"<b>%s</b>\"" % msg
+    if os.path.exists('/usr/bin/kdesudo'):
+        launcher = "kdesudo -n -i /usr/share/solydxk/updatemanager/icons/base.png -d --comment \"<b>%s</b>\"" % msg
 
 def isRunningLive():
     if force:
@@ -74,7 +75,7 @@ def showMsg(title, message):
         dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, message)
         dialog.set_markup("<b>%s</b>" % title)
         dialog.format_secondary_markup(message)
-        dialog.set_icon_from_file("/usr/share/solydxk/updatemanager/icons/base.svg")
+        dialog.set_icon_from_file("/usr/share/solydxk/updatemanager/icons/base.png")
         dialog.run()
         dialog.destroy()
 

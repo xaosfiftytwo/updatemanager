@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<style>
+body {
+	    font-family: Arial, Helvetica, Verdana, Sans-serif;
+	    font-size: 12px;
+	    color: #555555;
+	    background: #ffffff;
+	}
+.code {
+	background: #f1f1f1 url(http://packages.solydxk.com/pics/terminal.png) center no-repeat;
+	background-position: 15px 50%; /* x-pos y-pos */
+	text-align: left;
+	padding: 5px 20px 5px 45px;
+	border-top: 2px solid #5d5d5d;
+	border-bottom: 2px solid #5d5d5d;
+	font-family: monospace, courier;  
+	font-style: normal;
+	font-weight: bold;  
+	}
+.screenshot {
+	width: 500px;
+	height: 350px;
+	}
+</style>
+</head>
+<body>
+    
+<h1>SolydXK Business Edition (BE/BO) - 2014.04.15</h1>
+
+<h2>Changes</h2>
+<p><strong>A whole new Update Manager</strong></p>
+<p>The Update Manager has been re-built from scratch making it better suited for SolydXK's update processes.<br>
+Apt instead of Synaptic is the core of the application which will prevent discrepancies between terminal upgrades and upgrades with the Update Manager.</p>
+<p><h3> >> After the Update Manager has updated itself, you need to manually start the Update Manager (or logout/login), and re-enter your blacklisted packages in the preferences window if needed. << </h3></p>
+<h2>Other changes</h2>
+<p>
+<ul>
+    <li><strong>Firefox and Thunderbird</strong><br>Firefox and Thunderbird has been upgraded to version 24.4<br><br>
+        Both come with these add-ons:<br>
+		- Locale Switcher to switch installed language packs.<br>
+		- Firefox comes with Adblock Plus.<br>
+		- Thunderbird comes with the Lightning Calendar, and more.<br><br>
+		For existing users you need to enable these add-ons (and languages) in the add-ons manager of Firefox and Thunderbird.<br><br>
+		If you don't like these add-ons, you can simply remove these packages: firefox-solydxk-adjustments, thunderbird-solydxk-adjustments<br>This will leave you with a pure Firefox and Thunderbird install for new users. For existing users you only have to disable these add-ons in the add-ons manager.</li>
+    <li><strong>Plymouth</strong><br>The SolydXK Plymouth theme has been changed, and the Plymouth Manager has been adapted accordingly.</li>
+</ul>
+</p>
+
+<a name="info"></a><h2>Update information</h2>
+<h3>Read this whether you update with the Update Manager, or terminal.</h3>
+<p>
+<ul>
+	<li><strong>Firefox</strong><br>In your package upgrade list, you will see that Firefox will be upgraded from 24.2esr to the regular 28.0.<br>You can ignore this if you're using the UM, or run the below mentioned script if you do a terminal upgrade. The UM and script will upgrade to the next ESR version. This is a one time action.</li>
+	<li><strong>Firefox and Thunderbird</strong><br>If you're using the UM, or the below mentioned script, Firefox and Thunderbird are first removed before the new packages are installed. So, don't worry if you see them being removed.</li>
+</ul>
+</p>
+
+<a name="um"></a><h2>Updating with the Update Manager</h2>
+<p>The Update Manager can be opened from the system tray by clicking on this icon: <img src="http://packages.solydxk.com/pics/um.png" />.<br>
+You will be asked to confirm upgrade of certain packages or replace configuration files, <strong>simply hit "Enter" to continue</strong>.
+<ul>
+	<li><strong>Grub-pc</strong><br>Select the device where you installed GRUB (usually /dev/sda). Use the arrow keys to move, and the space bar to select (an asterisk marks the selected choice). When done, hit "Enter" to continue.<br><br>
+	<img class="screenshot" src="http://packages.solydxk.com/umfiles/pics/grub-pc-installdevices.png" /><br><br></li>
+	<li><strong>Openssl</strong><br>Some services need to be restarted. You can leave it as-is, and hit "Enter" to continue.<br><br>
+	<img class="screenshot" src="http://packages.solydxk.com/umfiles/pics/openssl-configure.png" /></li>
+</ul>
+
+<a name="terminal"></a><h2>Updating with the terminal</h2>
+<p>We recommend using the Update Manager to update your system, but if you prefer using the terminal, please read the below steps carefully.</p>
+<p>
+<ul>
+    <li><p><strong>Pre upgrade</strong><br>Download and run the following script <strong>as su</strong>: <a href="http://packages.solydxk.com/umfiles/tst/pre-stable-2014.04.15" target="_blank">http://packages.solydxk.com/umfiles/tst/pre-stable-2014.04.15</a><br>This will install, and configure the new Firefox, Thunderbird, and several other packages in preparation of the upgrade. It also copies the included add-ons to existing users directories if they do not already exist.</p>
+<p><strong>Now you can run dist-upgrade.</strong></p><br></li>
+    <li><strong>Configuration files</strong><br>You might be asked to replace certain configuration files. It is recommended to keep the currently installed file (default selected).<br><br></li>
+</ul>
+</p>
+
+<p>&nbsp;</p>
+<hr>    
+
+<p>The business editions of SolydXK follow Debian stable, Debian security, and the SolydXK Business repository.</p>
+
+<p>SolydXK, and Debian only publishes updates that either have low IT risk or that reduce IT risk.<br>
+These updates are all tested by the SolydXK, and Debian maintainers, the testing team, and in the field through the regular SolydXK Home editions, thus reducing the risk of software regression.</p>
+
+<p>The following channels are used to communicate to our users:<br>
+<ol>
+	<li><strong>Blog</strong>: <a href="http://solydxk.com/news" target="_blank">http://solydxk.com/news</a></li>
+	<li><strong>RSS</strong>: <a href="http://solydxk.com/feed" target="_blank">http://solydxk.com/feed</a></li>
+	<li><strong>Facebook</strong>: <a href="http://www.facebook.com/solyd.xk" target="_blank">http://www.facebook.com/solyd.xk</a></li>
+	<li><strong>Twitter</strong>: <a href="https://twitter.com/solydxk" target="_blank">https://twitter.com/solydxk</a></li>
+	<li><strong>Google+</strong>: <a href="https://plus.google.com/112450904523917402004" target="_blank">https://plus.google.com/112450904523917402004</a></li>
+	<li><strong>Forum</strong>: <a href="http://forums.solydxk.com" target="_blank">http://forums.solydxk.com</a></li>
+</ol></p>
+
+</body>
+</html>

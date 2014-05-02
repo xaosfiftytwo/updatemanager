@@ -1,11 +1,20 @@
-updatemanager (2.0.8) debian; urgency=low
+updatemanager (2.1.8) debian; urgency=low
+
+  * Improved handling of terminal output
+  * Added general settings tab in preferences window
+  * Cleanup old hist file
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 01 May 2014 09:00:00 +0100
+
+updatemanager (2.1.0) debian; urgency=low
 
   * Use dist-upgrade to extrapolate package information
   * Added translations: ca, el, nl
   * Improved debconf menu detection
   * Minor GUI improvements
+  * Some fixes for the BE editions
 
- -- Schoelje <schoelje@solydxk.com>  Sun, 09 Apr 2014 19:00:00 +0100
+ -- Schoelje <schoelje@solydxk.com>  Tue, 15 Apr 2014 23:00:00 +0100
 
 updatemanager (2.0.1) debian; urgency=low
 

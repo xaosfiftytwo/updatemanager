@@ -38,7 +38,7 @@ class UmRefresh(object):
 
         pid = self.umglobal.getScriptPid("updatemanager.py")
         if pid == 0:
-            os.system("rm %s" % join(self.scriptDir, ".um*"))
+            os.system("rm %s" % join(self.scriptDir, "files/.um*"))
 
         self.umglobal.getLocalInfo()
         if self.umglobal.repos:
@@ -51,7 +51,7 @@ class UmRefresh(object):
                         self.statusIcon.set_from_pixbuf(self.pbEmergency)
                         self.statusIcon.set_tooltip_text(emergencyText)
                     elif self.checkForUpdates():
-                        if self.umglobal.newStable:
+                        if self.umglobal.newNewStable:
                             self.statusIcon.set_from_pixbuf(self.pbInfo)
                             self.statusIcon.set_tooltip_text(stableText)
                         else:
