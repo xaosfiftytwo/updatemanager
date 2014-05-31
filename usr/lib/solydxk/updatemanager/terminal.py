@@ -179,7 +179,7 @@ class VirtualTerminal(Vte.Terminal):
                     matchObj = re.search("\d{1,2}%", line)
                     if matchObj:
                         if matchObj.group(0) != "":
-                            print("> progress indication found")
+                            #print("> progress indication found")
                             return False
 
                     # Skip on pre-defined strings
@@ -196,12 +196,12 @@ class VirtualTerminal(Vte.Terminal):
                                 if pos < 0:
                                     findString = self.lastLine[pos:(len(self.lastLine)+pos)+len(string)]
                                     if findString == string:
-                                        print(("> str on pos %d = %s: skip timer" % (pos, findString)))
+                                        #print(("> str on pos %d = %s: skip timer" % (pos, findString)))
                                         return False
                                 else:
                                     findString = self.lastLine[pos:pos + len(string)]
                                     if findString == string:
-                                        print(("> str on pos %d = %s: skip timer" % (pos, findString)))
+                                        #print(("> str on pos %d = %s: skip timer" % (pos, findString)))
                                         return False
                         if cnt == len(strings[1]):
                             print("> strings found: skip timer")
@@ -214,19 +214,19 @@ class VirtualTerminal(Vte.Terminal):
                 else:
                     # User input
                     if "_____" in line:
-                        print("> user input: skip timer")
+                        #print("> user input: skip timer")
                         return False
                     # User choice
                     if "[" in line and "]" in line:
                         choiceCnt += 1
                         if choiceCnt > 1:
-                            print("> user choice: skip timer")
+                            #print("> user choice: skip timer")
                             return False
                     # Multiple choice buttons
                     matchObj = re.search("<[a-zA-Z ]+> +<[a-zA-Z ]+>", line)
                     if matchObj:
                         if matchObj.group(0) != "":
-                            print("> more than one button: skip timer")
+                            #print("> more than one button: skip timer")
                             return False
 
             # If you've come this far, you can start the timer

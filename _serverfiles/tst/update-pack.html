@@ -9,7 +9,7 @@ body {
 	    background: #ffffff;
 	}
 .code {
-	background: #f1f1f1 url(http://packages.solydxk.com/pics/terminal.png) center no-repeat;
+	background: #f1f1f1 url(http://home.solydxk.com/pics/terminal.png) center no-repeat;
 	background-position: 15px 50%; /* x-pos y-pos */
 	text-align: left;
 	padding: 5px 20px 5px 45px;
@@ -61,21 +61,21 @@ Apt instead of Synaptic is the core of the application which will prevent discre
 </p>
 
 <a name="um"></a><h2>Updating with the Update Manager</h2>
-<p>The Update Manager can be opened from the system tray by clicking on this icon: <img src="http://packages.solydxk.com/pics/um.png" />.<br>
+<p>The Update Manager can be opened from the system tray by clicking on this icon: <img src="http://home.solydxk.com/pics/um.png" />.<br>
 Most user choices are being done for you by the Update Manager. It uses the default selection within 5 seconds before continuing the upgrade.
 Only the selection menus need to be done manually.
 <ul>
 	<li><strong>Grub-pc</strong><br>Select the device where you installed GRUB (usually /dev/sda). Use the arrow keys to move, and the space bar to select (an asterisk marks the selected choice). When done, hit "Enter" to continue.<br><br>
-	<img class="screenshot" src="http://packages.solydxk.com/umfiles/pics/grub-pc-installdevices.png" /><br><br></li>
+	<img class="screenshot" src="http://home.solydxk.com/umfiles/pics/grub-pc-installdevices.png" /><br><br></li>
 	<li><strong>Openssl</strong><br>Some services need to be restarted. You can leave it as-is, and hit "Enter" to continue.<br><br>
-	<img class="screenshot" src="http://packages.solydxk.com/umfiles/pics/openssl-configure.png" /></li>
+	<img class="screenshot" src="http://home.solydxk.com/umfiles/pics/openssl-configure.png" /></li>
 </ul>
 
 <a name="terminal"></a><h2>Updating with the terminal</h2>
 <p>We recommend using the Update Manager to update your system, but if you prefer using the terminal, please read the below steps carefully.</p>
 <p>
 <ul>
-    <li><p><strong>Pre upgrade</strong><br>Download and run the following script <strong>as su</strong>: <a href="http://packages.solydxk.com/umfiles/tst/pre-up-2014.04.15" target="_blank">http://packages.solydxk.com/umfiles/tst/pre-up-2014.04.15</a><br>This will install, and configure the new Firefox, Thunderbird, and several other packages in preparation of the upgrade. It also copies the included add-ons to existing users directories if they do not already exist.</p>
+    <li><p><strong>Pre upgrade</strong><br>Download and run the following script <strong>as su</strong>: <a href="http://home.solydxk.com/umfiles/tst/pre-up-2014.04.15" target="_blank">http://home.solydxk.com/umfiles/tst/pre-up-2014.04.15</a><br>This will install, and configure the new Firefox, Thunderbird, and several other packages in preparation of the upgrade. It also copies the included add-ons to existing users directories if they do not already exist.</p>
 <p><strong>Now you can run dist-upgrade.</strong></p><br></li>
     <li><strong>Configuration files</strong><br>You might be asked to replace '/etc/lightdm/lightdm-gtk-greeter.conf', and '/etc/bash.bashrc'. It is recommended to keep the currently installed file (default selected).<br><br></li>
     <li><strong>Post upgrade</strong><br>If you're using Nvidia, you run the following command before reboot:<br><div class="code">sudo apt-get install --reinstall nvidia-kernel-dkms</div></li>

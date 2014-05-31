@@ -6,7 +6,7 @@
 
 import pyinotify
 import gettext
-from os.path import abspath, dirname
+from os.path import abspath, dirname, join
 from gi.repository import GObject, GdkPixbuf
 
 # Need to initiate threads for Gtk,
@@ -66,6 +66,7 @@ class UmNotifier(object):
         self.umglobal = umglobal
         self.umrefresh = umrefresh
         self.scriptDir = abspath(dirname(__file__))
+        self.filesDir = join(self.scriptDir, "files")
 
         self.wm = pyinotify.WatchManager()  # Watch Manager
         self.notifier = pyinotify.ThreadedNotifier(self.wm, EventHandler(self.statusIcon, self.umglobal, self.umrefresh))
@@ -75,9 +76,9 @@ class UmNotifier(object):
         src = '/etc/apt/sources.list'
         self.srcWatch = self.wm.add_watch(src, pyinotify.IN_MODIFY, rec=False)
         self.srcdWatch = self.wm.add_watch("%s.d/" % src, pyinotify.IN_MODIFY, rec=False)
-        self.umWatch = self.wm.add_watch(self.scriptDir, pyinotify.IN_CREATE | pyinotify.IN_DELETE, rec=False)
+        self.umWatch = self.wm.add_watch(self.filesDir, pyinotify.IN_CREATE | pyinotify.IN_DELETE, rec=False)
         #self.lockWatch = self.wm.add_watch('/var/lib/dpkg/lock', pyinotify.IN_CLOSE_NOWRITE, rec=False)
-        print("Added file watches on %s, %s, %s" % (src, "%s.d/" % src, self.scriptDir))
+        print("Added file watches on %s, %s.d/, %s" % (src, src, self.filesDir))
 
     def quit(self):
         #print("Quit UmNotifier")

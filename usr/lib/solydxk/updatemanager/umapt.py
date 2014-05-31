@@ -31,20 +31,6 @@ class UmApt(object):
         self.heldbackPackages = []
         self.createPackageLists()
 
-        #print("===============================================")
-        #print((str(self.packagesVersionInfo)))
-        #print("===============================================")
-        #print((str(self.packagesNotAvailable)))
-        #print("===============================================")
-        #print((str(self.upgradablePackages)))
-        #print("===============================================")
-        #print((str(self.newPackages)))
-        #print("===============================================")
-        #print((str(self.removedPackages)))
-        #print("===============================================")
-        #print((str(self.heldbackPackages)))
-        #print("===============================================")
-
     def createPackagesVersionInfoLists(self):
         # Reset variables
         self.packagesVersionInfo = []
@@ -63,10 +49,10 @@ class UmApt(object):
                 # For stable
                 matchObj = re.search("([a-z0-9-]+)/([.\S]+)[a-z ]+(\d[.\S]*)[a-z ]*(.*)", line)
             if matchObj:
-                self.packagesVersionInfo.append([matchObj.group(1),
-                                                 matchObj.group(2),
-                                                 matchObj.group(3),
-                                                 matchObj.group(4)])
+                self.packagesVersionInfo.append([matchObj.group(1).strip(),
+                                                 matchObj.group(2).strip(),
+                                                 matchObj.group(3).strip(),
+                                                 matchObj.group(4).strip()])
             elif "no available version" in line.lower():
                 matchObj = re.search("(.*):[a-z]", line)
                 if matchObj:
@@ -113,7 +99,7 @@ class UmApt(object):
             package = package.strip()
             if addVersionInfo:
                 for info in self.packagesVersionInfo:
-                    if package == info[0]:
+                    if package == info[0] and len(info[3]) > 0:
                         packageList.append([package, info[2], info[3]])
                         break
             else:

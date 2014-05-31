@@ -133,6 +133,14 @@ function unhold_pck {
 handle_cnf '/usr/share/applications/display.im6.desktop' 'NoDisplay=true'
 handle_cnf '/usr/share/applications/debian-uxterm.desktop' 'NoDisplay=true'
 handle_cnf '/usr/share/applications/debian-xterm.desktop' 'NoDisplay=true'
+# Fix Synaptic in SolydX not starting
+if [ -e /usr/share/applications/synaptic.desktop ]; then
+  sed -i 's/synaptic-pkexec/gksudo synaptic/' /usr/share/applications/synaptic.desktop
+fi
+# Remove fake mime types in kde
+if [ -e /usr/share/mime/packages/kde.xml ]; then
+  sed -i -e /\<.*fake.*\>/,/^$/d /usr/share/mime/packages/kde.xml
+fi
 # ==============================================================
 
 

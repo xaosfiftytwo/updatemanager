@@ -1,3 +1,9 @@
+updatemanager (2.1.9) debian; urgency=low
+
+  * Refresh tray after update.
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 28 May 2014 16:00:00 +0100
+
 updatemanager (2.1.8) debian; urgency=low
 
   * Improved handling of terminal output

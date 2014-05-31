@@ -4,6 +4,7 @@
 from gi.repository import GdkPixbuf
 from execcmd import ExecCmd
 from os.path import join, abspath, dirname
+#from umapt import UmApt
 import os
 
 
@@ -14,6 +15,7 @@ class UmRefresh(object):
         self.ec = ExecCmd()
         self.statusIcon = statusIcon
         self.umglobal = umglobal
+        #self.apt = UmApt(self.umglobal)
         self.pbExec = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-exec"])
         self.pbApply = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-apply"])
         self.pbEmergency = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-emergency"])
@@ -84,11 +86,13 @@ class UmRefresh(object):
         print("Done refreshing")
 
     def checkForUpdates(self):
-        cmd = "apt-show-versions -u"
-        #cmd = "aptitude search '~U'"
+        #cmd = "apt-show-versions -u"
+        cmd = "aptitude search '~U'"
 
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
+
+        #lst = self.apt.getUpgradablePackages()
 
         if lst:
             return True

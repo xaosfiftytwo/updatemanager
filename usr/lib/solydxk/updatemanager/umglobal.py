@@ -257,7 +257,7 @@ class UmGlobal(object):
             settings["solydxk-debian"] = self.cfg.getValue(section, 'solydxk-debian')
             settings["debian"] = self.cfg.getValue(section, 'debian')
         except:
-            settings["solydxk"] = 'http://packages.solydxk.com'
+            settings["solydxk"] = 'http://home.solydxk.com'
             settings["solydxk-debian"] = 'http://debian.solydxk.com'
             settings["debian"] = 'http://ftp.debian.org'
             self.saveSettings(section, 'solydxk', settings["solydxk"])
@@ -328,7 +328,7 @@ class UmGlobal(object):
             settings["dl-test-solydxk"] = self.cfg.getValue(section, 'dl-test-solydxk')
             settings["timeout-secs"] = int(self.cfg.getValue(section, 'timeout-secs'))
         except:
-            settings["mirrors-list"] = 'http://packages.solydxk.com/mirrors.list'
+            settings["mirrors-list"] = 'http://home.solydxk.com/mirrors.list'
             settings["dl-test"] = 'production/README.mirrors.html'
             settings["dl-test-solydxk"] = 'production/dists/solydxk/kdenext/binary-amd64/Packages.gz'
             settings["timeout-secs"] = 10
