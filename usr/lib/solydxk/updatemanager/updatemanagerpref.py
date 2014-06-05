@@ -86,7 +86,7 @@ class UpdateManagerPref(object):
         self.filterText(self.txtCheckStatus)
 
         # GUI translations
-        self.window.set_title(_("Update Manager Preferfences"))
+        self.window.set_title(_("Update Manager Preferences"))
         self.btnSaveMirrors.set_label(_("Save mirrors"))
         self.btnCheckMirrorsSpeed.set_label(_("Check mirrrors speed"))
         self.btnRemoveBlackList.set_label(_("Remove"))
@@ -278,6 +278,10 @@ class UpdateManagerPref(object):
 
     def isUrlInSources(self, url):
         blnRet = False
+
+        # Change old URL
+        url = url.replace("packages.solydxk.com", "home.solydxk.com")
+
         for repo in self.umglobal.repos:
             if url in repo:
                 #print((">>> add %s" % url))
@@ -307,9 +311,14 @@ class UpdateManagerPref(object):
             lst = self.queue.get()
             if lst:
                 self.writeSpeed(lst[0], lst[1])
+            self.queue.task_done()
             return True
 
         # Thread is done
+        lst = self.queue.get()
+        if lst:
+            self.writeSpeed(lst[0], lst[1])
+        self.queue.task_done()
         del self.threads[name]
         self.btnCheckMirrorsSpeed.set_sensitive(True)
         self.btnSaveMirrors.set_sensitive(True)

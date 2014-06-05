@@ -325,16 +325,13 @@ class UmGlobal(object):
         try:
             settings["mirrors-list"] = self.cfg.getValue(section, 'mirrors-list')
             settings["dl-test"] = self.cfg.getValue(section, 'dl-test')
-            settings["dl-test-solydxk"] = self.cfg.getValue(section, 'dl-test-solydxk')
             settings["timeout-secs"] = int(self.cfg.getValue(section, 'timeout-secs'))
         except:
             settings["mirrors-list"] = 'http://home.solydxk.com/mirrors.list'
-            settings["dl-test"] = 'production/README.mirrors.html'
-            settings["dl-test-solydxk"] = 'production/dists/solydxk/kdenext/binary-amd64/Packages.gz'
+            settings["dl-test"] = 'production/dists/solydxk/main/binary-amd64/Packages'
             settings["timeout-secs"] = 10
             self.saveSettings(section, 'mirrors-list', settings["mirrors-list"])
             self.saveSettings(section, 'dl-test', settings["dl-test"])
-            self.saveSettings(section, 'dl-test-solydxk', settings["dl-test-solydxk"])
             self.saveSettings(section, 'timeout-secs', settings["timeout-secs"])
 
         section = 'icons'

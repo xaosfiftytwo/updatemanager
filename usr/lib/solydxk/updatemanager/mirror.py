@@ -19,43 +19,63 @@ class MirrorGetSpeed(threading.Thread):
 
     def run(self):
         try:
+            httpCode = -1
+            dlSpeed = 0
             for mirrorData in self.mirrors:
                 mirror = mirrorData[3].strip()
                 if ("http" in mirror or "ftp" in mirror):
                     if mirror.endswith('/'):
                         mirror = mirror[:-1]
 
-                    if mirrorData[2].lower() == 'solydxk':
-                        url = "%s/%s" % (mirror, self.umglobal.settings["dl-test-solydxk"])
-                    else:
+                    # Only check Debian repository: SolydXK is on the same server
+                    if mirrorData[2] == "Debian":
+                        httpCode = -1
+                        dlSpeed = 0
                         url = "%s/%s" % (mirror, self.umglobal.settings["dl-test"])
+                        cmd = "curl --connect-timeout %d -m %d -w '%%{http_code}\n%%{speed_download}\n' -o /dev/null -s %s" % (int(self.umglobal.settings["timeout-secs"] / 2), self.umglobal.settings["timeout-secs"], url)
 
-                    cmd = "curl --connect-timeout %d -m %d -w '%%{http_code}\n%%{speed_download}\n' -o /dev/null -s %s" % (int(self.umglobal.settings["timeout-secs"] / 2), self.umglobal.settings["timeout-secs"], url)
+                        lst = self.ec.run(cmd, False)
+                        if lst:
+                            httpCode = int(lst[0])
+                            dlSpeed = lst[1]
+                            # Download speed returns as string with decimal separator
+                            # On non-US systems converting to float throws an error
+                            # Split on the separator, and use the left part only
+                            if ',' in dlSpeed:
+                                dlSpeed = dlSpeed.split(',')[0]
+                            elif '.' in dlSpeed:
+                                dlSpeed = dlSpeed.split('.')[0]
 
-                    lst = self.ec.run(cmd, False)
-                    if lst:
-                        httpCode = int(lst[0])
-                        dlSpeed = lst[1]
-                        # Download speed returns as string with decimal separator
-                        # On non-US systems converting to float throws an error
-                        # Split on the separator, and use the left part only
-                        if ',' in dlSpeed:
-                            dlSpeed = dlSpeed.split(',')[0]
-                        elif '.' in dlSpeed:
-                            dlSpeed = dlSpeed.split('.')[0]
+                            if (httpCode == 200):
+                                dlSpeed = int(dlSpeed) / 1000
+                                self.queue.put([mirror, "%d Kb/s" % dlSpeed])
+                                print(("Server %(mirror)s - %(speed)d Kb/s" % {"mirror": mirror, "speed": dlSpeed}))
+                            elif httpCode >= 0:
+                                self.queue.put([mirror, self.getHumanReadableHttpCode(httpCode)])
+                                print(("Server %(mirror)s returns HTTP code %(return_code)s" % {"mirror": mirror, "return_code": self.getHumanReadableHttpCode(httpCode)}))
+                    else:
                         if (httpCode == 200):
-                            dlSpeed = int(dlSpeed) / 1000
                             self.queue.put([mirror, "%d Kb/s" % dlSpeed])
-                            self.queue.task_done()
-                            print(("Server %(mirror)s - %(speed)d Kb/s" % { "mirror": mirror, "speed": dlSpeed }))
-                        else:
-                            self.queue.put([mirror,"Error: %d" % httpCode])
-                            self.queue.task_done()
-                            print(("Server %(mirror)s returns HTTP code %(return_code)d" % { "mirror": mirror, "return_code": httpCode }))
+                            print(("Server %(mirror)s - %(speed)d Kb/s" % {"mirror": mirror, "speed": dlSpeed}))
+                        elif httpCode >= 0:
+                            self.queue.put([mirror, self.getHumanReadableHttpCode(httpCode)])
+                            print(("Server %(mirror)s returns HTTP code %(return_code)s" % {"mirror": mirror, "return_code": self.getHumanReadableHttpCode(httpCode)}))
 
         except Exception as detail:
             # This is a best-effort attempt, fail graciously
             print(("Error: %s" % str(detail)))
+
+    def getHumanReadableHttpCode(self, httpCode):
+        if httpCode == 200:
+            return "OK"
+        elif httpCode == 403:
+            return "403: forbidden"
+        elif httpCode == 404:
+            return "404: not found"
+        elif httpCode >= 500:
+            return "%d: server error" % httpCode
+        else:
+            return "Error: %d" % httpCode
 
 
 class Mirror():

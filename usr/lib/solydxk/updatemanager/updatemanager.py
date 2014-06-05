@@ -349,9 +349,11 @@ class UpdateManager(object):
                     os.system(cmd)
                 # Reload UM window
                 path = self.ec.run(cmd="which python3", returnAsList=False)
-                if path != "":
-                    os.execl(path, path, "%s/updatemanager.py" % self.scriptDir, self.user)
-                # Execution of this script ends here: a new instance was started after the update
+                if exists(path):
+                    try:
+                        os.execl(path, path, "%s/updatemanager.py" % self.scriptDir, self.user)
+                    except OSError as err:
+                        self.log.write("Reload UM: %s" % str(err), "UM.on_command_done", "error")
 
             # Cleanup name file
             os.system("rm -f %s" % join(self.filesDir, ".%s" % nid))
