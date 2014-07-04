@@ -81,6 +81,17 @@ class UpdateManager(object):
         self.btnPreferences = go("btnPreferences")
         self.nbMain = go("nbMain")
         self.swInfo = go("swInfo")
+        self.btnMaintenance = go("btnMaintenance")
+        self.lblMaintenance = go("lblMaintenance")
+        self.tvMaintenance = go("tvMaintenance")
+        self.btnMaintenanceExecute = go("btnMaintenanceExecute")
+        self.chkMaintenanceSelectAll = go("chkMaintenanceSelectAll")
+        self.radUnneeded = go("radUnneeded")
+        self.radCleanCache = go("radCleanCache")
+        self.radDowngradable = go("radDowngradable")
+        self.radNotavailable = go("radNotavailable")
+        self.radOldKernel = go("radOldKernel")
+        self.lblMaintenanceHelp = go("lblMaintenanceHelp")
 
         # Translations
         self.window.set_title(_("SolydXK Update Manager"))
@@ -91,9 +102,32 @@ class UpdateManager(object):
         self.btnPreferences.set_label(_("Preferences"))
         self.btnPackages.set_label(_("Packages"))
         self.uptodateText = _("Your system is up to date")
+        self.lblMaintenance.set_label(_("Maintenance"))
+        self.btnMaintenanceExecute.set_label(_("Execute"))
+        self.chkMaintenanceSelectAll.set_label(_("Select all"))
+        self.radUnneeded.set_label(_("Not needed"))
+        self.radCleanCache.set_label(_("Clean cache"))
+        self.radDowngradable.set_label(_("Downgrade"))
+        self.radNotavailable.set_label(_("Not available"))
+        self.radOldKernel.set_label(_("Old kernels"))
+        go("lblUnneeded").set_label(_("Remove not needed packages."))
+        go("lblCleanCache").set_label(_("Clean up the apt cache."))
+        go("lblDowngradable").set_label(_("Only lower version is available."))
+        go("lblNotavailable").set_label(_("Packages not in the repositories."))
+        go("lblOldKernel").set_label(_("Remove old kernels."))
+        self.lblMaintenanceHelp.set_label(_("Make sure you create\n"
+                                             "a system image before you\n"
+                                             "continue (e.g. Clonezilla)."))
+
+        self.upgradablePackagesText = _("The following packages will be upgraded:")
+        self.newPackagesText = _("The following NEW packages will be installed:")
+        self.removedPackagesText = _("The following packages will be REMOVED:")
+        self.heldbackPackagesText = _("The following packages have been kept back:")
+        self.downgradePackagesText = _("The following packages are going to be downgraded:")
 
         # Cleanup first
-        os.system("rm -f %s" % join(self.filesDir, ".um*"))
+        for fle in glob(join(self.filesDir, '.um*')):
+            remove(fle)
 
         # Initiate logging
         self.logFile = join('/var/log', self.umglobal.settings['log'])
@@ -124,6 +158,22 @@ class UpdateManager(object):
         self.btnRefresh.set_sensitive(False)
         self.btnInstall.set_sensitive(False)
         self.btnPackages.set_sensitive(False)
+        self.btnMaintenance.set_sensitive(False)
+
+        # Hide tabs if needed
+        for tab in self.umglobal.settings["hide-tabs"]:
+            if tab == "packages":
+                self.nbMain.get_nth_page(0).set_visible(False)
+                self.btnPackages.set_visible(False)
+            elif tab == "output":
+                self.nbMain.get_nth_page(1).set_visible(False)
+                self.btnOutput.set_visible(False)
+            elif tab == "info":
+                self.nbMain.get_nth_page(2).set_visible(False)
+                self.btnInfo.set_visible(False)
+            elif tab == "maintenance":
+                self.nbMain.get_nth_page(3).set_visible(False)
+                self.btnMaintenance.set_visible(False)
 
         # Connect the signals and show the window
         self.builder.connect_signals(self)
@@ -141,20 +191,22 @@ class UpdateManager(object):
         # Initialize
         self.ec = ExecCmd(loggerObject=self.log)
         self.apt = UmApt(self.umglobal)
-        self.log.write("Packages no longer available: %s" % ", ".join(self.apt.packagesNotAvailable), "UM.init", "warning")
-
+        self.kernelVersion = self.umglobal.getKernelVersion().split("-")[0]
         self.upgradables = []
         self.upgradableUM = []
         self.tvHandler = TreeViewHandler(self.tvPck)
+        self.tvMaintenanceHandler = TreeViewHandler(self.tvMaintenance)
 
         # Version information
         ver = _("Version")
-        self.version = "%s: %s" % (ver, self.apt.getPackageVersion('updatemanager'))
-        self.pushMessage(self.version)
+        pckVer = self.apt.getPackageVersion('updatemanager')
+        up = _("UP")
+        versionInfo = "%(ver)s: %(pckVer)s\t%(up)s: %(upVer)s" % { "ver": ver, "pckVer": pckVer, "up": up, "upVer": self.umglobal.localUpVersion }
+        self.pushMessage(versionInfo)
 
         # Log basic information
         self.log.write("==============================================", "UM.init", "debug")
-        self.log.write("UM version = %s" % self.version, "UM.init", "debug")
+        self.log.write("UM version = %s" % versionInfo, "UM.init", "debug")
         if self.umglobal.isStable:
             if self.umglobal.newNewStable:
                 self.log.write("UM localNewStable = %s, serverNewStable = %s, newNewStable = %s" % (self.umglobal.localNewStableVersion, self.umglobal.serverNewStableVersion, str(self.umglobal.newNewStable)), "UM.init", "debug")
@@ -177,6 +229,9 @@ class UpdateManager(object):
 
         # Refresh apt cache
         self.refresh()
+
+        # Initialize maintenance screen
+        self.fillTreeViewMaintenance()
 
     # ===============================================
     # Main window functions
@@ -211,7 +266,7 @@ class UpdateManager(object):
                             self.umglobal.saveHistVersion("emergency", self.umglobal.serverEmergencyVersion)
                             self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_btnInstall_clicked", "debug")
                     elif self.umglobal.newNewStable:
-                        msg = self.apt.getDistUpgradeInfo()
+                        msg = self.getDistUpgradeInfo()
                         answer = True
                         if msg != "":
                             answer = self.showConfirmationDlg(contMsg, msg)
@@ -236,13 +291,13 @@ class UpdateManager(object):
                         dialog = QuestionDialog(self.btnInstall.get_label(), contMsg, self.window)
                         if (dialog.show()):
                             cmd = "apt-get -y --force-yes upgrade"
-                            if self.umglobal.newStable:
-                                pre = join(self.filesDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
-                                post = join(self.filesDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
-                                if exists(pre):
-                                    cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
-                                if exists(post):
-                                    cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
+                            #if self.umglobal.newStable:
+                            pre = join(self.filesDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
+                            post = join(self.filesDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
+                            if exists(pre):
+                                cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
+                            if exists(post):
+                                cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
                             nid = 'uminstall'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
@@ -263,19 +318,20 @@ class UpdateManager(object):
                             self.umglobal.saveHistVersion("emergency", self.umglobal.serverEmergencyVersion)
                             self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_btnInstall_clicked", "debug")
                     else:
-                        msg = self.apt.getDistUpgradeInfo()
-                        answer = True
+                        msg = self.getDistUpgradeInfo()
+                        #answer = True
+                        answer = False
                         if msg != "":
                             answer = self.showConfirmationDlg(contMsg, msg)
                         if answer:
                             cmd = "apt-get -y --force-yes dist-upgrade"
-                            if self.umglobal.newUp:
-                                pre = join(self.filesDir, self.umglobal.settings['pre-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
-                                post = join(self.filesDir, self.umglobal.settings['post-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
-                                if exists(pre):
-                                    cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
-                                if exists(post):
-                                    cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
+                            #if self.umglobal.newUp:
+                            pre = join(self.filesDir, self.umglobal.settings['pre-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
+                            post = join(self.filesDir, self.umglobal.settings['post-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
+                            if exists(pre):
+                                cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
+                            if exists(post):
+                                cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
                             nid = 'uminstall'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
@@ -308,6 +364,180 @@ class UpdateManager(object):
         print("> openPreferences")
         os.system(join(self.scriptDir, "updatemanagerpref.py %s &" % self.user))
 
+    def on_btnMaintenance_clicked(self, widget):
+        self.showMaintenance()
+
+    def on_radCleanCache_toggled(self, widget):
+        if widget.get_active():
+            self.fillTreeViewMaintenance()
+
+    def on_radUnneeded_toggled(self, widget):
+        if widget.get_active():
+            message = _("You might need to run this several times.\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            self.fillTreeViewMaintenance()
+
+    def on_radNotavailable_toggled(self, widget):
+        if widget.get_active():
+            message = _("Removing not available packages may break your system!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            self.fillTreeViewMaintenance()
+
+    def on_radOldKernel_toggled(self, widget):
+        if widget.get_active():
+            message = _("Once removed you will not be able to boot these kernels!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            self.fillTreeViewMaintenance()
+
+    def on_radDowngradable_toggled(self, widget):
+        if widget.get_active():
+            message = _("Downgrading packages may break your system!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            self.fillTreeViewMaintenance()
+
+    def on_btnMaintenanceExecute_clicked(self, widget):
+        self.executeMaintenance()
+
+    def on_chkMaintenanceSelectAll_toggled(self, widget):
+        self.tvMaintenanceHandler.treeviewToggleAll(toggleColNrList=[0], toggleValue=widget.get_active())
+
+
+
+    # ===============================================
+    # Maintenance functions
+    # ===============================================
+
+    def enableMaintenance(self, enable=True):
+        self.btnMaintenanceExecute.set_sensitive(enable)
+        self.radUnneeded.set_sensitive(enable)
+        self.radCleanCache.set_sensitive(enable)
+        self.radDowngradable.set_sensitive(enable)
+        self.radOldKernel.set_sensitive(enable)
+        self.radNotavailable.set_sensitive(enable)
+        self.chkMaintenanceSelectAll.set_sensitive(enable)
+        if enable:
+            self.chkMaintenanceSelectAll.set_active(False)
+
+    def fillTreeViewMaintenance(self):
+        blnCleanCache = self.radCleanCache.get_active()
+        blnUnneeded = self.radUnneeded.get_active()
+        blnDowngradable = self.radDowngradable.get_active()
+        blnNotavailable = self.radNotavailable.get_active()
+        blnOldKernels = self.radOldKernel.get_active()
+
+        self.enableMaintenance(False)
+
+        columnTypesList = ['bool', 'str', 'str', 'str']
+        packages = [["", _("Package"), _("Installed"), _("Available")]]
+        # Clear the treeview first
+        self.tvMaintenanceHandler.fillTreeview(packages, columnTypesList, 0, 400, True)
+
+        msg = ""
+        if blnCleanCache:
+            msg = _("Hit the Execute button to clean the cache.")
+            columnTypesList = ['str']
+            packages.append([msg])
+        elif blnUnneeded:
+            msg = self.radUnneeded.get_label()
+            self.apt.createPackageLists("apt-get autoremove")
+            for pck in self.apt.removedPackages:
+                packages.append([False, pck[0], pck[1], pck[2]])
+            self.apt.createPackageLists()
+            # Add orphaned files
+            self.apt.fillOrphanedPackages()
+            for pck in self.apt.orphanedPackages:
+                packages.append([False, pck[0], pck[1], pck[2]])
+        elif blnNotavailable:
+            msg = self.radNotavailable.get_label()
+            self.apt.fillNotAvailablePackages()
+            for pck in self.apt.notavailablePackages:
+                if pck[0][0:6] != "linux-":
+                    packages.append([False, pck[0], pck[1], ""])
+        elif blnOldKernels:
+            msg = self.radOldKernel.get_label()
+            self.apt.fillNotAvailablePackages()
+            for pck in self.apt.notavailablePackages:
+                if pck[0][0:6] == "linux-" and self.kernelVersion not in pck[0]:
+                    packages.append([False, pck[0], pck[1], ""])
+        elif blnDowngradable:
+            msg = self.radDowngradable.get_label()
+            self.apt.fillDowngradablePackages()
+            for pck in self.apt.downgradablePackages:
+                packages.append([False, pck[0], pck[1], pck[2]])
+
+        if len(packages) > 1:
+            self.tvMaintenanceHandler.fillTreeview(packages, columnTypesList, 0, 400, True)
+        else:
+            if not blnCleanCache:
+                msg += _("\ndid not return any results.")
+                self.showInfoDlg(self.btnMaintenance.get_label(), msg)
+
+        self.enableMaintenance(True)
+
+    def executeMaintenance(self):
+        blnCleanCache = self.radCleanCache.get_active()
+        blnDowngradable = self.radDowngradable.get_active()
+        blnNotNeeded = self.radUnneeded.get_active()
+        downgradeString = ""
+        deleteString = ""
+        updateGrub = False
+        cmd = ""
+
+        self.enableMaintenance(False)
+
+        if blnCleanCache:
+            safe = False
+            msg = _("Do you want to completely clean the apt cache?\n\n"
+                    "When No, only unavailable installation packages are removed.")
+            dialog = QuestionDialog(self.radCleanCache.get_label(), msg, self.window)
+            if (dialog.show()):
+                safe = True
+            self.apt.cleanCache(safe)
+            msg = _("Apt cache has been cleaned.")
+            self.showInfoDlg(self.radCleanCache.get_label(), msg)
+        else:
+            # Get user selected packages
+            model = self.tvMaintenance.get_model()
+            itr = model.get_iter_first()
+            while itr is not None:
+                sel = model.get_value(itr, 0)
+                if sel:
+                    pck = model.get_value(itr, 1)
+                    avVer = model.get_value(itr, 3)
+                    if blnDowngradable:
+                        downgradeString += " %(pck)s=%(avVer)s" % {"pck": pck, "avVer": avVer}
+                    else:
+                        deleteString += " %s" % pck
+                        if "linux-image" in pck:
+                            updateGrub = True
+                itr = model.iter_next(itr)
+
+            if downgradeString != "":
+                cmd = "apt-get --yes --force-yes install %s" % downgradeString
+            elif deleteString != "":
+                cmd = "apt-get --yes --force-yes purge %s" % deleteString
+
+        if cmd != "":
+            self.apt.createPackageLists(cmd)
+            msg = self.getDistUpgradeInfo()
+            answer = True
+            if msg != "":
+                contMsg = _("Execute maintenance changes?")
+                answer = self.showConfirmationDlg(contMsg, msg)
+            if answer:
+                if updateGrub:
+                    cmd += "; update-grub"
+                self.showOutput()
+                nid = 'ummaintenance'
+                self.prepForCommand(nid)
+                self.terminal.executeCommand(cmd, nid)
+                if blnNotNeeded:
+                    cmd = "apt-get purge --yes --force-yes $(COLUMNS=132 dpkg -l | grep ^rc | awk '{ print $2 }')"
+                    self.terminal.executeCommand(cmd, nid)
+                self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.executeMaintenance", "debug")
+
+        self.enableMaintenance(True)
+
     # ===============================================
     # General functions
     # ===============================================
@@ -316,6 +546,7 @@ class UpdateManager(object):
         os.system("touch %s" % join(self.filesDir, ".%s" % nid))
         self.btnRefresh.set_sensitive(False)
         self.btnInstall.set_sensitive(False)
+        self.btnMaintenance.set_sensitive(False)
 
     def on_waiting_for_answer(self, obj, line):
         # Feed the terminal with an answer (only when safe)
@@ -356,33 +587,47 @@ class UpdateManager(object):
                         self.log.write("Reload UM: %s" % str(err), "UM.on_command_done", "error")
 
             # Cleanup name file
-            os.system("rm -f %s" % join(self.filesDir, ".%s" % nid))
+            remove(join(self.filesDir, ".%s" % nid))
 
             if nid == "umrefresh":
                 # Run post update when needed
                 self.postUpdate()
 
-            # Refresh data after install or update
-            self.umglobal.collectData()
-            self.apt.createPackagesVersionInfoLists()
-            self.apt.createPackageLists()
-            self.fillTreeView()
-            self.btnInstall.set_sensitive(True)
-            if not self.umglobal.newEmergency:
-                self.btnRefresh.set_sensitive(True)
-                self.btnPackages.set_sensitive(True)
-            self.loadInfo()
-            if self.umglobal.newEmergency or self.umglobal.newStable or self.umglobal.newNewStable or self.umglobal.newUp:
-                self.showInfo()
+            if nid == 'uminstall':
+                # Remove scripts
+                self.deleteScripts()
+
+            if nid == "ummaintenance":
+                self.enableMaintenance(True)
+                self.fillTreeViewMaintenance()
+                self.btnInstall.set_sensitive(True)
+                if not self.umglobal.newEmergency:
+                    self.btnRefresh.set_sensitive(True)
+                    self.btnPackages.set_sensitive(True)
+                    self.btnMaintenance.set_sensitive(True)
+                self.showMaintenance()
             else:
-                aptHasErrors = self.apt.aptHasErrors()
-                if aptHasErrors is not None:
-                    self.showInfoDlg(self.btnInfo.get_label(), aptHasErrors)
-                elif self.upgradables:
-                    self.showPackages()
-                else:
+                # Refresh data after install or update
+                self.umglobal.collectData()
+                self.apt.createPackageLists()
+                self.fillTreeView()
+                self.btnInstall.set_sensitive(True)
+                if not self.umglobal.newEmergency:
+                    self.btnRefresh.set_sensitive(True)
+                    self.btnPackages.set_sensitive(True)
+                    self.btnMaintenance.set_sensitive(True)
+                self.loadInfo()
+                if self.umglobal.newEmergency or self.umglobal.newStable or self.umglobal.newNewStable or self.umglobal.newUp:
                     self.showInfo()
-                    self.showInfoDlg(self.btnInfo.get_label(), self.uptodateText)
+                else:
+                    aptHasErrors = self.apt.aptHasErrors()
+                    if aptHasErrors is not None:
+                        self.showInfoDlg(self.btnInfo.get_label(), aptHasErrors)
+                    elif self.upgradables:
+                        self.showPackages()
+                    else:
+                        self.showInfo()
+                        self.showInfoDlg(self.btnInfo.get_label(), self.uptodateText)
 
     def refresh(self):
         prog = self.apt.getAptCacheLockedProgram(self.umglobal.settings["apt-packages"])
@@ -397,6 +642,7 @@ class UpdateManager(object):
             self.btnOutput.set_sensitive(True)
             self.btnRefresh.set_sensitive(False)
             self.btnInstall.set_sensitive(False)
+            self.btnMaintenance.set_sensitive(False)
             if self.umglobal.newEmergency:
                 self.btnPackages.set_sensitive(False)
             else:
@@ -430,13 +676,13 @@ class UpdateManager(object):
     def fillTreeView(self):
         self.log.write("Fill treeview", "UM.fillTreeView", "debug")
         # First check if this application is upgradable
-        self.upgradableUM = self.apt.getUpgradablePackages(packageNames=["updatemanager"])
+        self.upgradableUM = self.getUpgradablePackages(packageNames=["updatemanager"])
         if self.upgradableUM:
             self.upgradables = self.upgradableUM
         else:
             # Get a list of packages that can be upgraded
             self.upgradableUM = []
-            self.upgradables = self.apt.getUpgradablePackages()
+            self.upgradables = self.getUpgradablePackages()
             if not self.upgradables:
                 # Check for black listed packages
                 cmd = "dpkg --get-selections | grep hold$ | awk '{print $1}'"
@@ -447,6 +693,50 @@ class UpdateManager(object):
         contentList = [[_("Package"), _("Current version"), _("New version")]] + self.upgradables
         self.tvHandler.fillTreeview(contentList=contentList, columnTypesList=['str', 'str', 'str'], firstItemIsColName=True)
 
+    def getUpgradablePackages(self, packageNames=[]):
+        if packageNames:
+            upckList = []
+            for packageName in packageNames:
+                for upck in self.apt.upgradablePackages:
+                    if upck[0] == packageName:
+                        upckList.append(upck)
+                        break
+            return upckList
+        else:
+            return self.apt.upgradablePackages
+
+    def getDistUpgradeInfo(self, upgradablesOnly=False):
+        info = ""
+        if upgradablesOnly:
+            if self.apt.upgradablePackages:
+                info = "<strong>%s</strong><br>" % self.apt.upgradablePackagesText
+                for pck in self.apt.upgradablePackages:
+                    info += "%s " % pck[0]
+        else:
+            if self.apt.removedPackages:
+                info = "<strong>%s</strong><br>" % self.removedPackagesText
+                for pck in self.apt.removedPackages:
+                    info += "%s " % pck[0]
+            if self.apt.newPackages:
+                if info != "":
+                    info += "<p>&nbsp;</p>"
+                info += "<strong>%s</strong><br>" % self.newPackagesText
+                for pck in self.apt.newPackages:
+                    info += "%s " % pck[0]
+            if self.apt.heldbackPackages:
+                if info != "":
+                    info += "<p>&nbsp;</p>"
+                info += "<strong>%s</strong><br>" % self.heldbackPackagesText
+                for pck in self.apt.heldbackPackages:
+                    info += "%s " % pck[0]
+            if self.apt.downgradablePackages:
+                if info != "":
+                    info += "<p>&nbsp;</p>"
+                info += "<strong>%s</strong><br>" % self.downgradePackagesText
+                for pck in self.apt.downgradablePackages:
+                    info += "%s " % pck[0]
+        return info
+
     def showPackages(self):
         self.nbMain.set_current_page(0)
 
@@ -456,6 +746,9 @@ class UpdateManager(object):
 
     def showInfo(self):
         self.nbMain.set_current_page(2)
+
+    def showMaintenance(self):
+        self.nbMain.set_current_page(3)
 
     def showInfoDlg(self, title, message):
         MessageDialogSafe(title, message, Gtk.MessageType.INFO, self.window).show()
@@ -470,24 +763,21 @@ class UpdateManager(object):
 
     # Get pre-install script and post-install script from the server
     def getScripts(self, files):
-        # Delete old pre or post files
-        oldFiles = glob(join(self.filesDir, 'pre-*')) + glob(join(self.filesDir, 'post-*')) + glob(join(self.filesDir, 'emergency-*'))
-        for fle in oldFiles:
-            remove(fle)
         for fle in files:
-            # Get the new scripts if they exist
-            url = join(self.umglobal.umfilesUrl, fle)
-            try:
-                txt = urlopen(url).read().decode('utf-8')
-                if txt != '':
-                    # Save to a file and make executable
-                    flePath = join(self.filesDir, fle)
-                    self.log.write("Save script = %s" % flePath, "UM.getScripts", "debug")
-                    with open(flePath, 'w') as f:
-                        f.write(txt)
-                    chmod(flePath, 0o755)
-            except:
-                pass
+            flePath = join(self.filesDir, fle)
+            if not exists(flePath):
+                # Get the new scripts if they exist
+                url = join(self.umglobal.umfilesUrl, fle)
+                try:
+                    txt = urlopen(url).read().decode('utf-8')
+                    if txt != '':
+                        # Save to a file and make executable
+                        self.log.write("Save script = %s" % flePath, "UM.getScripts", "debug")
+                        with open(flePath, 'w') as f:
+                            f.write(txt)
+                        chmod(flePath, 0o755)
+                except:
+                    pass
 
     def loadInfo(self):
         url = join("file://%s" % self.scriptDir, self.umglobal.settings['not-found'])
@@ -526,18 +816,24 @@ class UpdateManager(object):
     def checkFilesDir(self):
         if not exists(self.filesDir):
             makedirs(self.filesDir)
-        oldFiles = glob(join(self.filesDir, 'pre-*')) + \
-                   glob(join(self.filesDir, 'post-*')) + \
-                   glob(join(self.filesDir, 'emergency-*')) + \
-                   [join(self.filesDir, 'updatemanager.hist')] + \
-                   [join(self.filesDir, 'mirrors.list')]
+        oldFiles = glob(join(self.scriptDir, 'pre-*')) + \
+                   glob(join(self.scriptDir, 'post-*')) + \
+                   glob(join(self.scriptDir, 'emergency-*')) + \
+                   [join(self.scriptDir, 'updatemanager.hist')] + \
+                   [join(self.scriptDir, 'mirrors.list')]
         for fle in oldFiles:
             fleName = basename(fle)
             if not exists(join(self.filesDir, fleName)):
                 move(fle, self.filesDir)
             else:
-                remove(fle)
+                if exists(fle):
+                    remove(fle)
         chmod(self.filesDir, 0o777)
+
+    def deleteScripts(self):
+        oldFiles = glob(join(self.filesDir, 'pre-*')) + glob(join(self.filesDir, 'post-*')) + glob(join(self.filesDir, 'emergency-*'))
+        for fle in oldFiles:
+            remove(fle)
 
     # Close the gui
     def on_windowMain_destroy(self, widget):

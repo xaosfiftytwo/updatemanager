@@ -1,4 +1,3 @@
 #!/bin/bash
 
-xgettext --language=Python --keyword=_ --output=updatemanager.pot usr/bin/updatemanager usr/lib/solydxk/updatemanager/updatemanager.py usr/lib/solydxk/updatemanager/treeview.py usr/lib/solydxk/updatemanager/umnotifier.py usr/lib/solydxk/updatemanager/umapt.py usr/lib/solydxk/updatemanager/updatemanagerpref.py usr/lib/solydxk/updatemanager/updatemanagertray.py usr/lib/solydxk/updatemanager/updatemanager.py
-
+xgettext --language=Python --keyword=_ --output=updatemanager.pot usr/bin/updatemanager $(find . -name "*.py" -type f)

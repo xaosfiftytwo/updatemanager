@@ -148,27 +148,24 @@ class UmGlobal(object):
                 self.localUpVersion = "2000.01.01"
 
     def getHistVersion(self, parameter, version=None):
-        ret = None
         upHistFile = join(self.filesDir, self.settings['hist'])
         if exists(upHistFile):
             with open(upHistFile, 'r') as f:
                 lines = f.readlines()
             for line in lines[::-1]:
-                line = line.split("=")
-                if len(line) == 2:
-                    p = line[0].strip()
-                    v = line[1].strip()
+                lst = line.split("=")
+                if len(lst) == 2:
+                    p = lst[0].strip()
+                    v = lst[1].strip()
                     if p == parameter and len(v) == 10:
                         if version is not None:
                             # Get latest with given version
                             if version == v:
-                                ret = v
-                                break
+                                return v
                         else:
                             # Get latest
-                            ret = v
-                            break
-        return ret
+                            return v
+        return None
 
     def cleanupHist(self):
         upHistFile = join(self.filesDir, self.settings['hist'])
@@ -200,8 +197,8 @@ class UmGlobal(object):
     def getMirrorData(self, excludeMirrors=[]):
         mirrorData = []
         mirrorsList = join(self.filesDir, basename(self.settings["mirrors-list"]))
-        if os.getuid() != 0 and not exists(mirrorsList):
-            mirrorsList = join('/tmp', basename(self.settings["mirrors-list"]))
+        #if os.getuid() != 0 and not exists(mirrorsList):
+            #mirrorsList = join('/tmp', basename(self.settings["mirrors-list"]))
 
         try:
             # Download the mirrors list from the server
@@ -373,6 +370,7 @@ class UmGlobal(object):
             settings["umfilessubdir-tst"] = self.cfg.getValue(section, 'umfilessubdir-tst')
             settings["testing-repo-matches"] = self.cfg.getValue(section, 'testing-repo-matches').split(",")
             settings["apt-packages"] = self.cfg.getValue(section, 'apt-packages').split(",")
+            settings["hide-tabs"] = self.cfg.getValue(section, 'hide-tabs').split(",")
         except:
             settings["secs-wait-user-input"] = 5
             settings["hrs-check-status"] = 1
@@ -380,12 +378,14 @@ class UmGlobal(object):
             settings["umfilessubdir-tst"] = 'umfiles/tst'
             settings["testing-repo-matches"] = ["business-testing", "/testing"]
             settings["apt-packages"] = ["dpkg", "apt-get", "synaptic", "adept", "adept-notifier"]
+            settings["hide-tabs"] = ["maintenance"]
             self.saveSettings(section, 'secs-wait-user-input', settings["secs-wait-user-input"])
             self.saveSettings(section, 'hrs-check-status', settings["hrs-check-status"])
             self.saveSettings(section, 'umfilessubdir-prd', settings["umfilessubdir-prd"])
             self.saveSettings(section, 'umfilessubdir-tst', settings["umfilessubdir-tst"])
             self.saveSettings(section, 'testing-repo-matches', ",".join(settings["testing-repo-matches"]))
             self.saveSettings(section, 'apt-packages', ",".join(settings["apt-packages"]))
+            self.saveSettings(section, 'hide-tabs', ",".join(settings["hide-tabs"]))
 
         return settings
 
@@ -437,3 +437,9 @@ class UmGlobal(object):
             return 0
         except:
             return 0
+
+    def getKernelVersion(self):
+        return self.ec.run(cmd="uname -r", realTime=False)[0]
+
+    def getKernelArchitecture(self):
+        return self.ec.run(cmd="uname -m", realTime=False)[0]

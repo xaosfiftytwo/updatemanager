@@ -4,8 +4,8 @@
 from gi.repository import GdkPixbuf
 from execcmd import ExecCmd
 from os.path import join, abspath, dirname
-#from umapt import UmApt
-import os
+from os import remove
+from glob import glob
 
 
 class UmRefresh(object):
@@ -40,7 +40,8 @@ class UmRefresh(object):
 
         pid = self.umglobal.getScriptPid("updatemanager.py")
         if pid == 0:
-            os.system("rm %s" % join(self.scriptDir, "files/.um*"))
+            for fle in glob(join(self.scriptDir, "files/.um*")):
+                remove(fle)
 
         self.umglobal.getLocalInfo()
         if self.umglobal.repos:
@@ -91,8 +92,6 @@ class UmRefresh(object):
 
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
-
-        #lst = self.apt.getUpgradablePackages()
 
         if lst:
             return True

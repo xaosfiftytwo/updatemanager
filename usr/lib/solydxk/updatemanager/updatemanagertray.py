@@ -93,11 +93,11 @@ class UpdateManagerTray(object):
         data.popup(None, None, None, None, button, time)
 
     def icon_activate(self, widget):
-        #if self.umglobal.getScriptPid("updatemanager.py")  == 0:
-        # Run UM in its own thread
-        pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager",))
-        pref_thread.setDaemon(True)
-        pref_thread.start()
+        if self.umglobal.getScriptPid("updatemanager.py")  == 0:
+            # Run UM in its own thread
+            pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager",))
+            pref_thread.setDaemon(True)
+            pref_thread.start()
 
     def open_preferences(self, widget):
         # Run preferences in its own thread

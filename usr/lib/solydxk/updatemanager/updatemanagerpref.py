@@ -21,6 +21,8 @@ from mirror import MirrorGetSpeed, Mirror
 from queue import Queue
 from umglobal import UmGlobal
 from logger import Logger
+from os import remove, system
+from glob import glob
 
 
 # i18n: http://docs.python.org/2/library/gettext.html
@@ -48,7 +50,7 @@ class UpdateManagerPref(object):
             # This is used by the installer when upgrading
             if 'reload' in sys.argv[1:]:
                 print(("Kill preferences window with pid: %d" % pid))
-                os.system("kill %d" % pid)
+                system("kill %d" % pid)
             else:
                 print(("Exit - preferences already running with pid: %d" % pid))
                 sys.exit(1)
@@ -80,6 +82,7 @@ class UpdateManagerPref(object):
         self.txtUserWait = go("txtUserWait")
         self.txtCheckStatus = go("txtCheckStatus")
         self.btnSaveGeneral = go("btnSaveGeneral")
+        self.chkHideMaintenance = go("chkHideMaintenance")
 
         # Only allow numbers
         self.filterText(self.txtUserWait)
@@ -88,11 +91,12 @@ class UpdateManagerPref(object):
         # GUI translations
         self.window.set_title(_("Update Manager Preferences"))
         self.btnSaveMirrors.set_label(_("Save mirrors"))
-        self.btnCheckMirrorsSpeed.set_label(_("Check mirrrors speed"))
+        self.btnCheckMirrorsSpeed.set_label(_("Check mirrors speed"))
         self.btnRemoveBlackList.set_label(_("Remove"))
         self.btnAddBlackList.set_label(_("Blacklist"))
         self.lblMirrors.set_label(_("Repository mirrors"))
         self.lblGeneral.set_label(_("General"))
+        go("lblHideMaintenance").set_label(_("Hide maintenance"))
         go("lblBlacklist").set_label(_("Blacklisted packages"))
         go("lblMirrorsText").set_label(_("Select the fastest production repository"))
         go("lblBlacklistText").set_label(_("Blacklisted packages"))
@@ -150,7 +154,6 @@ class UpdateManagerPref(object):
     def on_btnAddBlacklist_clicked(self, widget):
         self.addBlacklist()
 
-
     # ===============================================
     # Blacklist functions
     # ===============================================
@@ -158,6 +161,9 @@ class UpdateManagerPref(object):
     def fillGeneralSettings(self):
         self.txtCheckStatus.set_text(str(self.umglobal.settings["hrs-check-status"]))
         self.txtUserWait.set_text(str(self.umglobal.settings["secs-wait-user-input"]))
+        for tab in self.umglobal.settings["hide-tabs"]:
+            if tab == "maintenance":
+                self.chkHideMaintenance.set_active(True)
 
     def fillTreeViewBlackList(self):
         self.blacklist = []
@@ -184,7 +190,7 @@ class UpdateManagerPref(object):
         for pck in packages:
             self.log.write("Blacklist package: %s" % pck, "UMPref.addBlacklist", "debug")
             cmd = "echo '%s hold' | dpkg --set-selections" % pck
-            os.system(cmd)
+            system(cmd)
         self.fillTreeViewBlackList()
         self.fillTreeViewAvailable()
 
@@ -193,9 +199,10 @@ class UpdateManagerPref(object):
         for pck in packages:
             self.log.write("Remove package from blacklist: %s" % pck, "UMPref.removeBlacklist", "debug")
             cmd = "echo '%s install' | dpkg --set-selections" % pck
-            os.system(cmd)
+            system(cmd)
         self.fillTreeViewBlackList()
         self.fillTreeViewAvailable()
+
     # ===============================================
     # Mirror functions
     # ===============================================
@@ -246,7 +253,7 @@ class UpdateManagerPref(object):
             self.btnSaveMirrors.set_sensitive(False)
             self.btnCheckMirrorsSpeed.set_sensitive(False)
             cmd = "touch %s" % join(self.filesDir, ".umrefresh")
-            os.system(cmd)
+            system(cmd)
 
             m = Mirror()
             m.save(replaceRepos, self.excludeMirrors)
@@ -255,8 +262,7 @@ class UpdateManagerPref(object):
             self.mirrors = self.getMirrors()
             self.fillTreeViewMirrors()
 
-            cmd = "rm -f %s" % join(self.filesDir, ".umrefresh")
-            os.system(cmd)
+            remove(join(self.filesDir, ".umrefresh"))
             self.btnSaveMirrors.set_sensitive(True)
             self.btnCheckMirrorsSpeed.set_sensitive(True)
 
@@ -360,28 +366,34 @@ class UpdateManagerPref(object):
 
     def saveGeneralSettings(self):
         #print("> saveGeneralSettings")
-        ui_saved = False
-        cs_saved = False
+
         secs = self.umglobal.strToNumber(self.txtUserWait.get_text(), True)
         #print(secs)
         if self.umglobal.settings["secs-wait-user-input"] != secs:
             #print("> save secs-wait-user-input 1")
             self.umglobal.saveSettings('misc', 'secs-wait-user-input', secs)
-            ui_saved = True
             #print("> save secs-wait-user-input 2")
+
         hrs = self.umglobal.strToNumber(self.txtCheckStatus.get_text(), True)
         #print(hrs)
         if self.umglobal.settings["hrs-check-status"] != hrs:
             #print("> save hrs-check-status 1")
             self.umglobal.saveSettings('misc', 'hrs-check-status', hrs)
-            cs_saved = True
             #print("> save hrs-check-status 2")
-        if ui_saved or cs_saved:
-            msg = _("The new settings will take effect after UM restart.")
-            self.showInfo(self.lblGeneral.get_label(), msg, self.window)
+
+        lst = []
+        for tab in self.umglobal.settings["hide-tabs"]:
+            if tab != "maintenance":
+                lst.append(tab)
+        if self.chkHideMaintenance.get_active():
+            lst.append("maintenance")
+        if lst:
+            self.umglobal.saveSettings('misc', 'hide-tabs', ",".join(lst))
         else:
-            msg = _("No changes were made.")
-            self.showInfo(self.lblGeneral.get_label(), msg, self.window)
+            self.umglobal.saveSettings('misc', 'hide-tabs', "")
+
+        msg = _("The new settings will take effect after UM restart.")
+        self.showInfo(self.lblGeneral.get_label(), msg, self.window)
 
     def filterText(self, widget):
         def filter(entry, *args):

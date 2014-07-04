@@ -9,7 +9,7 @@ Package: updatemanager
 Architecture: all
 Maintainer: Schoelje <schoelje@solydxk.com>
 Installed-Size: 450
-Depends: gksu, apt-show-versions, apt, curl, python3-gi, python-vte, gir1.2-vte-2.90, gir1.2-webkit-3.0, python3, gir1.2-gtk-3.0, python3-pyinotify
+Depends: gksu, apt-show-versions, deborphan, apt, curl, python3-gi, python-vte, gir1.2-vte-2.90, gir1.2-webkit-3.0, python3, gir1.2-gtk-3.0, python3-pyinotify
 Section: admin
 Priority: optional
 Description: SolydXK Update Manager

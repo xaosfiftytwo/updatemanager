@@ -7,7 +7,7 @@ DEBUG=false
 RELEASE=$(cat /etc/solydxk/info | grep EDITION= | cut -d'=' -f2)
 
 BITS=$(uname -m)
-echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tRelease: $RELEASE $BITS"
+echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tRelease: $RELEASE $BITS"
 
 # Function to install a given package
 # Parameters:
@@ -21,7 +21,7 @@ function handle_pck {
     CONTINUE=true
     
     if [ "$DISTRO" != "all" ] && [ "$DISTRO" != "$RELEASE" ]; then
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
         CONTINUE=false
     fi
 
@@ -29,28 +29,31 @@ function handle_pck {
 	PCKINST=$(dpkg-query -l $PCK | grep ^i)
 	if [ "${PCKINST:0:1}" != "i" ]; then
 	    if [ "$ACTION" != "install" ] && [ "$ACTION" != "forceinstall" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\t$ACTION not needed, $PCK not installed"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\t$ACTION not needed, $PCK not installed"
 		CONTINUE=false
 	    fi
 	    PCKINST=$PCK
 	else
 	    if [ "$ACTION" == "install" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\t$ACTION not needed, $PCK already installed"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\t$ACTION not needed, $PCK already installed"
 		CONTINUE=false
 	    fi
 	fi
 	
 	if $CONTINUE; then
 	    if [ "$ACTION" == "forceremove" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
 		if ! $DEBUG; then
 		    dpkg --force-remove-reinstreq -P $PCK
 		fi
 	    else
-		if [ "$ACTION" == "reinstall" ] || [ "$ACTION" == "forceinstall" ]; then
+		if [ "$ACTION" == "reinstall" ]; then
 		    ACTION="install --reinstall"
+		elif [ "$ACTION" == "forceinstall" ]; then
+		    ACTION="install --reinstall -o Dpkg::Options::='--force-overwrite'"
 		fi
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tapt-get $ACTION $PCK"
+		
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tapt-get $ACTION $PCK"
 		if ! $DEBUG; then
 		    apt-get $ACTION -y --force-yes $PCK
 		fi
@@ -90,20 +93,20 @@ function handle_cnf {
     if [ -e $CNF ]; then
 	if grep -Fq $OPT $CNF; then
 	    if [ "$OPT" != "$LINE" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\t$CNF : replace $OPT with $LINE"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\t$CNF : replace $OPT with $LINE"
 		if ! $DEBUG; then
 		    sed -i "s/$ESCOPT/$LINE/" $CNF
 		fi
 	    fi
 	else
 	    if [ "$APPAFTER" == "" ]; then
-	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tAppend $LINE to $CNF"
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tAppend $LINE to $CNF"
 	        if ! $DEBUG; then
 		    echo >> $CNF
 		    echo -e "$LINE" >> $CNF
 		fi
 	    else
-	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-StableScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
 	        if ! $DEBUG; then
 	            sed -i "\'/\$APPAFTER/a \$LINE\'" $CNF
 	        fi
@@ -145,3 +148,4 @@ fi
 
 
 # Configure the individual packages, and configuration files here
+handle_pck 'solydxk-locale' 'install' 'all'

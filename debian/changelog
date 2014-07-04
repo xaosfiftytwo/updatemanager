@@ -1,3 +1,15 @@
+updatemanager (2.3.1) debian; urgency=low
+
+  * Added system maintenance
+
+ -- Schoelje <schoelje@solydxk.com>  Fri, 04 Jul 2014 17:00:00 +0100
+
+updatemanager (2.2.2) debian; urgency=low
+
+  * Moved locale to solydxk-locale
+
+ -- Schoelje <schoelje@solydxk.com>  Thu, 26 Jun 2014 08:00:00 +0100
+
 updatemanager (2.2.1) debian; urgency=low
 
   * Resolved mirror speed bug throwing errors.
