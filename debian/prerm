@@ -24,6 +24,13 @@ case "$1" in
 	rm -f /usr/lib/solydxk/updatemanager/*.log
 	rm -f /usr/lib/solydxk/updatemanager/*.hist
 	rm -f /usr/lib/solydxk/updatemanager/*.list
+	
+	# Remove group
+	#delgroup --quiet updatemanager
+	# Delete um sudoers file
+	#if [ -f /etc/sudoers.d/updatemanager ]; then
+	#  rm /etc/sudoers.d/updatemanager
+	#fi
     ;;
     *)
 

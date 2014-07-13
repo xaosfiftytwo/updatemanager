@@ -40,6 +40,16 @@ case "$1" in
 	chmod 755 "$DIR/updatemanagerpref.py"
 	chmod 755 "$DIR/updatemanagertray.py"
 	chmod 755 "/usr/bin/updatemanager"
+	
+	# Create group
+	#addgroup --quiet updatemanager
+	# Add existing users to group
+	#USERS=$(cat /etc/passwd | grep bash | grep home | cut -d':' -f 1)
+	#for USER in $USERS; do
+	#  usermod -aG updatemanager $USER
+	#done
+	# Add group to sudoers
+	#echo "%updatemanager ALL=(ALL) NOPASSWD:/usr/bin/updatemanager" > /etc/sudoers.d/updatemanager
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
