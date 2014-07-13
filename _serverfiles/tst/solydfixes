@@ -1,0 +1,346 @@
+#!/bin/bash
+
+ScriptName=solydfixes
+ScriptVersion=1.5.0
+ScriptDate=2014-07-09
+
+ScriptTitle='update related fixes for solydxk'
+ScriptCopyright='2014 Duinsoft Packages <pkg@duinsoft.nl>'
+ScriptLicence='GPL-2 - http://www.gnu.org/licenses'
+ScriptURL=http://duinsoft.nl/solydfixes.php
+
+Temp=/tmp/$ScriptName.d
+KDENext=$Temp/packages
+Installed=$Temp/installed
+Downgrade=$Temp/downgrade
+Remove=$Temp/remove
+KNURL64=http://home.solydxk.com/umfiles/prd/un-kdenext-amd64/Packages.gz
+KNURL32=http://home.solydxk.com/umfiles/prd/un-kdenext-i386/Packages.gz
+SourcesList=/etc/apt/sources.list
+SourcesNoDMO=$Temp/sources.list.nodmo
+DMOLost=$Temp/dmo-no-replacement
+
+
+# Space or line feed separated lists of actions to perform before the downgrade
+# and before and after the dist-upgrade.
+# This is non-optional, i.e. if a list isn't empty, it WILL be used.
+PreDowngrade='
+upgrade=solydk-system-adjustments
+purge=hal
+purge=hal-info
+purge=libhal-storage1
+purge=libhal1
+purge=libgdbm3:
+'
+PreDistUpgrade='
+upgrade=updatemanager
+'
+PostDistUpgrade='
+install=solydxk-locale
+k)purge=userconfig
+k)install=kuser
+reinstall=nvidia-kernel-dkms
+'
+
+
+# Space or line feed separated list of VirtualBox guest addition module packages
+# to remove when not in a VirtualBox VM.
+# This is optional - use the -v option if you want this done.
+VBoxGuest='
+purge=virtualbox-guest-dkms
+purge=virtualbox-guest-utils
+purge=virtualbox-guest-x11
+'
+
+
+# Space or line feed separated list of packages imported from deb-multimedia.org
+# (DMO). These packages are to be ignored when removing the DMO packages.
+# This is non-optional, i.e. if the list isn't empty, it WILL be used.
+MultiMedia='libdvdcss2 w32codecs w64codecs'
+
+
+Syntax="$ScriptName - $ScriptTitle - version $ScriptVersion - $ScriptDate
+Perform several actions on SolydXK Home Edition systems.
+
+Usage: $ScriptName [OPTION]...
+
+Options:
+  -d          downgrade packages after creating a downgrade list
+  -f          force execution of apt-get actions, even if potentially harmful
+  -h, --help  display this text and exit
+  -k          create lists for downgrading and removing kdenext packages
+  -m          remove deb-multimedia.org (DMO) packages
+  -p          do not update the package lists
+  -r          remove packages after creating a remove list
+  -s          simulate the apt-get actions (may give wrong result in sequences)
+  -t          fix incorrect /tmp to /var/tmp linkage
+  -u          execute apt-get dist-upgrade and post dist-upgrade actions
+  -v          remove superfluous VirtualBox guest addition modules
+  -y          assume yes to all apt-get questions
+
+You need to specify options. Without them, this script will do nothing.
+
+If all you want to do is create the downgrade and remove lists, use the -k
+option only. If you want to run the whole sequence from creating lists to post
+dist-upgrade, use -kdu (or -kduyf if you don't want apt-get to ask you
+anything). If you also want to fix the other issues, use -kduyftvm (or do each
+of them separately, i.e. with just the -t, -v or -m options).
+
+Only skip updating the package lists (apt-get update) if you are certain the
+current lists are up do date.
+
+If you use the kdenext downgrade function, the kdenext repository component will
+be removed from your sources.list file.
+
+More information about use of the list variables PreDowngrade, PreDistUpgrade,
+PostDistUpgrade, VBoxGuest and MultiMedia can be found elsewhere (try
+$ScriptURL).
+
+DISCLAIMER
+
+As far as I'm aware, this script does what it's supposed to do. Nevertheless,
+you use it entirely at your own risk."
+
+
+OrigArgs="$@"
+Args=$(getopt -odfhkmprstuvy -lhelp -n$ScriptName -- "$@"); [ $? != 0 ] && exit 1
+eval set -- "$Args"
+while [ "$1" ]; do
+	case "$1" in
+	--)	;;
+	-d)			OptDowngrade=1;;
+	-f)			OptForceYes='--force-yes';;
+	-h|--help)	echo "$Syntax"; exit;;
+	-k)			OptCreateLists=1;;
+	-m)			OptRemoveDMO=1;;
+	-p)			OptSkipUpdate=1;;
+	-r)			OptRemove=1;;
+	-s)			OptSimulate='--simulate';;
+	-t)			OptTmpFix=1;;
+	-u)			OptDistUpgrade=1;;
+	-v)			OptVBoxGuest=1;;
+	-y)			OptAssumeYes='--assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold';;
+	*)			echo "Unknown argument"; exit 1;;
+	esac
+	shift
+done
+
+
+[ $EUID != 0 ] && { sudo "$0" $OrigArgs; exit $?; }
+
+
+IsInstalled(){
+	local R
+	R=$(dpkg-query -W -f='${Status}' $1 2>&1)
+	test "${R: -12}" == "ok installed"
+}
+
+
+CheckDE(){
+	IsInstalled $1 && { echo "$3 desktop environment detected"; Desktops+=$2; }
+}
+
+
+Retrieve(){
+	local N S
+	[ "$4" ] && S=$4 || S=3600
+	[ -s $1 ] || N=1
+ 	[ -v N ] || [ $(( $(date +%s) - $(date -r $1 +%s) )) -gt $S ] && N=2
+	if [ -v N ]; then
+		echo "retrieving $3 package list $(basename $1) ..."
+		wget --no-use-server-timestamps -qO $1 $2
+		[ ${2: -3} == .gz ] && { mv $1 $1.gz; gzip -d $1.gz; }
+	fi
+}
+
+
+Process(){
+	local C D I OK P
+	for I in $1; do
+		unset -v OK
+		C=${I%%=*}
+		P=${I#*=}
+		D=${C%%)*}
+		C=${C#*)}
+		[ "$D" == "$C" ] && unset -v D
+		[ ${P: -1} == : ] && P=$P$Foreign
+		if [[ kx != *$D* ]]; then
+			echo -n "unknown desktop environment specifier ($D)"
+		elif [[ $Desktops != *$D* ]]; then
+			echo -n "$C $P - wrong environment"
+		elif [[ :install:reinstall:upgrade:remove:purge: != *:$C:* ]]; then
+			echo -n "unknown command ($C)"
+		elif [ $C == $P ]; then
+			echo -n "$C - no command/package separator (=)"
+		elif [ $C == reinstall ] || [ $C == upgrade ] || [ $C == remove ] || [ $C == purge ]; then
+			if IsInstalled $P; then
+				if [ $C == reinstall ]; then
+					C='install --reinstall'
+				elif [ $C == upgrade ]; then
+					C='install'
+				fi
+				OK=true
+			else
+				echo -n "$C $P - package not installed"
+			fi
+		else
+			OK=true
+		fi
+		[ -v OK ] && apt-get $C $OptAssumeYes $OptForceYes $OptSimulate $P || echo ' - skipped'
+	done
+}
+
+
+CheckDE kde-runtime k KDE
+CheckDE xfce4-session x Xfce
+
+Native=$(dpkg --print-architecture)
+Foreign=$(dpkg --print-foreign-architectures)
+
+[ ! -d $Temp ] && mkdir $Temp
+cd $Temp
+
+if [ "$OptAssumeYes" ]; then
+	export DEBIAN_FRONTEND=noninteractive
+	export APT_LISTCHANGES_FRONTEND=mail
+fi
+
+
+[ -f $(dirname $0)/$ScriptName.ini ] && source $(dirname $0)/$ScriptName.ini
+
+
+[ -v OptSimulate ] && echo -e "\n** simulation mode is set! **"
+
+
+if [ -v OptTmpFix ] && [ -L /tmp ] && ( [ $(readlink /tmp) == /var/tmp ] || [ $(readlink /tmp) == /var/tmp/ ] ); then
+	echo -e "\nseparating linked /tmp and /var/tmp directories ..."
+	rm /tmp
+	mv /var/tmp /tmp
+	mkdir -m 1777 /var/tmp
+	[ -e /tmp/kdecache-root ] && mv -t /var/tmp /tmp/kdecache-*
+fi
+
+
+[ -v OptVBoxGuest ] && [ "$VBoxGuest" ] && [ "$(dmidecode -s bios-version)" != "VirtualBox" ] && { echo -e "\nremoving VirtualBox guest addition modules ..."; Process "$VBoxGuest"; }
+
+
+if [ -v OptCreateLists ]; then
+	rm -f $Downgrade $Remove
+
+	if [ ! -v OptSkipUpdate ]; then
+		echo "updating $SourcesList and package lists ...";
+		sed -i 's/ kdenext//' $SourcesList
+		apt-get update
+		ForceRetrieve=1
+	fi
+	
+	Retrieve $KDENext-amd64 $KNURL64 kdenext $ForceRetrieve
+	Retrieve $KDENext-i386 $KNURL32 kdenext $ForceRetrieve
+
+	echo "building installed packages list ..."
+	sed -nr 's/^ii  ([0-9a-zA-Z.:+-]+) +([0-9a-zA-Z.:~+-]+) +(all|amd64|i386) .+$/\1 \2 \3/p' < <(dpkg-query -l) >$Installed
+
+	echo -e "\nchecking installed kdenext packages ..."
+	while read Line; do
+		read Package Version Arch < <(echo $Line)
+		Package=${Package%:amd64}
+		Package=${Package%:i386}
+		[ $Arch == all ] && Arch=$Native
+		Found=$(sed -n '/^Package: '$Package'$/,/^$/p;T;q' $KDENext-$Arch)
+		if [ "$Found" ]; then
+			KdeNext=$(sed -n 's/^Version: \(.*\)/\1/p;T;q' < <(echo "$Found"))
+			New=$(sed -nr '1 s/^.+\| +(.+) \| .+$/\1/p' < <(apt-cache madison $Package))
+			echo "$Package found in kdenext ($Arch)"
+			if [ -z "$New" ]; then
+				echo " >>> no new version <<<"
+				echo $Package >>$Remove
+			elif [ $New == $Version ]; then
+				echo " - $New = $Version - ok"
+			elif dpkg --compare-versions $New lt $KdeNext; then
+				echo " >>> new version ($New) < old ($KdeNext) <<<"
+				echo $Package=$New >>$Downgrade
+			else
+				echo " - $New > $KdeNext - to downgrade list anyway"
+				echo $Package >>$Downgrade
+			fi
+		fi
+	done <$Installed
+
+	echo -e "\npackage check done"
+	[ -s $Downgrade ] && echo "see $Downgrade for packages to downgrade" || echo "nothing to downgrade"
+	[ -s $Remove ] && echo "see $Remove for packages to remove" || echo "nothing to remove"
+fi
+
+
+if [ -v OptDowngrade ] && [ -s $Downgrade ]; then
+
+	if [ "$PreDowngrade" ]; then
+		echo -e "\napt-get actions before downgrading ..."
+		Process "$PreDowngrade"
+	fi
+
+	echo -e "\ndowngrading (with force-overwrite set) ..."
+	apt-get install -o Dpkg::Options::="--force-overwrite" $OptAssumeYes $OptForceYes $OptSimulate $(cat $Downgrade)
+fi
+
+
+if [ -v OptRemove ] && [ -s $Remove ]; then
+	echo -e "\nremoving (purge) ..."
+	apt-get purge $OptAssumeYes $OptForceYes $OptSimulate $(cat $Remove)
+fi
+
+
+if [ -v OptDistUpgrade ]; then
+	if [ "$PreDistUpgrade" ]; then
+		echo -e "\napt-get actions before dist-upgrade..."
+		Process "$PreDistUpgrade"
+	fi
+
+	echo -e "\ndist-upgrade ..."
+	apt-get dist-upgrade $OptAssumeYes $OptForceYes $OptSimulate
+
+	if [ "$PostDistUpgrade" ]; then
+		echo -e "\napt-get actions after dist-upgrade..."
+		Process "$PostDistUpgrade"
+	fi
+fi
+
+
+# based on http://forums.solydxk.com/viewtopic.php?f=14&t=4030#p37280
+if [ -v OptRemoveDMO ]; then
+	sed 's|^deb.*/multimedia .*$|# &|' $SourcesList >$SourcesNoDMO
+	cmp --silent $SourcesList $SourcesNoDMO && rm $SourcesNoDMO
+
+	echo -e "\nlooking for DMO packages ..."
+	DMOList=$(aptitude search '?narrow(?version(CURRENT),?maintainer(Christian Marillat))' --disable-columns -F%p)
+
+#	echo "$DMOList" >DMOList - debug
+
+	if [ "$DMOList" ]; then
+		echo "checking multimedia ignore list ..."
+		for Item in $DMOList; do
+			[[ $MultiMedia == *$Item* ]] || DMOListOK+=" $Item"
+		done
+	fi
+
+	if [ "$DMOListOK" ]; then
+		if [ -f $SourcesNoDMO ]; then
+			echo "replacing sources.list ..."
+			mv -f $SourcesNoDMO $SourcesList
+			unset -v OptSkipUpdate
+		fi
+		[ -v OptSkipUpdate ] || { echo "updating package lists ..."; apt-get update; }
+
+		echo -e "\nremoving DMO packages ..."
+		dpkg $OptSimulate --remove --force-depends $DMOListOK
+
+		echo -e "\nrepairing dependencies ..."
+		apt-get install --fix-broken $OptAssumeYes $OptForceYes $OptSimulate
+
+		rm -f $DMOLost
+		for Item in $DMOListOK; do
+			[ "$(apt-cache madison $Item)" ] || echo $Item >>$DMOLost
+		done
+		[ -f $DMOLost ] && { echo -e "\nnot found in main repositories:"; cat $DMOLost; }
+	fi
+fi

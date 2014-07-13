@@ -38,8 +38,7 @@ class UmRefresh(object):
         self.statusIcon.set_from_pixbuf(self.pbExec)
         self.statusIcon.set_tooltip_text(_("Refreshing..."))
 
-        pid = self.umglobal.getScriptPid("updatemanager.py")
-        if pid == 0:
+        if not self.umglobal.scriptIsRunning("updatemanager.py"):
             for fle in glob(join(self.scriptDir, "files/.um*")):
                 remove(fle)
 

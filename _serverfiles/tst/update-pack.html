@@ -32,7 +32,6 @@ body {
 <h2>Changes</h2>
 <p>
 <ul>
-    <li><strong>Kernel</strong><br>Kernel updated to version 3.14-1</li>
     <li><strong>LibreOffice</strong><br>LibreOffice has been updated to version 4.2.5-1.</li>
     <li><strong>Update Manager</strong><br>A system maintenance section was added to the UM main window, but because of its potential danger of breaking your system it has been disabled by default. You can enable maintenance in the preferences window.</li>
 </ul>
@@ -44,31 +43,38 @@ body {
 <ul>
 	<li><strong>kdenext</strong><br>As from this UP, kdenext has been dropped.<br>
 	To make the upgrade as smooth as possible, we need to downgrade some packages before we can start the upgrade. The Update Manager will handle this for you, but if you wish to use the terminal you need to follow the below mentioned steps carefully.<br><br>
-	When upgrading, UM will show a list with packages that are going to be removed, and might look something like this:<br>
+	When upgrading, UM will show a list with packages that are going to be removed.<br>
+	For SolydK, it might look something like this:<br>
 	<strong>gdebi-kde kde-config-touchpad plasma-scriptengine-python plasma-widget-facebook python-kde4 python3-pykde4 software-properties-kde userconfig</strong><br>
-	The downgrade will prevent this. So, you can ignore that, and continue the upgrade.</li>
+	For SolydX:<br>
+	<strong>console-tools libcogl-pango12 libcogl12 libgoa-1.0-0</strong><br><br>
+	The downgrade will prevent this. So, you can ignore that, and continue the upgrade.<br><br></li>
+	<li>These are some warnings you can safely ignore:<br><br>
+	<div class="code">(frontend:13716): Gtk-WARNING **: Error loading icon: Couldn't recognize the image file format for file '/usr/share/icons/oxygen/some.png'</div><br>
+	<div class="code">dpkg-query: error: --listfiles needs a valid package name but 'libc6' is not: ambiguous package name 'libc6' with more than one installed instance</div><br>
+	<div class="code">GdkPixbuf-WARNING **: Cannot open pixbuf loader module file '/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache': No such file or directory</div><br></li>
 </ul>
 </p>
 
 <a name="um"></a><h2>Updating with the Update Manager</h2>
 <p>The Update Manager can be opened from the system tray by clicking on this icon: <img src="http://home.solydxk.com/pics/um.png" />.<br>
-Most user choices are being done for you by the Update Manager. It uses the default selection within 5 seconds before continuing the upgrade.
-Only the selection menus need to be done manually.
+Most user choices are being done for you by the Update Manager. Depending on your system's configuration, you find some user choices explaned below:
 <ul>
-	<li><strong>openssh-server</strong><br>It's safe to select "Yes" here to disable root SSH login.<br><br>
-	<img class="screenshot" src="http://home.solydxk.com/umfiles/pics/openssh-server-configure.png" /><br><br></li>
-	<li><strong>libc6</strong><br>Leave the default "Yes".<br>On a 64-bit system you need to do that twice.<br>
-	<img class="screenshot" src="http://home.solydxk.com/umfiles/pics/libc6-configure.png" /><br><br></li>
+	<li><strong>openssh-server</strong><br>You can safely select the check box to disable root SSH login.<br><br>
+	<img class="screenshot" src="http://home.solydxk.com/umfiles/pics/openssh-server-configure-gtk.png" /><br><br></li>
+	<li><strong>libc6</strong><br>Leave the check box selected, and click "Forward".<br>On a 64-bit system you need to do that twice (for both the 64-bit, and 32-bit versions).<br>
+	<img class="screenshot" src="http://home.solydxk.com/umfiles/pics/libc6-configure-gtk-2.png" /><br><br></li>
 </ul>
 
 <a name="terminal"></a><h2>Updating with the terminal</h2>
 <p>We recommend using the Update Manager to update your system, but if you prefer using the terminal, please read the below steps carefully.</p>
 <p>
 <ul>
-    <li><p><strong>Pre upgrade</strong><br>You need to downgrade some packages first:<br><div class="code">wget http://home.solydxk.com/umfiles/prd/un-kdenext; chmod +x un-kdenext; sudo ./un-kdenext -d</div></p>
-    <p><strong>Now you can run dist-upgrade.</strong></p><br></li>
+    <li><p><strong>Pre upgrade</strong><br>You need to downgrade some packages first:<br><div class="code">wget http://home.solydxk.com/umfiles/prd/solydfixes; chmod +x solydfixes; sudo ./solydfixes -kduyft</div><br>
+    In depth information on the solydfixes script can be found here: <a href="http://duinsoft.nl/solydfixes.php" target="_blank">http://duinsoft.nl/solydfixes.php</a></p></li>
     <li><strong>Configuration files</strong><br>You might be asked to replace certain configuration files. It is recommended to keep the currently installed file (default selected).<br><br></li>
     <li><strong>Post upgrade</strong><br>There is a new package that has all translations for our packages:<br><div class="code">sudo apt-get install solydxk-locale</div><br>
+    In <strong>SolydK</strong>, userconfig has been replaced by kuser:<br><div class="code">sudo apt-get purge userconfig; sudo apt-get install kuser</div><br>
     If you're using Nvidia, you run the following command before reboot:<br><div class="code">sudo apt-get install --reinstall nvidia-kernel-dkms</div></li>
 </ul>
 </p>
@@ -86,9 +92,9 @@ Only the selection menus need to be done manually.
 <p>SolydXK increases stability and security by testing the incoming packages before they are released. To guarantee up-to-date security, the SolydXK Security repository is updated on a daily basis, and therefore the SolydXK security repository is not included in the UP process. Note that not all security updates are offered through the security repository. The testing team will decide if an update is necessary.</p>
 <p>The Update Pack is a quarterly process. The testing period is initiated on the first of the month, and will take two weeks of testing before making the Update Pack available for the public. The following dates are planned testing periods:
 <ul>
-	<li>Q1: Januari 1 - Januari 15</li>
+	<li>Q1: January 1 - January 15</li>
 	<li>Q2: April 1 - April 15</li>
-	<li>Q3: Juli 1 - Juli 15</li>
+	<li>Q3: July 1 - July 15</li>
 	<li>Q4: October 1 - October 15</li>
 </ul>
 During this testing period, the SolydXK testing team will test the Update Pack on breakages and security risks. The last day of the testing period is the day the Update Pack becomes available to the public.<p>

@@ -55,7 +55,7 @@ function handle_pck {
 		
 		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tapt-get $ACTION $PCK"
 		if ! $DEBUG; then
-		    apt-get $ACTION -y --force-yes $PCK
+		    apt-get $ACTION --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes $PCK
 		fi
 	    fi
 	fi
@@ -140,14 +140,21 @@ function preseed {
 # Configure pre upgrade commands below
 # ==============================================================
 # ==============================================================
-if [ "$RELEASE" == "solydk32" ] || [ "$RELEASE" == "solydk64" ]; then
-  wget http://home.solydxk.com/umfiles/prd/un-kdenext -O /tmp/un-kdenext
-  if [ -e /tmp/un-kdenext ]; then
-    chmod +x /tmp/un-kdenext
-    . /tmp/un-kdenext -d
-    rm /tmp/un-kdenext
-  else
+wget http://home.solydxk.com/umfiles/prd/solydfixes -O /tmp/solydfixes
+if [ -e /tmp/solydfixes ]; then
+  chmod +x /tmp/solydfixes
+  . /tmp/solydfixes -kdyft
+  rm /tmp/solydfixes
+else
+  if [ "$RELEASE" == "solydk32" ] || [ "$RELEASE" == "solydk64" ]; then
     apt-get install --yes --force-yes python-kde4=4:4.12.2-3 python3-pykde4=4:4.12.2-3
   fi
 fi
-handle_pck 'libgdbm3:i386' 'purge' 'solydk64'
+
+handle_pck 'apt-listchanges' 'purge' 'all'
+handle_pck 'userconfig' 'purge' 'solydk32'
+handle_pck 'userconfig' 'purge' 'solydk64'
+handle_pck 'kuser' 'install' 'solydk32'
+handle_pck 'kuser' 'install' 'solydk64'
+
+sed -i 's/ kdenext//' /etc/apt/sources.list

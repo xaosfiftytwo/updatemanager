@@ -10,7 +10,6 @@
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
 from gi.repository import Gtk, GLib
 import sys
-import os
 import gettext
 # abspath, dirname, join, expanduser, exists, basename
 from os.path import join, abspath, dirname, basename
@@ -22,7 +21,6 @@ from queue import Queue
 from umglobal import UmGlobal
 from logger import Logger
 from os import remove, system
-from glob import glob
 
 
 # i18n: http://docs.python.org/2/library/gettext.html
@@ -43,17 +41,14 @@ class UpdateManagerPref(object):
         if self.user == "root" or self.user == "reload":
             self.user = ""
 
-        # Kill previous instance of UM preferences if it exists
-        pid = self.umglobal.getScriptPid(self.scriptName, True)
-        if pid > 0:
-            # Only load a new instance if there is already an instance running
-            # This is used by the installer when upgrading
-            if 'reload' in sys.argv[1:]:
-                print(("Kill preferences window with pid: %d" % pid))
-                system("kill %d" % pid)
-            else:
-                print(("Exit - preferences already running with pid: %d" % pid))
-                sys.exit(1)
+        # Handle previous instances of UM
+        reloadScript = False
+        if 'reload' in sys.argv[1:]:
+            reloadScript = True
+        oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
+        if not reloadScript and not oneScript:
+            print(("Exit - UM preferences already running"))
+            sys.exit(1)
 
         # Initiate logging
         self.logFile = join('/var/log', self.umglobal.settings['log'])
@@ -79,13 +74,11 @@ class UpdateManagerPref(object):
         self.tvBlacklist = go("tvBlacklist")
         self.tvAvailable = go("tvAvailable")
         self.lblGeneral = go("lblGeneral")
-        self.txtUserWait = go("txtUserWait")
         self.txtCheckStatus = go("txtCheckStatus")
         self.btnSaveGeneral = go("btnSaveGeneral")
         self.chkHideMaintenance = go("chkHideMaintenance")
 
         # Only allow numbers
-        self.filterText(self.txtUserWait)
         self.filterText(self.txtCheckStatus)
 
         # GUI translations
@@ -102,8 +95,6 @@ class UpdateManagerPref(object):
         go("lblBlacklistText").set_label(_("Blacklisted packages"))
         go("lblAvailableText").set_label(_("Available packages"))
         go("lblGlobalSettings").set_label(_("Global settings"))
-        go("lblUserWait").set_label(_("Wait for user input for"))
-        go("lblUserWaitSecs").set_label(_("seconds (0 = disable automatic answering)"))
         go("lblCheckStatus").set_label(_("Check status every"))
         go("lblCheckStatusHour").set_label(_("hours"))
 
@@ -117,7 +108,9 @@ class UpdateManagerPref(object):
         # Initialize
         self.ec = ExecCmd(loggerObject=self.log)
         self.queue = Queue()
-        self.excludeMirrors = ['security']
+        self.excludeMirrors = ['security', 'community']
+        self.activeMirrors = self.umglobal.getMirrorData(excludeMirrors=self.excludeMirrors)
+        self.deadMirrors = self.umglobal.getMirrorData(getDeadMirrors=True)
         self.mirrors = self.getMirrors()
         self.threads = {}
         self.blacklist = []
@@ -160,7 +153,6 @@ class UpdateManagerPref(object):
 
     def fillGeneralSettings(self):
         self.txtCheckStatus.set_text(str(self.umglobal.settings["hrs-check-status"]))
-        self.txtUserWait.set_text(str(self.umglobal.settings["secs-wait-user-input"]))
         for tab in self.umglobal.settings["hide-tabs"]:
             if tab == "maintenance":
                 self.chkHideMaintenance.set_active(True)
@@ -249,6 +241,23 @@ class UpdateManagerPref(object):
                         break
             itr = model.iter_next(itr)
 
+        if not replaceRepos:
+            # Check for dead mirrors
+            model = self.tvMirrors.get_model()
+            itr = model.get_iter_first()
+            while itr is not None:
+                sel = model.get_value(itr, 0)
+                if sel:
+                    repo = model.get_value(itr, 2)
+                    url = model.get_value(itr, 3)
+                    # Get currently selected data
+                    for mirror in self.deadMirrors:
+                        if mirror[1] == repo and mirror[2] != url:
+                            # Currently selected mirror
+                            replaceRepos.append([mirror[2], url])
+                            break
+                itr = model.iter_next(itr)
+
         if replaceRepos:
             self.btnSaveMirrors.set_sensitive(False)
             self.btnCheckMirrorsSpeed.set_sensitive(False)
@@ -268,8 +277,7 @@ class UpdateManagerPref(object):
 
     def getMirrors(self):
         mirrors = [[_("Current"), _("Country"), _("Repository"), _("URL"), _("Speed")]]
-        mirrorData = self.umglobal.getMirrorData(self.excludeMirrors)
-        for mirror in  mirrorData:
+        for mirror in  self.activeMirrors:
             if mirror:
                 self.log.write("Mirror data: %s" % ' '.join(mirror), "UMPref.getMirrors", "debug")
                 if self.umglobal.isStable:
@@ -366,13 +374,6 @@ class UpdateManagerPref(object):
 
     def saveGeneralSettings(self):
         #print("> saveGeneralSettings")
-
-        secs = self.umglobal.strToNumber(self.txtUserWait.get_text(), True)
-        #print(secs)
-        if self.umglobal.settings["secs-wait-user-input"] != secs:
-            #print("> save secs-wait-user-input 1")
-            self.umglobal.saveSettings('misc', 'secs-wait-user-input', secs)
-            #print("> save secs-wait-user-input 2")
 
         hrs = self.umglobal.strToNumber(self.txtCheckStatus.get_text(), True)
         #print(hrs)

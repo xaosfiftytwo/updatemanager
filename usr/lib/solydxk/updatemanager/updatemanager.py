@@ -1,13 +1,11 @@
 #! /usr/bin/env python3
 #-*- coding: utf-8 -*-
 
-# Depends: apt-show-versions, python3-gi, python-vte, gir1.2-vte-2.90, gir1.2-webkit-3.0, python3-pyinotify
-
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
 from gi.repository import Gtk, Gdk, GObject
 import sys
 import os
-from os import remove, access, chmod, makedirs
+from os import remove, chmod, makedirs
 from shutil import move
 import gettext
 import threading
@@ -45,17 +43,14 @@ class UpdateManager(object):
         if self.user == "root" or self.user == "reload":
             self.user = ""
 
-        # Kill previous instance of UM if it exists
-        pid = self.umglobal.getScriptPid(self.scriptName, True)
-        if pid > 0:
-            if 'reload' in sys.argv[1:]:
-                # Only load a new instance if there is already an instance running
-                # This is used by the installer when upgrading
-                print(("Kill update manager window with pid: %d" % pid))
-                os.system("kill %d" % pid)
-            else:
-                print(("Exit - UM already running with pid: %d" % pid))
-                sys.exit(1)
+        # Handle previous instances of UM
+        reloadScript = False
+        if 'reload' in sys.argv[1:]:
+            reloadScript = True
+        oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
+        if not reloadScript and not oneScript:
+            print(("Exit - UM already running"))
+            sys.exit(1)
 
         # Load window and widgets
         self.scriptDir = abspath(dirname(__file__))
@@ -132,18 +127,15 @@ class UpdateManager(object):
         # Initiate logging
         self.logFile = join('/var/log', self.umglobal.settings['log'])
         print(("UM log = %s" % self.logFile))
-        if access(self.logFile, os.W_OK):
-            remove(self.logFile)
-        self.log = Logger(self.logFile)
+        self.log = Logger(self.logFile, maxSizeKB=5120)
 
         # VTE Terminal
-        self.terminal = VirtualTerminal(maxWaitForAnswer=self.umglobal.settings['secs-wait-user-input'])
+        self.terminal = VirtualTerminal(userInputAllowed=self.umglobal.settings["allow-terminal-user-input"])
         self.swTerminal.add(self.terminal)
         self.terminal.set_vexpand(True)
         self.terminal.set_hexpand(True)
         self.terminal.connect('command-done', self.on_command_done)
         self.terminal.connect('line-added', self.on_line_added)
-        self.terminal.connect('waiting-for-answer', self.on_waiting_for_answer)
         if self.umglobal.isStable:
             self.terminal.setTerminalColors("#000000", "#FFFFFF")
         else:
@@ -200,9 +192,14 @@ class UpdateManager(object):
         # Version information
         ver = _("Version")
         pckVer = self.apt.getPackageVersion('updatemanager')
-        up = _("UP")
-        versionInfo = "%(ver)s: %(pckVer)s\t%(up)s: %(upVer)s" % { "ver": ver, "pckVer": pckVer, "up": up, "upVer": self.umglobal.localUpVersion }
+        versionInfo = "%(ver)s: %(pckVer)s" % { "ver": ver, "pckVer": pckVer }
+        if not self.umglobal.isStable:
+            up = _("UP")
+            versionInfo = "%(ver)s: %(pckVer)s\t%(up)s: %(upVer)s" % { "ver": ver, "pckVer": pckVer, "up": up, "upVer": self.umglobal.localUpVersion }
         self.pushMessage(versionInfo)
+
+        # Remove scripts
+        self.deleteScripts(self.umglobal.localUpVersion)
 
         # Log basic information
         self.log.write("==============================================", "UM.init", "debug")
@@ -242,11 +239,26 @@ class UpdateManager(object):
         if aptHasErrors is not None:
             self.showInfoDlg(self.btnInstall.get_label(), aptHasErrors)
         elif self.upgradables or self.umglobal.newEmergency:
+
+            if self.apt.upgradablePackages:
+                self.log.write("=================== upgradable pacages ====================", "UM.on_command_done", "debug")
+                self.log.write(self.createLogString(self.apt.upgradablePackages), "UM.on_command_done", "debug")
+            if self.apt.removedPackages:
+                self.log.write("==================== removed packages =====================", "UM.on_command_done", "debug")
+                self.log.write(self.createLogString(self.apt.removedPackages), "UM.on_command_done", "debug")
+            if self.apt.newPackages:
+                self.log.write("======================= new packages =======================", "UM.on_command_done", "debug")
+                self.log.write(self.createLogString(self.apt.newPackages), "UM.on_command_done", "debug")
+            if self.apt.heldbackPackages:
+                self.log.write("=================== kept back packages =====================", "UM.on_command_done", "debug")
+                self.log.write(self.createLogString(self.apt.heldbackPackages), "UM.on_command_done", "debug")
+
             self.showOutput()
             contMsg = _("Continue installation?")
             contEmMsg = _("Continue emergency installation?")
             if self.upgradableUM:
-                cmd = "apt-get -y --force-yes install updatemanager"
+                cmd = "%s install updatemanager" % self.umglobal.settings['apt-get-string']
+                cmd += "; %s install %s" % (self.umglobal.settings['apt-get-string'], " ".join(self.umglobal.settings["um-dependencies"]))
                 nid = 'uminstallum'
                 self.prepForCommand(nid)
                 self.terminal.executeCommand(cmd, nid)
@@ -272,7 +284,7 @@ class UpdateManager(object):
                             answer = self.showConfirmationDlg(contMsg, msg)
                         if answer:
                             # Pre and post scripts for stable
-                            cmd = "apt-get -y --force-yes dist-upgrade"
+                            cmd = "%s dist-upgrade" % self.umglobal.settings['apt-get-string']
                             # We can't have a new stable upgrade and a stable upgrade at the same time: use the same pre/post-stable variables
                             pre = join(self.filesDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
                             post = join(self.filesDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
@@ -290,7 +302,7 @@ class UpdateManager(object):
                     else:
                         dialog = QuestionDialog(self.btnInstall.get_label(), contMsg, self.window)
                         if (dialog.show()):
-                            cmd = "apt-get -y --force-yes upgrade"
+                            cmd = "%s upgrade" % self.umglobal.settings['apt-get-string']
                             #if self.umglobal.newStable:
                             pre = join(self.filesDir, self.umglobal.settings['pre-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
                             post = join(self.filesDir, self.umglobal.settings['post-stable'].replace("[VERSION]", self.umglobal.serverStableVersion))
@@ -319,12 +331,11 @@ class UpdateManager(object):
                             self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_btnInstall_clicked", "debug")
                     else:
                         msg = self.getDistUpgradeInfo()
-                        #answer = True
-                        answer = False
+                        answer = True
                         if msg != "":
                             answer = self.showConfirmationDlg(contMsg, msg)
                         if answer:
-                            cmd = "apt-get -y --force-yes dist-upgrade"
+                            cmd = "%s dist-upgrade" % self.umglobal.settings['apt-get-string']
                             #if self.umglobal.newUp:
                             pre = join(self.filesDir, self.umglobal.settings['pre-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
                             post = join(self.filesDir, self.umglobal.settings['post-up'].replace("[VERSION]", self.umglobal.serverUpVersion))
@@ -401,8 +412,6 @@ class UpdateManager(object):
     def on_chkMaintenanceSelectAll_toggled(self, widget):
         self.tvMaintenanceHandler.treeviewToggleAll(toggleColNrList=[0], toggleValue=widget.get_active())
 
-
-
     # ===============================================
     # Maintenance functions
     # ===============================================
@@ -469,7 +478,7 @@ class UpdateManager(object):
             self.tvMaintenanceHandler.fillTreeview(packages, columnTypesList, 0, 400, True)
         else:
             if not blnCleanCache:
-                msg += _("\ndid not return any results.")
+                msg = _("\"%s\"\n did not return any results.") % msg
                 self.showInfoDlg(self.btnMaintenance.get_label(), msg)
 
         self.enableMaintenance(True)
@@ -513,9 +522,9 @@ class UpdateManager(object):
                 itr = model.iter_next(itr)
 
             if downgradeString != "":
-                cmd = "apt-get --yes --force-yes install %s" % downgradeString
+                cmd = "%s install %s" % (self.umglobal.settings['apt-get-string'], downgradeString)
             elif deleteString != "":
-                cmd = "apt-get --yes --force-yes purge %s" % deleteString
+                cmd = "%s purge %s" % (self.umglobal.settings['apt-get-string'], deleteString)
 
         if cmd != "":
             self.apt.createPackageLists(cmd)
@@ -527,13 +536,12 @@ class UpdateManager(object):
             if answer:
                 if updateGrub:
                     cmd += "; update-grub"
+                if blnNotNeeded:
+                    cmd += "; %s purge $(COLUMNS=132 dpkg -l | grep ^rc | awk '{ print $2 }')" % self.umglobal.settings['apt-get-string']
                 self.showOutput()
                 nid = 'ummaintenance'
                 self.prepForCommand(nid)
                 self.terminal.executeCommand(cmd, nid)
-                if blnNotNeeded:
-                    cmd = "apt-get purge --yes --force-yes $(COLUMNS=132 dpkg -l | grep ^rc | awk '{ print $2 }')"
-                    self.terminal.executeCommand(cmd, nid)
                 self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.executeMaintenance", "debug")
 
         self.enableMaintenance(True)
@@ -548,43 +556,31 @@ class UpdateManager(object):
         self.btnInstall.set_sensitive(False)
         self.btnMaintenance.set_sensitive(False)
 
-    def on_waiting_for_answer(self, obj, line):
-        # Feed the terminal with an answer (only when safe)
-        self.log.write("Waiting for answer on line: %s" % line, "UM.on_waiting_for_answer", "info")
-        line = line.strip()
-        if line == ":" or line == "(":
-            cmd = 'q\r\n'
-            self.terminal.feed_child(cmd, len(cmd))
-            print(">> Assume changes to read: hit q before enter")
-        else:
-            print(">> Hit enter")
-            cmd = '\r\n'
-            # Just hit enter (use default selection)
-            self.terminal.feed_child(cmd, len(cmd))
-
     def on_line_added(self, terminal, line):
-        self.log.write(line, "UM.on_line_added", "info")
+        if line.strip()[0:2].upper() == "E:":
+            self.log.write(line, "UM.on_line_added", "error")
+        else:
+            self.log.write(line, "UM.on_line_added", "info")
 
     def on_command_done(self, terminal, pid, nid):
         if nid != "init":
             self.log.write("Command finished (pid=%s, nid=%s)" % (pid, nid), "UM.on_command_done", "info")
             if nid == "uminstallum":
                 # Reload UM
-                self.log.write("updatemanager updated: reload UM", "UM.on_command_done", "debug")
-                pid = self.umglobal.getScriptPid("updatemanagerpref.py")
-                if pid > 0:
-                    os.system("kill %d" % pid)
+                self.log.write("Updating UM: kill process of updatemanagerpref.py", "UM.on_command_done", "debug")
+                self.umglobal.killScriptProcess("updatemanagerpref.py")
                 # Reload tray as user
+                self.log.write("Updating UM: kill process of updatemanagertray.py", "UM.on_command_done", "debug")
+                self.umglobal.killScriptProcess("updatemanagertray.py")
                 if self.user != "":
-                    cmd = "sudo -u %s %s" % (self.user, join(self.scriptDir, "updatemanagertray.py reload &"))
+                    script = join(self.scriptDir, "updatemanagertray.py")
+                    cmd = "sudo -u %s %s &" % (self.user, script)
                     os.system(cmd)
+                    self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
                 # Reload UM window
-                path = self.ec.run(cmd="which python3", returnAsList=False)
-                if exists(path):
-                    try:
-                        os.execl(path, path, "%s/updatemanager.py" % self.scriptDir, self.user)
-                    except OSError as err:
-                        self.log.write("Reload UM: %s" % str(err), "UM.on_command_done", "error")
+                script = join(self.scriptDir, "updatemanager.py")
+                self.umglobal.reloadWindow(script, self.user)
+                self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
 
             # Cleanup name file
             remove(join(self.filesDir, ".%s" % nid))
@@ -629,6 +625,12 @@ class UpdateManager(object):
                         self.showInfo()
                         self.showInfoDlg(self.btnInfo.get_label(), self.uptodateText)
 
+    def createLogString(self, packagesList):
+        lst = []
+        for data in packagesList:
+            lst.append(data[0])
+        return ' '.join(lst)
+
     def refresh(self):
         prog = self.apt.getAptCacheLockedProgram(self.umglobal.settings["apt-packages"])
         if prog is not None:
@@ -636,6 +638,7 @@ class UpdateManager(object):
                     "Please, close the program before refreshing:\n"
                     "* %s" % prog)
             self.showInfoDlg(self.btnRefresh.get_label(), msg)
+            self.log.write("%s is locking the apt cache" % prog, "UM.refresh", "warning")
         else:
             self.btnInfo.set_sensitive(True)
             self.btnPreferences.set_sensitive(True)
@@ -649,10 +652,11 @@ class UpdateManager(object):
                 self.btnPackages.set_sensitive(True)
 
             self.showOutput()
-            cmd = "dpkg --configure -a; apt-get -y --force-yes -f install; apt-get update"
+            cmd = "dpkg --configure -a; %s -f install; apt-get update" % self.umglobal.settings['apt-get-string']
             nid = 'umrefresh'
             self.prepForCommand(nid)
-            self.terminal.executeCommand(cmd, nid, True)
+            self.terminal.executeCommand(cmd, nid)
+            self.apt.initAptShowVersions()
             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.refresh", "debug")
 
     def postUpdate(self):
@@ -674,7 +678,6 @@ class UpdateManager(object):
                                 self.umglobal.settings['post-up'].replace("[VERSION]", self.umglobal.serverUpVersion)])
 
     def fillTreeView(self):
-        self.log.write("Fill treeview", "UM.fillTreeView", "debug")
         # First check if this application is upgradable
         self.upgradableUM = self.getUpgradablePackages(packageNames=["updatemanager"])
         if self.upgradableUM:
@@ -694,6 +697,7 @@ class UpdateManager(object):
         self.tvHandler.fillTreeview(contentList=contentList, columnTypesList=['str', 'str', 'str'], firstItemIsColName=True)
 
     def getUpgradablePackages(self, packageNames=[]):
+        upckList = []
         if packageNames:
             upckList = []
             for packageName in packageNames:
@@ -701,9 +705,9 @@ class UpdateManager(object):
                     if upck[0] == packageName:
                         upckList.append(upck)
                         break
-            return upckList
         else:
-            return self.apt.upgradablePackages
+            upckList = self.apt.upgradablePackages
+        return upckList
 
     def getDistUpgradeInfo(self, upgradablesOnly=False):
         info = ""
@@ -822,18 +826,23 @@ class UpdateManager(object):
                    [join(self.scriptDir, 'updatemanager.hist')] + \
                    [join(self.scriptDir, 'mirrors.list')]
         for fle in oldFiles:
-            fleName = basename(fle)
-            if not exists(join(self.filesDir, fleName)):
-                move(fle, self.filesDir)
-            else:
-                if exists(fle):
+            if exists(fle):
+                fleName = basename(fle)
+                if not exists(join(self.filesDir, fleName)):
+                    move(fle, self.filesDir)
+                else:
                     remove(fle)
         chmod(self.filesDir, 0o777)
 
-    def deleteScripts(self):
-        oldFiles = glob(join(self.filesDir, 'pre-*')) + glob(join(self.filesDir, 'post-*')) + glob(join(self.filesDir, 'emergency-*'))
+    def deleteScripts(self, upVersion=None):
+        upVersion = "*"
+        if upVersion is not None:
+            upVersion = "*%s" % upVersion
+
+        oldFiles = glob(join(self.filesDir, "pre-%s" % upVersion)) + glob(join(self.filesDir, "post-%s" % upVersion)) + glob(join(self.filesDir, "emergency-%s" % upVersion))
         for fle in oldFiles:
             remove(fle)
+            self.log.write("Cleanup file: %s" % fle, "UM.deleteScripts", "debug")
 
     # Close the gui
     def on_windowMain_destroy(self, widget):

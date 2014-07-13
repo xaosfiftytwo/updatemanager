@@ -12,7 +12,7 @@ from execcmd import ExecCmd
 
 class UmGlobal(object):
 
-    def __init__(self):
+    def __init__(self, collectData=True):
         # Get the settings
         self.scriptDir = abspath(dirname(__file__))
         self.filesDir = join(self.scriptDir, "files")
@@ -44,7 +44,8 @@ class UmGlobal(object):
 
         # Set global variables
         self.umfilesUrl = self.getUmFilesUrl()
-        self.collectData()
+        if collectData:
+            self.collectData()
 
     def collectData(self):
         self.getLocalInfo()
@@ -194,15 +195,22 @@ class UmGlobal(object):
             with open(upHistFile, 'a') as f:
                 f.write("%s=%s\n" % (parameter, value))
 
-    def getMirrorData(self, excludeMirrors=[]):
+    def getMirrorData(self, excludeMirrors=[], getDeadMirrors=False):
         mirrorData = []
+
         mirrorsList = join(self.filesDir, basename(self.settings["mirrors-list"]))
+        if getDeadMirrors:
+            mirrorsList = "%s.dead" % mirrorsList
+
         #if os.getuid() != 0 and not exists(mirrorsList):
             #mirrorsList = join('/tmp', basename(self.settings["mirrors-list"]))
 
         try:
             # Download the mirrors list from the server
-            txt = urlopen(self.settings["mirrors-list"]).read().decode('utf-8')
+            url = self.settings["mirrors-list"]
+            if getDeadMirrors:
+                url = "%s.dead" % url
+            txt = urlopen(url).read().decode('utf-8')
             if txt != '':
                 # Save to a file
                 with open(mirrorsList, 'w') as f:
@@ -215,9 +223,20 @@ class UmGlobal(object):
                 lines = f.readlines()
             for line in lines:
                 data = line.strip().split(',')
-                #print((">>> data = %s" % str(data)))
                 if len(data) > 2:
-                    if data[2] not in excludeMirrors:
+                    if getDeadMirrors:
+                        blnAdd = False
+                        for repo in self.repos:
+                            if data[2] in repo:
+                                blnAdd = True
+                                break
+                    else:
+                        blnAdd = True
+                        for excl in excludeMirrors:
+                            if excl in data[2]:
+                                blnAdd = False
+                                break
+                    if blnAdd:
                         #print((">>> append data"))
                         mirrorData.append(data)
         return mirrorData
@@ -228,21 +247,10 @@ class UmGlobal(object):
 
         xkUrl = self.settings['solydxk']
         url = "%s/%s" % (xkUrl, self.settings["umfilessubdir-prd"])
-        mirrors = self.getMirrorData()
-        #print(("> mirrors = %s" % str(mirrors)))
         for repo in self.repos:
-            #print((">> repo = %s" % str(repo)))
-            for mirror in mirrors:
-                #print((">>> mirror = %s" % str(mirror)))
-                if mirror[2] in repo:
-                    #print((">>> testing-repo-matches = %s" % str(self.settings["testing-repo-matches"])))
-                    for match in self.settings["testing-repo-matches"]:
-                        #print((">>>> match = %s" % str(match)))
-                        if match in repo:
-                            url = "%s/%s" % (xkUrl, self.settings["umfilessubdir-tst"])
-                            print(("Repo URL = %s" % str(url)))
-                            return url
-        print(("Repo URL = %s" % str(url)))
+            if "/testing" in repo:
+                url = "%s/%s" % (xkUrl, self.settings["umfilessubdir-tst"])
+                break
         return url
 
     def getSettings(self):
@@ -325,7 +333,7 @@ class UmGlobal(object):
             settings["timeout-secs"] = int(self.cfg.getValue(section, 'timeout-secs'))
         except:
             settings["mirrors-list"] = 'http://home.solydxk.com/mirrors.list'
-            settings["dl-test"] = 'production/dists/solydxk/main/binary-amd64/Packages'
+            settings["dl-test"] = 'production/speedtest.1mb'
             settings["timeout-secs"] = 10
             self.saveSettings(section, 'mirrors-list', settings["mirrors-list"])
             self.saveSettings(section, 'dl-test', settings["dl-test"])
@@ -364,28 +372,42 @@ class UmGlobal(object):
 
         section = 'misc'
         try:
-            settings["secs-wait-user-input"] = int(self.cfg.getValue(section, 'secs-wait-user-input'))
+            settings["allow-terminal-user-input"] = True
+            bln = self.cfg.getValue(section, 'allow-terminal-user-input').lower()
+            if bln == "false":
+                settings["allow-terminal-user-input"] = False
             settings["hrs-check-status"] = int(self.cfg.getValue(section, 'hrs-check-status'))
             settings["umfilessubdir-prd"] = self.cfg.getValue(section, 'umfilessubdir-prd')
             settings["umfilessubdir-tst"] = self.cfg.getValue(section, 'umfilessubdir-tst')
             settings["testing-repo-matches"] = self.cfg.getValue(section, 'testing-repo-matches').split(",")
             settings["apt-packages"] = self.cfg.getValue(section, 'apt-packages').split(",")
             settings["hide-tabs"] = self.cfg.getValue(section, 'hide-tabs').split(",")
+            settings["um-dependencies"] = self.cfg.getValue(section, 'um-dependencies').split(",")
+            settings["apt-get-string"] = self.cfg.getValue(section, 'apt-get-string')
         except:
-            settings["secs-wait-user-input"] = 5
+            settings["allow-terminal-user-input"] = True
             settings["hrs-check-status"] = 1
             settings["umfilessubdir-prd"] = 'umfiles/prd'
             settings["umfilessubdir-tst"] = 'umfiles/tst'
             settings["testing-repo-matches"] = ["business-testing", "/testing"]
             settings["apt-packages"] = ["dpkg", "apt-get", "synaptic", "adept", "adept-notifier"]
             settings["hide-tabs"] = ["maintenance"]
-            self.saveSettings(section, 'secs-wait-user-input', settings["secs-wait-user-input"])
+            settings["um-dependencies"] = ["gksu", "apt-show-versions", "deborphan", "apt", "curl", "python3-gi", "python-vte", "gir1.2-vte-2.90", "gir1.2-webkit-3.0", "python3", "gir1.2-gtk-3.0", "python3-pyinotify"]
+            settings["apt-get-string"] = 'DEBIAN_FRONTEND=gnome apt-get --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes'
+            self.saveSettings(section, 'allow-terminal-user-input', str(settings["allow-terminal-user-input"]).lower())
             self.saveSettings(section, 'hrs-check-status', settings["hrs-check-status"])
             self.saveSettings(section, 'umfilessubdir-prd', settings["umfilessubdir-prd"])
             self.saveSettings(section, 'umfilessubdir-tst', settings["umfilessubdir-tst"])
             self.saveSettings(section, 'testing-repo-matches', ",".join(settings["testing-repo-matches"]))
             self.saveSettings(section, 'apt-packages', ",".join(settings["apt-packages"]))
             self.saveSettings(section, 'hide-tabs', ",".join(settings["hide-tabs"]))
+            self.saveSettings(section, 'um-dependencies', ",".join(settings["um-dependencies"]))
+            self.saveSettings(section, 'apt-get-string', settings["apt-get-string"])
+
+        # These settings were changed, and we need to be sure they have a certain value
+        if settings["dl-test"] != 'production/speedtest.1mb':
+            settings["dl-test"] = 'production/speedtest.1mb'
+            self.saveSettings('mirror', 'dl-test', settings["dl-test"])
 
         return settings
 
@@ -419,27 +441,64 @@ class UmGlobal(object):
             nr = 0
         return nr
 
-    def getScriptPid(self, script, returnExistingPid=False):
-        cnt = 0
-        pid = 0
+    def getScriptPids(self, script, returnExistingPid=False):
+        pids = []
         try:
             procs = self.ec.run(cmd="ps -ef | grep %s" % script, realTime=False)
             for pline in procs:
                 matchObj = re.search("([0-9]+).*:\d\d\s.*python", pline)
                 if matchObj:
-                    if returnExistingPid:
-                        cnt += 1
-                        if cnt > 1:
-                            return pid
-                    else:
-                        return int(matchObj.group(1))
-                    pid = int(matchObj.group(1))
-            return 0
+                    pids.append(int(matchObj.group(1)))
+            return pids
         except:
-            return 0
+            return pids
+
+    def confirmOneSrciptRunning(self, scriptName, reloadScript=False):
+        pids = self.getScriptPids(scriptName)
+        cnt = 0
+        ret = True
+        for pid in pids:
+            cnt += 1
+            if cnt > 1:
+                if reloadScript or cnt > 2:
+                    print(("Kill %s process with pid: %d" % (scriptName, pid)))
+                    cmd = "kill %d" % pid
+                    self.ec.run(cmd, False)
+                elif cnt == 2:
+                    ret = False
+        return ret
+
+    def killScriptProcess(self, scriptName):
+        msg = _('Please enter your password')
+        pids = self.getScriptPids(scriptName)
+        for pid in pids:
+            print(("Kill %s process with pid: %d" % (scriptName, pid)))
+            cmd = "gksudo --message \"<b>%s</b>\" kill %d" % (msg, pid)
+            self.ec.run(cmd, False)
+
+    def scriptIsRunning(self, scriptName):
+        pids = self.getScriptPids(scriptName)
+        if len(pids) > 0:
+            return True
+        else:
+            return False
+
+    def reloadWindow(self, scriptPath, runAsUser):
+        path = self.ec.run(cmd="which python3", returnAsList=False)
+        if exists(path):
+            try:
+                os.execl(path, path, scriptPath, runAsUser)
+            except OSError as err:
+                self.log.write("Reload UM: %s" % str(err), "UM.reloadWindow", "error")
 
     def getKernelVersion(self):
         return self.ec.run(cmd="uname -r", realTime=False)[0]
 
     def getKernelArchitecture(self):
         return self.ec.run(cmd="uname -m", realTime=False)[0]
+
+    def getDistribution(self):
+        distribution = ""
+        if exists('/etc/solydxk/info'):
+            distribution = self.ec.run("cat /etc/solydxk/info | grep EDITION | cut -d'=' -f 2", realTime=False, returnAsList=False)
+        return distribution

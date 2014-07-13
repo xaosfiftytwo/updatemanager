@@ -32,17 +32,14 @@ class UpdateManagerTray(object):
         self.umglobal = UmGlobal()
         self.ec = ExecCmd()
 
-        # Kill previous instance of UM tray if it exists
-        pid = self.umglobal.getScriptPid(self.scriptName, True)
-        #print((">>> tray pid: %d" % pid))
-        if pid > 0:
-            print((sys.argv[1:]))
-            if 'reload' in sys.argv[1:]:
-                print(("Kill UM tray with pid: %d" % pid))
-                os.system("kill %d" % pid)
-            else:
-                print(("Exit - UM tray already running with pid: %d" % pid))
-                sys.exit(1)
+        # Handle previous instances of UM
+        reloadScript = False
+        if 'reload' in sys.argv[1:]:
+            reloadScript = True
+        oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
+        if not reloadScript and not oneScript:
+            print(("Exit - UM tray already running"))
+            sys.exit(1)
 
         # Build status icon menu
         self.refreshText = _("Refresh")
@@ -93,7 +90,7 @@ class UpdateManagerTray(object):
         data.popup(None, None, None, None, button, time)
 
     def icon_activate(self, widget):
-        if self.umglobal.getScriptPid("updatemanager.py")  == 0:
+        if not self.umglobal.scriptIsRunning("updatemanager.py"):
             # Run UM in its own thread
             pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager",))
             pref_thread.setDaemon(True)
@@ -112,20 +109,8 @@ class UpdateManagerTray(object):
         if exists(join(self.filesDir, ".uminstall")):
             self.showInfoDlg(self.quitText, _("Cannot quit: upgrade in progress"))
         else:
-            msg = _('Please enter your password')
-            pids = []
-            pids.append(self.umglobal.getScriptPid("updatemanager.py"))
-            pids.append(self.umglobal.getScriptPid("updatemanagerpref.py"))
-            if pids:
-                execCmd = False
-                cmd = "gksudo --message \"<b>%s</b>\" kill" % msg
-                for pid in pids:
-                    if pid > 0:
-                        execCmd = True
-                        cmd += " %d" % pid
-                print(cmd)
-                if execCmd:
-                    os.system(cmd)
+            self.umglobal.killScriptProcess("updatemanager.py")
+            self.umglobal.killScriptProcess("updatemanagerpref.py")
             self.notifier.quit()
             Gtk.main_quit()
 

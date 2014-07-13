@@ -34,10 +34,6 @@ class UmApt(object):
         # Reset variables
         self.packagesInfo = []
 
-        # Initialize or update package cache only
-        cmd = "apt-show-versions -i"
-        self.ec.run(cmd=cmd, realTime=False)
-
         # Use env LANG=C to ensure the output of apt-show-versions is always en_US
         cmd = "env LANG=C bash -c 'apt-show-versions'"
         # Get the output of the command in a list
@@ -46,16 +42,25 @@ class UmApt(object):
         # Loop through each line and fill the package lists
         for line in lst:
             items = line.split(" ")
-            pck = items[0].split(":")[0]
-            if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
+            if self.umglobal.isStable:
                 pck = items[0].split("/")[0]
-            ver = items[1]
-            avVer = ""
-            if "uptodate" in line:
-                avVer = ver
-            elif "upgradeable" in line:
-                avVer = items[len(items) - 1]
-            self.packagesInfo.append([pck, ver, avVer])
+                if "uptodate" in line:
+                    ver = items[len(items) - 1]
+                    avVer = ver
+                elif "upgradeable" in line:
+                    ver = items[len(items) - 3]
+                    avVer = items[len(items) - 1]
+                self.packagesInfo.append([pck, ver, avVer])
+            else:
+                pck = items[0].split(":")[0]
+                if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
+                    pck = items[0].split("/")[0]
+                ver = items[1]
+                if "uptodate" in line:
+                    avVer = ver
+                elif "upgradeable" in line:
+                    avVer = items[len(items) - 1]
+                self.packagesInfo.append([pck, ver, avVer])
 
     def createPackageLists(self, customAptGetCommand=""):
         # Reset variables
@@ -93,6 +98,11 @@ class UmApt(object):
                     self.fillPackageList(self.upgradablePackages, line.strip())
             else:
                 prevLine = line
+
+    def initAptShowVersions(self):
+        # Initialize or update package cache only
+        cmd = "apt-show-versions -i"
+        self.ec.run(cmd=cmd, realTime=False)
 
     def fillPackageList(self, packageList, line, new=False):
         packages = line.split(" ")
@@ -141,7 +151,8 @@ class UmApt(object):
                     pck = items[0].split("/")[0]
                 ver = items[1]
                 avVer = self.getDowngradablePackageVersion(pck)
-                self.downgradablePackages.append([pck, ver, avVer])
+                if ver != avVer:
+                    self.downgradablePackages.append([pck, ver, avVer])
 
     def fillOrphanedPackages(self):
         self.orphanedPackages = []

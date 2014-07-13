@@ -5,6 +5,7 @@ import os
 import pwd
 import logging
 import re
+from shutil import move
 from gi.repository import Gtk
 from dialogs import MessageDialog
 from treeview import TreeViewHandler
@@ -32,7 +33,10 @@ class Logger():
             if os.path.exists(self.logPath) and self.maxSizeKB is not None:
                 b = os.path.getsize(self.logPath)
                 if b > self.maxSizeKB * 1024:
-                    os.remove(self.logPath)
+                    old = "%s.old" % self.logPath
+                    if os.path.exists(old):
+                        os.remove(old)
+                    move(self.logPath, "%s.old" % self.logPath)
             # Set basic configuration
             formatStr = '%(name)-30s%(levelname)-10s%(message)s'
             dateFmtStr = None
