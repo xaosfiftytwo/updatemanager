@@ -44,6 +44,8 @@ class UmApt(object):
             items = line.split(" ")
             if self.umglobal.isStable:
                 pck = items[0].split("/")[0]
+                ver = items[1]
+                avVer = ''
                 if "uptodate" in line:
                     ver = items[len(items) - 1]
                     avVer = ver
@@ -56,6 +58,7 @@ class UmApt(object):
                 if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
                     pck = items[0].split("/")[0]
                 ver = items[1]
+                avVer = ''
                 if "uptodate" in line:
                     avVer = ver
                 elif "upgradeable" in line:

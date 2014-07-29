@@ -3,13 +3,12 @@
 
 from gi.repository import Gtk, GObject
 import sys
-import os
 import gettext
 import threading
 from umglobal import UmGlobal
 from umnotifier import UmNotifier
 from umrefresh import UmRefresh
-from os.path import join, abspath, dirname, exists, basename
+from os.path import join, abspath, dirname, basename
 from dialogs import MessageDialogSafe
 from execcmd import ExecCmd
 
@@ -106,7 +105,7 @@ class UpdateManagerTray(object):
         MessageDialogSafe(title, message, Gtk.MessageType.INFO, None).show()
 
     def quit_tray(self, widget):
-        if exists(join(self.filesDir, ".uminstall")):
+        if self.umglobal.isUpgrading():
             self.showInfoDlg(self.quitText, _("Cannot quit: upgrade in progress"))
         else:
             self.umglobal.killScriptProcess("updatemanager.py")

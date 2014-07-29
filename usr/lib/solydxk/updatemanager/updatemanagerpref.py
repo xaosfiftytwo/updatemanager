@@ -261,7 +261,7 @@ class UpdateManagerPref(object):
         if replaceRepos:
             self.btnSaveMirrors.set_sensitive(False)
             self.btnCheckMirrorsSpeed.set_sensitive(False)
-            cmd = "touch %s" % join(self.filesDir, ".umrefresh")
+            cmd = "touch %s" % self.umglobal.umfiles["umrefresh"]
             system(cmd)
 
             m = Mirror()
@@ -271,7 +271,7 @@ class UpdateManagerPref(object):
             self.mirrors = self.getMirrors()
             self.fillTreeViewMirrors()
 
-            remove(join(self.filesDir, ".umrefresh"))
+            remove(self.umglobal.umfiles["umrefresh"])
             self.btnSaveMirrors.set_sensitive(True)
             self.btnCheckMirrorsSpeed.set_sensitive(True)
 

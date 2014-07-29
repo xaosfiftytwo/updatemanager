@@ -20,6 +20,15 @@ class UmGlobal(object):
         self.cfg = Config(join(self.filesDir, 'updatemanager.conf'))
         self.settings = self.getSettings()
 
+        self.umfiles = {}
+        self.umfiles['umemergency'] = join(self.filesDir, ".umemergency")
+        self.umfiles['umnewstable'] = join(self.filesDir, ".umnewstable")
+        self.umfiles['umstable'] = join(self.filesDir, ".umstable")
+        self.umfiles['umup'] = join(self.filesDir, ".umup")
+        self.umfiles['umrefresh'] = join(self.filesDir, ".umrefresh")
+        self.umfiles['ummaintenance'] = join(self.filesDir, ".ummaintenance")
+        self.umfiles['uminstallum'] = join(self.filesDir, ".uminstallum")
+
         # UP variables
         self.localUpVersion = None
         self.serverUpVersion = None
@@ -70,34 +79,42 @@ class UmGlobal(object):
                     if len(value) > 0:
                         if self.isStable:
                             # Write the parameter, and the value if no hist file exist: assume clean install
-                            self.writeNonExistingHist(parameter, value)
+                            self.writeNonExistingHist(parameter)
                             if parameter == "newstable":
                                 self.serverNewStableVersion = value
-                                self.newNewStable = self.isNewServerVersion(self.serverNewStableVersion, self.localNewStableVersion)
                             elif parameter == "stable":
                                 self.serverStableVersion = value
-                                self.newStable = self.isNewServerVersion(self.serverStableVersion, self.localStableVersion)
                             elif parameter == "emergencystable":
                                 self.serverEmergencyVersion = value
-                                self.newEmergency = self.isNewServerVersion(self.serverEmergencyVersion, self.localEmergencyVersion)
                         else:
                             # Write the parameter, and the value if no hist file exist: assume clean install
-                            self.writeNonExistingHist(parameter, value)
+                            self.writeNonExistingHist(parameter)
                             if parameter == "up":
                                 self.serverUpVersion = value
-                                self.newUp = self.isNewServerVersion(self.serverUpVersion, self.localUpVersion)
                             elif parameter == "emergency":
                                 self.serverEmergencyVersion = value
-                                self.newEmergency = self.isNewServerVersion(self.serverEmergencyVersion, self.localEmergencyVersion)
+
                 cont.close()
+
+                # Check for new versions
+                if self.serverEmergencyVersion is not None:
+                    self.newEmergency = self.isNewServerVersion(self.serverEmergencyVersion, self.localEmergencyVersion)
+                elif self.serverNewStableVersion is not None:
+                    self.newNewStable = self.isNewServerVersion(self.serverNewStableVersion, self.localNewStableVersion)
+                else:
+                    if self.serverStableVersion is not None:
+                        self.newStable = self.isNewServerVersion(self.serverStableVersion, self.localStableVersion)
+                    elif self.serverUpVersion is not None:
+                        self.newUp = self.isNewServerVersion(self.serverUpVersion, self.localUpVersion)
+
             except Exception as detail:
                 print(("There is no internet connection: %s" % detail))
                 self.hasInternet = False
 
-    def writeNonExistingHist(self, parameter, version):
+    def writeNonExistingHist(self, parameter):
         upHistFile = join(self.filesDir, self.settings['hist'])
         if not exists(upHistFile):
-            self.saveHistVersion(parameter, version)
+            self.saveHistVersion(parameter, "2000.01.01")
             self.getLocalInfo()
 
     def isNewServerVersion(self, serverVersion, localVersion):
@@ -113,6 +130,14 @@ class UmGlobal(object):
                 # Server version is newer
                 isNew = True
         return isNew
+
+    def isPackageInstalled(self, package, version):
+        cmd = "env LANG=C bash -c 'apt-cache policy %s | grep \"Installed:\"'" % package
+        lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
+        if lst[1] == version:
+            return True
+        else:
+            return False
 
     def getLocalInfo(self):
         # Get configured repos, and check whether they are pointing to stable (LTS) or not
@@ -502,3 +527,18 @@ class UmGlobal(object):
         if exists('/etc/solydxk/info'):
             distribution = self.ec.run("cat /etc/solydxk/info | grep EDITION | cut -d'=' -f 2", realTime=False, returnAsList=False)
         return distribution
+
+    def isUpgrading(self):
+        if exists(self.umfiles['umemergency']) or \
+           exists(self.umfiles['umnewstable']) or \
+           exists(self.umfiles['umstable']) or \
+           exists(self.umfiles['umup']):
+            return True
+        else:
+            return False
+
+    def isRefreshing(self):
+        if exists(self.umfiles['umrefresh']):
+            return True
+        else:
+            return False

@@ -193,7 +193,7 @@ class UpdateManager(object):
         ver = _("Version")
         pckVer = self.apt.getPackageVersion('updatemanager')
         versionInfo = "%(ver)s: %(pckVer)s" % { "ver": ver, "pckVer": pckVer }
-        if not self.umglobal.isStable:
+        if not self.umglobal.isStable and self.umglobal.localUpVersion != "2000.01.01":
             up = _("UP")
             versionInfo = "%(ver)s: %(pckVer)s\t%(up)s: %(upVer)s" % { "ver": ver, "pckVer": pckVer, "up": up, "upVer": self.umglobal.localUpVersion }
         self.pushMessage(versionInfo)
@@ -270,13 +270,11 @@ class UpdateManager(object):
                         if (dialog.show()):
                             em = join(self.filesDir, self.umglobal.settings['emergency-stable'].replace("[VERSION]", self.umglobal.serverEmergencyVersion))
                             cmd = "/bin/bash %(em)s" % { "em": em }
-                            nid = 'uminstall'
+                            nid = 'umemergency'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
                             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
-                            # Save emergency version in hist file
-                            self.umglobal.saveHistVersion("emergency", self.umglobal.serverEmergencyVersion)
-                            self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_btnInstall_clicked", "debug")
+
                     elif self.umglobal.newNewStable:
                         msg = self.getDistUpgradeInfo()
                         answer = True
@@ -292,13 +290,11 @@ class UpdateManager(object):
                                 cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
                             if exists(post):
                                 cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
-                            nid = 'uminstall'
+                            nid = 'umnewstable'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
                             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
-                            # Save newstable version in hist file
-                            self.umglobal.saveHistVersion("newstable", self.umglobal.serverNewStableVersion)
-                            self.log.write("Save history newstable= %s" % self.umglobal.serverNewStableVersion, "UM.on_btnInstall_clicked", "debug")
+
                     else:
                         dialog = QuestionDialog(self.btnInstall.get_label(), contMsg, self.window)
                         if (dialog.show()):
@@ -310,25 +306,21 @@ class UpdateManager(object):
                                 cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
                             if exists(post):
                                 cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
-                            nid = 'uminstall'
+                            nid = 'umstable'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
-                            # Save stable version in hist file
-                            self.umglobal.saveHistVersion("stable", self.umglobal.serverStableVersion)
-                            self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
+
                 else:
                     if self.umglobal.newEmergency:
                         dialog = QuestionDialog(self.btnInfo.get_label(), contEmMsg, self.window)
                         if (dialog.show()):
                             em = join(self.filesDir, self.umglobal.settings['emergency'].replace("[VERSION]", self.umglobal.serverEmergencyVersion))
                             cmd = "/bin/bash %(em)s" % { "em": em }
-                            nid = 'uminstall'
+                            nid = 'umemergency'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
                             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
-                            # Save emergency version in hist file
-                            self.umglobal.saveHistVersion("emergency", self.umglobal.serverEmergencyVersion)
-                            self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_btnInstall_clicked", "debug")
+
                     else:
                         msg = self.getDistUpgradeInfo()
                         answer = True
@@ -343,13 +335,11 @@ class UpdateManager(object):
                                 cmd = "/bin/bash %(pre)s; %(cmd)s" % { "pre": pre, "cmd": cmd }
                             if exists(post):
                                 cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
-                            nid = 'uminstall'
+                            nid = 'umup'
                             self.prepForCommand(nid)
                             self.terminal.executeCommand(cmd, nid)
                             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
-                            # Save up version in hist file
-                            self.umglobal.saveHistVersion("up", self.umglobal.serverUpVersion)
-                            self.log.write("Save history up=%s" % self.umglobal.serverUpVersion, "UM.on_btnInstall_clicked", "debug")
+
         else:
             self.showInfoDlg(self.btnInstall.get_label(), self.uptodateText)
 
@@ -372,7 +362,6 @@ class UpdateManager(object):
         pref_thread.start()
 
     def openPreferences(self):
-        print("> openPreferences")
         os.system(join(self.scriptDir, "updatemanagerpref.py %s &" % self.user))
 
     def on_btnMaintenance_clicked(self, widget):
@@ -551,7 +540,7 @@ class UpdateManager(object):
     # ===============================================
 
     def prepForCommand(self, nid):
-        os.system("touch %s" % join(self.filesDir, ".%s" % nid))
+        os.system("touch %s" % self.umglobal.umfiles[nid])
         self.btnRefresh.set_sensitive(False)
         self.btnInstall.set_sensitive(False)
         self.btnMaintenance.set_sensitive(False)
@@ -582,16 +571,9 @@ class UpdateManager(object):
                 self.umglobal.reloadWindow(script, self.user)
                 self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
 
-            # Cleanup name file
-            remove(join(self.filesDir, ".%s" % nid))
-
             if nid == "umrefresh":
                 # Run post update when needed
                 self.postUpdate()
-
-            if nid == 'uminstall':
-                # Remove scripts
-                self.deleteScripts()
 
             if nid == "ummaintenance":
                 self.enableMaintenance(True)
@@ -603,6 +585,28 @@ class UpdateManager(object):
                     self.btnMaintenance.set_sensitive(True)
                 self.showMaintenance()
             else:
+                if nid == 'umemergency':
+                    # Save emergency version in hist file
+                    self.umglobal.saveHistVersion("emergency", self.umglobal.serverEmergencyVersion)
+                    self.log.write("Save history emergency=%s" % self.umglobal.serverEmergencyVersion, "UM.on_command_done", "debug")
+                    # Remove scripts
+                    self.deleteScripts()
+                elif nid == 'umnewstable':
+                    # Save newstable version in hist file
+                    self.umglobal.saveHistVersion("newstable", self.umglobal.serverNewStableVersion)
+                    self.log.write("Save history newstable= %s" % self.umglobal.serverNewStableVersion, "UM.on_command_done", "debug")
+                    self.deleteScripts()
+                elif nid == 'umstable':
+                    # Save stable version in hist file
+                    self.umglobal.saveHistVersion("stable", self.umglobal.serverStableVersion)
+                    self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_command_done", "debug")
+                    self.deleteScripts()
+                elif nid == 'umup':
+                    # Save up version in hist file
+                    self.umglobal.saveHistVersion("up", self.umglobal.serverUpVersion)
+                    self.log.write("Save history up=%s" % self.umglobal.serverUpVersion, "UM.on_btnInstall_clicked", "debug")
+                    self.deleteScripts()
+
                 # Refresh data after install or update
                 self.umglobal.collectData()
                 self.apt.createPackageLists()
@@ -624,6 +628,10 @@ class UpdateManager(object):
                     else:
                         self.showInfo()
                         self.showInfoDlg(self.btnInfo.get_label(), self.uptodateText)
+
+            # Cleanup name file(s)
+            for fle in glob(join(self.filesDir, '.um*')):
+                remove(fle)
 
     def createLogString(self, packagesList):
         lst = []

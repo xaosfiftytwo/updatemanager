@@ -1,3 +1,15 @@
+updatemanager (2.4.0) debian; urgency=low
+
+  * Resolved bug crashing when available version is not set.
+
+ -- Schoelje <schoelje@solydxk.com>  Mon, 28 Jul 2014 16:00:00 +0100
+
+updatemanager (2.3.9) debian; urgency=low
+
+  * Emergency fix
+
+ -- Schoelje <schoelje@solydxk.com>  Wed, 16 Jul 2014 08:00:00 +0100
+
 updatemanager (2.3.7) debian; urgency=low
 
   * Added system maintenance

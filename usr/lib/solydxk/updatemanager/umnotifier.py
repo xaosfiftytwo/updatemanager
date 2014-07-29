@@ -27,18 +27,30 @@ class EventHandler(pyinotify.ProcessEvent):
         self.umrefresh = umrefresh
 
     def process_IN_CREATE(self, event):
-        if ('/.umrefresh' in event.pathname or '/.uminstall' in event.pathname) and not self.executing:
-            print(("Creating: %s" % event.pathname))
-            self.executing = True
-            if '/.umrefresh' in event.pathname:
+        print((">>> process_IN_CREATE: %s" % event.pathname))
+        if not self.executing:
+            if event.pathname == self.umglobal.umfiles['umrefresh']:
+                print(("Creating: %s" % event.pathname))
+                self.executing = True
                 # You cannot handle GUI changes in a thread
                 # Use idle_add to let the calling thread handle GUI stuff when there's time left
                 GObject.idle_add(self.changeIcon, "icon-exec", _("Refreshing update list..."))
-            elif '/.uminstall' in event.pathname:
-                GObject.idle_add(self.changeIcon, "icon-exec", _("Installing updates..."))
+            if not self.executing:
+                if event.pathname == self.umglobal.umfiles['umemergency'] or \
+                   event.pathname == self.umglobal.umfiles['umnewstable'] or \
+                   event.pathname == self.umglobal.umfiles['umstable'] or \
+                   event.pathname == self.umglobal.umfiles['umup']:
+                    print(("Creating: %s" % event.pathname))
+                    self.executing = True
+                    GObject.idle_add(self.changeIcon, "icon-exec", _("Installing updates..."))
 
     def process_IN_DELETE(self, event):
-        if '/.umrefresh' in event.pathname or '/.uminstall' in event.pathname:
+        print((">>> process_IN_DELETE: %s" % event.pathname))
+        if event.pathname == self.umglobal.umfiles['umemergency'] or \
+           event.pathname == self.umglobal.umfiles['umnewstable'] or \
+           event.pathname == self.umglobal.umfiles['umstable'] or \
+           event.pathname == self.umglobal.umfiles['umup'] or \
+           event.pathname == self.umglobal.umfiles['umrefresh']:
             print(("Deleting: %s" % event.pathname))
             self.executing = False
             GObject.idle_add(self.refresh)
