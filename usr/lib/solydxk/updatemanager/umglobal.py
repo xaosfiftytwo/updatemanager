@@ -149,7 +149,9 @@ class UmGlobal(object):
             matchObj = re.search("^deb\s*(http[:\/a-zA-Z0-9\.\-]*)", line)
             if matchObj:
                 repo = matchObj.group(1)
-                if '/lts' in repo or '/business' in repo:
+                if '/lts' in repo \
+                    or '/business' in repo \
+                    or ('solydxk-' in repo and '/debian' in repo):
                     self.isStable = True
                 self.repos.append(repo)
 

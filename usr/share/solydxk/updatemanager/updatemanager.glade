@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.16.1 -->
+<!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
   <object class="GtkWindow" id="windowMain">
@@ -24,7 +24,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Install</property>
-                <property name="icon_name">system-software-update</property>
+                <property name="icon_name">system-installer</property>
                 <signal name="clicked" handler="on_btnInstall_clicked" swapped="no"/>
               </object>
               <packing>
@@ -99,7 +99,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Information</property>
-                <property name="icon_name">help-about</property>
+                <property name="icon_name">documentinfo</property>
                 <signal name="clicked" handler="on_btnInfo_clicked" swapped="no"/>
               </object>
               <packing>
@@ -123,7 +123,7 @@
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Preferences</property>
                 <property name="use_underline">True</property>
-                <property name="icon_name">preferences-other</property>
+                <property name="icon_name">preferences-system</property>
                 <signal name="clicked" handler="on_btnPreferences_clicked" swapped="no"/>
               </object>
               <packing>

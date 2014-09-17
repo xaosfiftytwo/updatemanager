@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
 from execcmd import ExecCmd
@@ -28,7 +28,7 @@ class UmApt(object):
         self.orphanedPackages = []
 
         # Build installed packages info list
-        self.createPackagesInfoList()
+        #self.createPackagesInfoList()
 
     def createPackagesInfoList(self):
         # Reset variables
@@ -192,7 +192,7 @@ class UmApt(object):
         if candidate:
             cmd = "env LANG=C bash -c 'apt-cache policy %s | grep \"Candidate:\"'" % package
         lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
-        return lst[1]
+        return lst[-1]
 
     def aptHasErrors(self):
         ret = self.ec.run("apt-get --assume-no upgrade", False, False)

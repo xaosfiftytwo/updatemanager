@@ -136,25 +136,33 @@ function preseed {
   fi
 }
 
+# Function to divert file
+function divert {
+  if [ -f "$1" ]; then
+    DIVERTS=$(dpkg-divert --list | grep $1)
+    if [ "$DIVERTS" == "" ]; then
+      dpkg-divert --add --rename --divert $1.divert $1
+    fi
+  fi
+}
+
+# Function to remove a divert
+function remove_divert {
+  if [ ! -z "$1" ]; then
+    DIVERTS=$(dpkg-divert --list | grep $1 | awk '{print $3}')
+    for DIVERT in $DIVERTS; do
+      sudo dpkg-divert --rename --remove $DIVERT
+      # Sometimes it's forbidden to rename diverts
+      CHKDIVERT=$(dpkg-divert --list | grep $DIVERT | awk '{print $3}')
+      if [ "$CHKDIVERT" != "" ]; then
+        sudo dpkg-divert --remove $DIVERT
+      fi
+    done
+  fi
+}
+
 # ==============================================================
 # Configure pre upgrade commands below
 # ==============================================================
 # ==============================================================
-wget http://home.solydxk.com/umfiles/prd/solydfixes -O /tmp/solydfixes
-if [ -e /tmp/solydfixes ]; then
-  chmod +x /tmp/solydfixes
-  . /tmp/solydfixes -kdyft
-  rm /tmp/solydfixes
-else
-  if [ "$RELEASE" == "solydk32" ] || [ "$RELEASE" == "solydk64" ]; then
-    apt-get install --yes --force-yes python-kde4=4:4.12.2-3 python3-pykde4=4:4.12.2-3
-  fi
-fi
-
-handle_pck 'apt-listchanges' 'purge' 'all'
-handle_pck 'userconfig' 'purge' 'solydk32'
-handle_pck 'userconfig' 'purge' 'solydk64'
-handle_pck 'kuser' 'install' 'solydk32'
-handle_pck 'kuser' 'install' 'solydk64'
-
-sed -i 's/ kdenext//' /etc/apt/sources.list
+remove_divert 'lmde'

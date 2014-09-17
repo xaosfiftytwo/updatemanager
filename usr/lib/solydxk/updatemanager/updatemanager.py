@@ -572,6 +572,8 @@ class UpdateManager(object):
                 self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
 
             if nid == "umrefresh":
+                # Build installed packages info list
+                self.apt.createPackagesInfoList()
                 # Run post update when needed
                 self.postUpdate()
 
@@ -599,7 +601,7 @@ class UpdateManager(object):
                 elif nid == 'umstable':
                     # Save stable version in hist file
                     self.umglobal.saveHistVersion("stable", self.umglobal.serverStableVersion)
-                    self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_command_done", "debug")
+                    self.log.write("Save history stable= %s" % self.umglobal.serverStableVersion, "UM.on_command_done", "debug")
                     self.deleteScripts()
                 elif nid == 'umup':
                     # Save up version in hist file

@@ -80,7 +80,7 @@ launcher = ''
 if os.geteuid() > 0:
     launcher = "gksudo --message \"<b>%s</b>\"" % msg
     if os.path.exists('/usr/bin/kdesudo'):
-        launcher = "kdesudo -n -i /usr/share/solydxk/updatemanager/icons/base.png -d --comment \"<b>%s</b>\"" % msg
+        launcher = "kdesudo -n -i 'update-manager' -d --comment \"<b>%s</b>\"" % msg
 
 def isRunningLive():
     if force:
@@ -95,7 +95,7 @@ def showMsg(title, message):
         dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, message)
         dialog.set_markup("<b>%s</b>" % title)
         dialog.format_secondary_markup(message)
-        dialog.set_icon_from_file("/usr/share/solydxk/updatemanager/icons/base.png")
+        dialog.set_icon_from_name("update-manager")
         dialog.run()
         dialog.destroy()
 

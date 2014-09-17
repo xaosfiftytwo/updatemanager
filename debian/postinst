@@ -41,6 +41,8 @@ case "$1" in
 	chmod 755 "$DIR/updatemanagertray.py"
 	chmod 755 "/usr/bin/updatemanager"
 	
+	/usr/lib/solydxk/system/adjust.py
+	
 	# Create group
 	#addgroup --quiet updatemanager
 	# Add existing users to group

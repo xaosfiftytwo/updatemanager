@@ -144,14 +144,11 @@ fi
 if [ -e /usr/share/mime/packages/kde.xml ]; then
   sed -i -e /\<.*fake.*\>/,/^$/d /usr/share/mime/packages/kde.xml
 fi
+# Set the right permissions on hddtemp
+if [ -e /usr/sbin/hddtemp ]; then
+  chmod 4755 /usr/sbin/hddtemp
+fi
 # ==============================================================
 
 
 # Configure the individual packages, and configuration files here
-
-if [ -e /usr/sbin/hddtemp ]; then
-  chmod 4755 /usr/sbin/hddtemp
-fi
-
-handle_pck 'solydxk-locale' 'install' 'all'
-

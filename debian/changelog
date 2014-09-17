@@ -1,16 +1,22 @@
-updatemanager (2.4.0) debian; urgency=low
+updatemanager (2.4.1) solydxk; urgency=low
+
+  * Resolved bug not finishing correctly after upgrade.
+
+ -- Schoelje <schoelje@solydxk.com>  Sun, 16 Aug 2014 21:00:00 +0100
+
+updatemanager (2.4.0) solydxk; urgency=low
 
   * Resolved bug crashing when available version is not set.
 
  -- Schoelje <schoelje@solydxk.com>  Mon, 28 Jul 2014 16:00:00 +0100
 
-updatemanager (2.3.9) debian; urgency=low
+updatemanager (2.3.9) solydxk; urgency=low
 
   * Emergency fix
 
  -- Schoelje <schoelje@solydxk.com>  Wed, 16 Jul 2014 08:00:00 +0100
 
-updatemanager (2.3.7) debian; urgency=low
+updatemanager (2.3.7) solydxk; urgency=low
 
   * Added system maintenance
   * Moved apt configuration to solydxk-system
@@ -19,26 +25,26 @@ updatemanager (2.3.7) debian; urgency=low
 
  -- Schoelje <schoelje@solydxk.com>  Mon, 07 Jul 2014 19:00:00 +0100
 
-updatemanager (2.2.2) debian; urgency=low
+updatemanager (2.2.2) solydxk; urgency=low
 
   * Moved locale to solydxk-locale
 
  -- Schoelje <schoelje@solydxk.com>  Thu, 26 Jun 2014 08:00:00 +0100
 
-updatemanager (2.2.1) debian; urgency=low
+updatemanager (2.2.1) solydxk; urgency=low
 
   * Resolved mirror speed bug throwing errors.
   * Improved error handling when reloading UM.
 
  -- Schoelje <schoelje@solydxk.com>  Thu, 05 Jun 2014 10:00:00 +0100
 
-updatemanager (2.1.9) debian; urgency=low
+updatemanager (2.1.9) solydxk; urgency=low
 
   * Refresh tray after update.
 
  -- Schoelje <schoelje@solydxk.com>  Thu, 28 May 2014 16:00:00 +0100
 
-updatemanager (2.1.8) debian; urgency=low
+updatemanager (2.1.8) solydxk; urgency=low
 
   * Improved handling of terminal output
   * Added general settings tab in preferences window
@@ -46,7 +52,7 @@ updatemanager (2.1.8) debian; urgency=low
 
  -- Schoelje <schoelje@solydxk.com>  Thu, 01 May 2014 09:00:00 +0100
 
-updatemanager (2.1.0) debian; urgency=low
+updatemanager (2.1.0) solydxk; urgency=low
 
   * Use dist-upgrade to extrapolate package information
   * Added translations: ca, el, nl
@@ -56,14 +62,14 @@ updatemanager (2.1.0) debian; urgency=low
 
  -- Schoelje <schoelje@solydxk.com>  Tue, 15 Apr 2014 23:00:00 +0100
 
-updatemanager (2.0.1) debian; urgency=low
+updatemanager (2.0.1) solydxk; urgency=low
 
   * Check for apt errors
   * Resolve upgradable package discrepancy
 
  -- Schoelje <schoelje@solydxk.com>  Sun, 06 Apr 2014 19:00:00 +0100
 
-updatemanager (2.0.0) debian; urgency=low
+updatemanager (2.0.0) solydxk; urgency=low
 
   * Total rework of the old Update Manager
 
