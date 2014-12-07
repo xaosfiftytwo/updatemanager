@@ -18,19 +18,16 @@ gettext.install("updatemanager", "/usr/share/locale")
 msg = _('Please enter your password')
 scriptDir = join(abspath(dirname(__file__)), "../lib/solydxk/updatemanager")
 
-# Clear Update Pack history
+# Clear update history
 def clearUpHistory():
     histFile = join(scriptDir, "files/updatemanager.hist")
     resetLine = None
     if exists(histFile):
-        print(("> Clear up history file"))
+        print(("> Clear update history file"))
         with open(histFile, 'r') as f:
             for line in reversed(f.readlines()):
-                if "stable=" in line:
-                    resetLine = "stable=2000.01.01\n"
-                    break
-                elif "up=" in line:
-                    resetLine = "up=2000.01.01\n"
+                if "upd=" in line:
+                    resetLine = "upd=2000.01.01\n"
                     break
         if resetLine is not None:
              with open(histFile, 'w') as f:
@@ -45,13 +42,13 @@ Options:
   -p (--pref): Show the preference window
   -t (--tray): Load the tray icon only
   -f (--force): Force start in a live environment
-  -u (--clear-up): Clear Update Pack history
+  -u (--clear-upd): Clear Update Pack history
   -h (--help): Show this help"""
     print(hlp)
 
 # Handle arguments
 try:
-    opts, args = getopt.getopt(sys.argv[1:], 'hptfru', ['help', 'pref', 'tray', 'force', 'reload', 'clear-up'])
+    opts, args = getopt.getopt(sys.argv[1:], 'hptfru', ['help', 'pref', 'tray', 'force', 'reload', 'clear-upd'])
 except getopt.GetoptError:
     usage()
     sys.exit(2)
@@ -95,7 +92,7 @@ def showMsg(title, message):
         dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, message)
         dialog.set_markup("<b>%s</b>" % title)
         dialog.format_secondary_markup(message)
-        dialog.set_icon_from_name("update-manager")
+        dialog.set_icon_name("update-manager")
         dialog.run()
         dialog.destroy()
 

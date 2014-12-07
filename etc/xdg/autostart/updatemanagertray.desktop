@@ -1,7 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=updatemanagertray
+Name[nl]=updatemanagertray
 Comment=Update Manager Tray
+Comment[nl]=Update Manager Tray
 Icon=stock_lock
 Exec=updatemanager -t
 Terminal=false

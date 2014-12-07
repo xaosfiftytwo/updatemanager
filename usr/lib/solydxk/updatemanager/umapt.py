@@ -20,6 +20,7 @@ class UmApt(object):
         self.packagesInfo = []
 
         self.downgradablePackages = []
+        self.kernelPackages = []
         self.upgradablePackages = []
         self.newPackages = []
         self.removedPackages = []
@@ -42,28 +43,16 @@ class UmApt(object):
         # Loop through each line and fill the package lists
         for line in lst:
             items = line.split(" ")
-            if self.umglobal.isStable:
+            pck = items[0].split(":")[0]
+            if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
                 pck = items[0].split("/")[0]
-                ver = items[1]
-                avVer = ''
-                if "uptodate" in line:
-                    ver = items[len(items) - 1]
-                    avVer = ver
-                elif "upgradeable" in line:
-                    ver = items[len(items) - 3]
-                    avVer = items[len(items) - 1]
-                self.packagesInfo.append([pck, ver, avVer])
-            else:
-                pck = items[0].split(":")[0]
-                if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
-                    pck = items[0].split("/")[0]
-                ver = items[1]
-                avVer = ''
-                if "uptodate" in line:
-                    avVer = ver
-                elif "upgradeable" in line:
-                    avVer = items[len(items) - 1]
-                self.packagesInfo.append([pck, ver, avVer])
+            ver = items[1]
+            avVer = ''
+            if "uptodate" in line:
+                avVer = ver
+            elif "upgradeable" in line:
+                avVer = items[len(items) - 1]
+            self.packagesInfo.append([pck, ver, avVer])
 
     def createPackageLists(self, customAptGetCommand=""):
         # Reset variables
@@ -75,8 +64,7 @@ class UmApt(object):
         # Create approriate command
         # Use env LANG=C to ensure the output of dist-upgrade is always en_US
         cmd = "env LANG=C bash -c 'apt-get dist-upgrade --assume-no'"
-        if self.umglobal.isStable:
-            cmd = "env LANG=C bash -c 'apt-get upgrade --assume-no'"
+        #cmd = "env LANG=C bash -c 'apt-get upgrade --assume-no'"
         if "apt-get" in customAptGetCommand:
             customAptGetCommand = customAptGetCommand.replace("--force-yes", "")
             customAptGetCommand = customAptGetCommand.replace("--assume-yes", "")
@@ -156,6 +144,22 @@ class UmApt(object):
                 avVer = self.getDowngradablePackageVersion(pck)
                 if ver != avVer:
                     self.downgradablePackages.append([pck, ver, avVer])
+
+    def fillKernelPackages(self):
+        self.kernelPackages = []
+        # Use env LANG=C to ensure the output of apt-show-versions is always en_US
+        cmd = "env LANG=C bash -c 'apt-show-versions | grep ^linux-'"
+        # Get the output of the command in a list
+        lst = self.ec.run(cmd=cmd, realTime=False)
+
+        # Loop through each line and fill the package lists
+        for line in lst:
+            items = line.split(" ")
+            pck = items[0].split(":")[0]
+            if "-image-" in pck \
+            or "-headers-" in pck \
+            or "-kbuild-" in pck:
+                self.kernelPackages.append([pck, items[1], ""])
 
     def fillOrphanedPackages(self):
         self.orphanedPackages = []

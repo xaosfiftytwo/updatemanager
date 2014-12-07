@@ -21,8 +21,8 @@ class VirtualTerminal(Vte.Terminal):
 
         #Popup Menu
         self.menu = Gtk.Menu()
-        menu_item = Gtk.ImageMenuItem.new_from_stock("gtk-copy", None)
-        menu_item.connect_after("activate", lambda w: self.copy_clipboard())
+        menu_item = Gtk.MenuItem("copy")
+        menu_item.connect("activate", lambda w: self.copy_clipboard())
         self.menu.add(menu_item)
         self.menu.show_all()
 

@@ -18,7 +18,6 @@ class UmRefresh(object):
         #self.apt = UmApt(self.umglobal)
         self.pbExec = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-exec"])
         self.pbApply = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-apply"])
-        self.pbEmergency = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-emergency"])
         self.pbInfo = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-info"])
         self.pbDisconnected = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-disconnected"])
         self.pbError = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-error"])
@@ -28,10 +27,8 @@ class UmRefresh(object):
     def refresh(self):
         uptodateText = _("Your system is up to date")
         updavText = _("There are updates available")
-        emergencyText = _("There is an emergency update available")
         noConText = _("No internet connection")
         errText = _("Unable to retrieve sources information")
-        stableText = _("New stable version available")
         self.counter += 1
         print(("UmRefresh refresh count #: %d" % self.counter))
 
@@ -48,34 +45,16 @@ class UmRefresh(object):
                 self.umglobal.getServerInfo()
             if self.umglobal.hasInternet:
                 # Check update status
-                if self.umglobal.isStable:
-                    if self.umglobal.newEmergency:
-                        self.statusIcon.set_from_pixbuf(self.pbEmergency)
-                        self.statusIcon.set_tooltip_text(emergencyText)
-                    elif self.checkForUpdates():
-                        if self.umglobal.newNewStable:
-                            self.statusIcon.set_from_pixbuf(self.pbInfo)
-                            self.statusIcon.set_tooltip_text(stableText)
-                        else:
-                            self.statusIcon.set_from_pixbuf(self.pbInfo)
-                            self.statusIcon.set_tooltip_text(updavText)
+                if self.checkForUpdates():
+                    if self.umglobal.newUpd:
+                        self.statusIcon.set_from_pixbuf(self.pbInfo)
+                        self.statusIcon.set_tooltip_text(_("New update: %s" % self.umglobal.serverUpdVersion))
                     else:
-                        self.statusIcon.set_from_pixbuf(self.pbApply)
-                        self.statusIcon.set_tooltip_text(uptodateText)
+                        self.statusIcon.set_from_pixbuf(self.pbInfo)
+                        self.statusIcon.set_tooltip_text(updavText)
                 else:
-                    if self.umglobal.newEmergency:
-                        self.statusIcon.set_from_pixbuf(self.pbEmergency)
-                        self.statusIcon.set_tooltip_text(emergencyText)
-                    elif self.checkForUpdates():
-                        if self.umglobal.newUp:
-                            self.statusIcon.set_from_pixbuf(self.pbInfo)
-                            self.statusIcon.set_tooltip_text(_("New UP: %s" % self.umglobal.serverUpVersion))
-                        else:
-                            self.statusIcon.set_from_pixbuf(self.pbInfo)
-                            self.statusIcon.set_tooltip_text(updavText)
-                    else:
-                        self.statusIcon.set_from_pixbuf(self.pbApply)
-                        self.statusIcon.set_tooltip_text(uptodateText)
+                    self.statusIcon.set_from_pixbuf(self.pbApply)
+                    self.statusIcon.set_tooltip_text(uptodateText)
             else:
                 self.statusIcon.set_from_pixbuf(self.pbDisconnected)
                 self.statusIcon.set_tooltip_text(noConText)

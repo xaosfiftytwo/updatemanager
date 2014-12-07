@@ -21,32 +21,15 @@ class UmGlobal(object):
         self.settings = self.getSettings()
 
         self.umfiles = {}
-        self.umfiles['umemergency'] = join(self.filesDir, ".umemergency")
-        self.umfiles['umnewstable'] = join(self.filesDir, ".umnewstable")
-        self.umfiles['umstable'] = join(self.filesDir, ".umstable")
-        self.umfiles['umup'] = join(self.filesDir, ".umup")
+        self.umfiles['umupd'] = join(self.filesDir, ".umupd")
         self.umfiles['umrefresh'] = join(self.filesDir, ".umrefresh")
         self.umfiles['ummaintenance'] = join(self.filesDir, ".ummaintenance")
         self.umfiles['uminstallum'] = join(self.filesDir, ".uminstallum")
 
-        # UP variables
-        self.localUpVersion = None
-        self.serverUpVersion = None
-        self.newUp = False
-
-        # Stable variables
-        self.localStableVersion = None
-        self.serverStableVersion = None
-        self.localNewStableVersion = None
-        self.serverNewStableVersion = None
-        self.newStable = False
-        self.newNewStable = False
-        self.isStable = False
-
-        # Emergency variables
-        self.localEmergencyVersion = None
-        self.serverEmergencyVersion = None
-        self.newEmergency = False
+        # Variables
+        self.localUpdVersion = None
+        self.serverUpdVersion = None
+        self.newUpd = False
 
         self.hasInternet = False
         self.repos = []
@@ -77,35 +60,16 @@ class UmGlobal(object):
                     #print((">>> parameter = %s" % parameter))
                     #print((">>> value = %s" % value))
                     if len(value) > 0:
-                        if self.isStable:
-                            # Write the parameter, and the value if no hist file exist: assume clean install
-                            self.writeNonExistingHist(parameter)
-                            if parameter == "newstable":
-                                self.serverNewStableVersion = value
-                            elif parameter == "stable":
-                                self.serverStableVersion = value
-                            elif parameter == "emergencystable":
-                                self.serverEmergencyVersion = value
-                        else:
-                            # Write the parameter, and the value if no hist file exist: assume clean install
-                            self.writeNonExistingHist(parameter)
-                            if parameter == "up":
-                                self.serverUpVersion = value
-                            elif parameter == "emergency":
-                                self.serverEmergencyVersion = value
+                        # Write the parameter, and the value if no hist file exist: assume clean install
+                        self.writeNonExistingHist(parameter)
+                        if parameter == "upd":
+                            self.serverUpdVersion = value
 
                 cont.close()
 
                 # Check for new versions
-                if self.serverEmergencyVersion is not None:
-                    self.newEmergency = self.isNewServerVersion(self.serverEmergencyVersion, self.localEmergencyVersion)
-                elif self.serverNewStableVersion is not None:
-                    self.newNewStable = self.isNewServerVersion(self.serverNewStableVersion, self.localNewStableVersion)
-                else:
-                    if self.serverStableVersion is not None:
-                        self.newStable = self.isNewServerVersion(self.serverStableVersion, self.localStableVersion)
-                    elif self.serverUpVersion is not None:
-                        self.newUp = self.isNewServerVersion(self.serverUpVersion, self.localUpVersion)
+                if self.serverUpdVersion is not None:
+                    self.newUpd = self.isNewServerVersion(self.serverUpdVersion, self.localUpdVersion)
 
             except Exception as detail:
                 print(("There is no internet connection: %s" % detail))
@@ -140,7 +104,7 @@ class UmGlobal(object):
             return False
 
     def getLocalInfo(self):
-        # Get configured repos, and check whether they are pointing to stable (LTS) or not
+        # Get configured repos
         self.repos = []
         with open("/etc/apt/sources.list", 'r') as f:
             lines = f.readlines()
@@ -149,31 +113,15 @@ class UmGlobal(object):
             matchObj = re.search("^deb\s*(http[:\/a-zA-Z0-9\.\-]*)", line)
             if matchObj:
                 repo = matchObj.group(1)
-                if '/lts' in repo \
-                    or '/business' in repo \
-                    or ('solydxk-' in repo and '/debian' in repo):
-                    self.isStable = True
                 self.repos.append(repo)
 
         # Cleanup hist file first
         self.cleanupHist()
 
         # Get the latest local history versions
-        self.localEmergencyVersion = self.getHistVersion(parameter="emergency")
-        if self.localEmergencyVersion is None:
-            self.localEmergencyVersion = "2000.01.01"
-        if self.isStable:
-            self.localStableVersion = self.getHistVersion(parameter="stable")
-            if self.localStableVersion is None:
-                self.localStableVersion = "2000.01.01"
-
-            self.localNewStableVersion = self.getHistVersion(parameter="newstable")
-            if self.localNewStableVersion is None:
-                self.localNewStableVersion = "2000.01.01"
-        else:
-            self.localUpVersion = self.getHistVersion(parameter="up")
-            if self.localUpVersion is None:
-                self.localUpVersion = "2000.01.01"
+        self.localUpdVersion = self.getHistVersion(parameter="upd")
+        if self.localUpdVersion is None:
+            self.localUpdVersion = "2000.01.01"
 
     def getHistVersion(self, parameter, version=None):
         upHistFile = join(self.filesDir, self.settings['hist'])
@@ -200,19 +148,9 @@ class UmGlobal(object):
         if exists(upHistFile):
             # Remove old or incorrect entries
             os.system("sed -r '/=.*[a-zA-Z]+/d' %s" % upHistFile)
+            # Remove duplicate lines
+            os.system("awk '!a[$0]++' %s" % upHistFile)
             #os.chmod(upHistFile, 0o666)
-            if self.isStable:
-                # The old UM used up= for stable as well
-                # This UM has its own parameter stable=
-                stableHist = self.ec.run("grep 'stable=' %s" % upHistFile, False)
-                if stableHist:
-                    # Remove up history
-                    os.system("sed -i '/up=/d' %s" % upHistFile)
-                else:
-                    # Rename up history
-                    upHist = self.ec.run("grep 'up=' %s" % upHistFile, False)
-                    if upHist:
-                        os.system("sed -i 's/up=/stable=/' %s" % upHistFile)
 
     def saveHistVersion(self, parameter, value):
         # Check if parameter with value already exists
@@ -269,15 +207,11 @@ class UmGlobal(object):
         return mirrorData
 
     def getUmFilesUrl(self):
-        if self.localUpVersion is None:
+        if self.localUpdVersion is None:
             self.getLocalInfo()
 
         xkUrl = self.settings['solydxk']
-        url = "%s/%s" % (xkUrl, self.settings["umfilessubdir-prd"])
-        for repo in self.repos:
-            if "/testing" in repo:
-                url = "%s/%s" % (xkUrl, self.settings["umfilessubdir-tst"])
-                break
+        url = "%s/%s" % (xkUrl, self.settings["umfilesdir"])
         return url
 
     def getSettings(self):
@@ -286,15 +220,9 @@ class UmGlobal(object):
         section = 'url'
         try:
             settings["solydxk"] = self.cfg.getValue(section, 'solydxk')
-            settings["solydxk-debian"] = self.cfg.getValue(section, 'solydxk-debian')
-            settings["debian"] = self.cfg.getValue(section, 'debian')
         except:
             settings["solydxk"] = 'http://home.solydxk.com'
-            settings["solydxk-debian"] = 'http://debian.solydxk.com'
-            settings["debian"] = 'http://ftp.debian.org'
             self.saveSettings(section, 'solydxk', settings["solydxk"])
-            self.saveSettings(section, 'solydxk-debian', settings["solydxk-debian"])
-            self.saveSettings(section, 'debian', settings["debian"])
 
         section = 'localfiles'
         try:
@@ -312,46 +240,24 @@ class UmGlobal(object):
         section = 'serverfiles'
         try:
             settings["repo-info"] = self.cfg.getValue(section, 'repo-info')
-            settings["up-info"] = self.cfg.getValue(section, 'up-info')
-            settings["stable-info"] = self.cfg.getValue(section, 'stable-info')
-            settings["emergency-info"] = self.cfg.getValue(section, 'emergency-info')
-            settings["emergency-stable-info"] = self.cfg.getValue(section, 'emergency-stable-info')
-            settings["new-stable-info"] = self.cfg.getValue(section, 'new-stable-info')
+            settings["upd-info"] = self.cfg.getValue(section, 'upd-info')
         except:
             settings["repo-info"] = 'repo.info'
-            settings["up-info"] = 'update-pack.html'
-            settings["stable-info"] = 'stable.html'
-            settings["emergency-info"] = 'emergency.html'
-            settings["emergency-stable-info"] = 'emergency-stable.html'
-            settings["new-stable-info"] = 'new-stable.html'
+            settings["upd-info"] = 'update.html'
             self.saveSettings(section, 'repo-info', settings["repo-info"])
-            self.saveSettings(section, 'up-info', settings["up-info"])
-            self.saveSettings(section, 'stable-info', settings["stable-info"])
-            self.saveSettings(section, 'emergency-info', settings["emergency-info"])
-            self.saveSettings(section, 'emergency-stable-info', settings["emergency-stable-info"])
-            self.saveSettings(section, 'new-stable-info', settings["new-stable-info"])
+            self.saveSettings(section, 'upd-info', settings["upd-info"])
 
         section = 'serverscripts'
         try:
-            settings["emergency"] = self.cfg.getValue(section, 'emergency')
-            settings["emergency-stable"] = self.cfg.getValue(section, 'emergency-stable')
-            settings["pre-up"] = self.cfg.getValue(section, 'pre-up')
-            settings["post-up"] = self.cfg.getValue(section, 'post-up')
-            settings["pre-stable"] = self.cfg.getValue(section, 'pre-stable')
-            settings["post-stable"] = self.cfg.getValue(section, 'post-stable')
+            settings["pre-upd"] = self.cfg.getValue(section, 'pre-upd')
+            settings["post-upd"] = self.cfg.getValue(section, 'post-upd')
+
         except:
-            settings["emergency"] = 'emergency-[VERSION]'
-            settings["emergency-stable"] = 'emergency-stable-[VERSION]'
-            settings["pre-up"] = 'pre-up-[VERSION]'
-            settings["post-up"] = 'post-up-[VERSION]'
-            settings["pre-stable"] = 'pre-stable-[VERSION]'
-            settings["post-stable"] = 'post-stable-[VERSION]'
-            self.saveSettings(section, 'emergency', settings["emergency"])
-            self.saveSettings(section, 'emergency-stable', settings["emergency-stable"])
-            self.saveSettings(section, 'pre-up', settings["pre-up"])
-            self.saveSettings(section, 'post-up', settings["post-up"])
-            self.saveSettings(section, 'pre-stable', settings["pre-stable"])
-            self.saveSettings(section, 'post-stable', settings["post-stable"])
+            settings["pre-upd"] = 'pre-upd-[VERSION]'
+            settings["post-upd"] = 'post-upd-[VERSION]'
+            self.saveSettings(section, 'pre-upd', settings["pre-upd"])
+            self.saveSettings(section, 'post-upd', settings["post-upd"])
+
 
         section = 'mirror'
         try:
@@ -370,7 +276,6 @@ class UmGlobal(object):
         try:
             settings["icon-apply"] = self.cfg.getValue(section, 'icon-apply')
             settings["icon-disconnected"] = self.cfg.getValue(section, 'icon-disconnected')
-            settings["icon-emergency"] = self.cfg.getValue(section, 'icon-emergency')
             settings["icon-error"] = self.cfg.getValue(section, 'icon-error')
             settings["icon-exec"] = self.cfg.getValue(section, 'icon-exec')
             settings["icon-info"] = self.cfg.getValue(section, 'icon-info')
@@ -380,7 +285,6 @@ class UmGlobal(object):
         except:
             settings["icon-apply"] = '/usr/share/solydxk/updatemanager/icons/base-apply.png'
             settings["icon-disconnected"] = '/usr/share/solydxk/updatemanager/icons/base-disconnected.png'
-            settings["icon-emergency"] = '/usr/share/solydxk/updatemanager/icons/base-emergency.png'
             settings["icon-error"] = '/usr/share/solydxk/updatemanager/icons/base-error.png'
             settings["icon-exec"] = '/usr/share/solydxk/updatemanager/icons/base-exec.png'
             settings["icon-info"] = '/usr/share/solydxk/updatemanager/icons/base-info.png'
@@ -389,7 +293,6 @@ class UmGlobal(object):
             settings["icon-warning"] = '/usr/share/solydxk/updatemanager/icons/base-warning.png'
             self.saveSettings(section, 'icon-apply', settings["icon-apply"])
             self.saveSettings(section, 'icon-disconnected', settings["icon-disconnected"])
-            self.saveSettings(section, 'icon-emergency', settings["icon-emergency"])
             self.saveSettings(section, 'icon-error', settings["icon-error"])
             self.saveSettings(section, 'icon-exec', settings["icon-exec"])
             self.saveSettings(section, 'icon-info', settings["icon-info"])
@@ -404,9 +307,7 @@ class UmGlobal(object):
             if bln == "false":
                 settings["allow-terminal-user-input"] = False
             settings["hrs-check-status"] = int(self.cfg.getValue(section, 'hrs-check-status'))
-            settings["umfilessubdir-prd"] = self.cfg.getValue(section, 'umfilessubdir-prd')
-            settings["umfilessubdir-tst"] = self.cfg.getValue(section, 'umfilessubdir-tst')
-            settings["testing-repo-matches"] = self.cfg.getValue(section, 'testing-repo-matches').split(",")
+            settings["umfilesdir"] = self.cfg.getValue(section, 'umfilesdir')
             settings["apt-packages"] = self.cfg.getValue(section, 'apt-packages').split(",")
             settings["hide-tabs"] = self.cfg.getValue(section, 'hide-tabs').split(",")
             settings["um-dependencies"] = self.cfg.getValue(section, 'um-dependencies').split(",")
@@ -414,18 +315,14 @@ class UmGlobal(object):
         except:
             settings["allow-terminal-user-input"] = True
             settings["hrs-check-status"] = 1
-            settings["umfilessubdir-prd"] = 'umfiles/prd'
-            settings["umfilessubdir-tst"] = 'umfiles/tst'
-            settings["testing-repo-matches"] = ["business-testing", "/testing"]
+            settings["umfilesdir"] = 'umfiles'
             settings["apt-packages"] = ["dpkg", "apt-get", "synaptic", "adept", "adept-notifier"]
             settings["hide-tabs"] = ["maintenance"]
             settings["um-dependencies"] = ["gksu", "apt-show-versions", "deborphan", "apt", "curl", "python3-gi", "python-vte", "gir1.2-vte-2.90", "gir1.2-webkit-3.0", "python3", "gir1.2-gtk-3.0", "python3-pyinotify"]
             settings["apt-get-string"] = 'DEBIAN_FRONTEND=gnome apt-get --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes'
             self.saveSettings(section, 'allow-terminal-user-input', str(settings["allow-terminal-user-input"]).lower())
             self.saveSettings(section, 'hrs-check-status', settings["hrs-check-status"])
-            self.saveSettings(section, 'umfilessubdir-prd', settings["umfilessubdir-prd"])
-            self.saveSettings(section, 'umfilessubdir-tst', settings["umfilessubdir-tst"])
-            self.saveSettings(section, 'testing-repo-matches', ",".join(settings["testing-repo-matches"]))
+            self.saveSettings(section, 'umfilesdir', settings["umfilesdir"])
             self.saveSettings(section, 'apt-packages', ",".join(settings["apt-packages"]))
             self.saveSettings(section, 'hide-tabs', ",".join(settings["hide-tabs"]))
             self.saveSettings(section, 'um-dependencies', ",".join(settings["um-dependencies"]))
@@ -519,7 +416,9 @@ class UmGlobal(object):
                 self.log.write("Reload UM: %s" % str(err), "UM.reloadWindow", "error")
 
     def getKernelVersion(self):
-        return self.ec.run(cmd="uname -r", realTime=False)[0]
+        version = self.ec.run(cmd="uname -r", realTime=False)[0]
+        ind = version.rindex("-")
+        return version[0:ind]
 
     def getKernelArchitecture(self):
         return self.ec.run(cmd="uname -m", realTime=False)[0]
@@ -531,10 +430,7 @@ class UmGlobal(object):
         return distribution
 
     def isUpgrading(self):
-        if exists(self.umfiles['umemergency']) or \
-           exists(self.umfiles['umnewstable']) or \
-           exists(self.umfiles['umstable']) or \
-           exists(self.umfiles['umup']):
+        if exists(self.umfiles['umupd']):
             return True
         else:
             return False

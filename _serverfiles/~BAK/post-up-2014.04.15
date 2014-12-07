@@ -7,7 +7,7 @@ DEBUG=false
 RELEASE=$(cat /etc/solydxk/info | grep EDITION= | cut -d'=' -f2)
 
 BITS=$(uname -m)
-echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tRelease: $RELEASE $BITS"
+echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tRelease: $RELEASE $BITS"
 
 # Function to install a given package
 # Parameters:
@@ -21,7 +21,7 @@ function handle_pck {
     CONTINUE=true
     
     if [ "$DISTRO" != "all" ] && [ "$DISTRO" != "$RELEASE" ]; then
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tdo not $ACTION $PCK on $RELEASE ($DISTRO only)"
         CONTINUE=false
     fi
 
@@ -29,33 +29,30 @@ function handle_pck {
 	PCKINST=$(dpkg-query -l $PCK | grep ^i)
 	if [ "${PCKINST:0:1}" != "i" ]; then
 	    if [ "$ACTION" != "install" ] && [ "$ACTION" != "forceinstall" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\t$ACTION not needed, $PCK not installed"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\t$ACTION not needed, $PCK not installed"
 		CONTINUE=false
 	    fi
 	    PCKINST=$PCK
 	else
 	    if [ "$ACTION" == "install" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\t$ACTION not needed, $PCK already installed"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\t$ACTION not needed, $PCK already installed"
 		CONTINUE=false
 	    fi
 	fi
 	
 	if $CONTINUE; then
 	    if [ "$ACTION" == "forceremove" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tdpkg --force-remove-reinstreq -P $PCK"
 		if ! $DEBUG; then
 		    dpkg --force-remove-reinstreq -P $PCK
 		fi
 	    else
-		if [ "$ACTION" == "reinstall" ]; then
+		if [ "$ACTION" == "reinstall" ] || [ "$ACTION" == "forceinstall" ]; then
 		    ACTION="install --reinstall"
-		elif [ "$ACTION" == "forceinstall" ]; then
-		    ACTION="install --reinstall -o Dpkg::Options::='--force-overwrite'"
 		fi
-		
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tapt-get $ACTION $PCK"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tapt-get $ACTION $PCK"
 		if ! $DEBUG; then
-		    apt-get $ACTION --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes $PCK
+		    apt-get $ACTION -y --force-yes $PCK
 		fi
 	    fi
 	fi
@@ -93,20 +90,20 @@ function handle_cnf {
     if [ -e $CNF ]; then
 	if grep -Fq $OPT $CNF; then
 	    if [ "$OPT" != "$LINE" ]; then
-		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\t$CNF : replace $OPT with $LINE"
+		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\t$CNF : replace $OPT with $LINE"
 		if ! $DEBUG; then
 		    sed -i "s/$ESCOPT/$LINE/" $CNF
 		fi
 	    fi
 	else
 	    if [ "$APPAFTER" == "" ]; then
-	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tAppend $LINE to $CNF"
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tAppend $LINE to $CNF"
 	        if ! $DEBUG; then
 		    echo >> $CNF
 		    echo -e "$LINE" >> $CNF
 		fi
 	    else
-	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-UpScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
+	        echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPost-UpScript\tDEBUG\tAppend $LINE after $APPAFTER in $CNF"
 	        if ! $DEBUG; then
 	            sed -i "\'/\$APPAFTER/a \$LINE\'" $CNF
 	        fi
@@ -129,40 +126,22 @@ function unhold_pck {
   fi
 }
 
-# Function to seed debconf answers
-function preseed {
-  if [ ! -z "$1" ]; then
-    echo "$1" | debconf-set-selections
-  fi
-}
-
-# Function to divert file
-function divert {
-  if [ -f "$1" ]; then
-    DIVERTS=$(dpkg-divert --list | grep $1)
-    if [ "$DIVERTS" == "" ]; then
-      dpkg-divert --add --rename --divert $1.divert $1
-    fi
-  fi
-}
-
-# Function to remove a divert
-function remove_divert {
-  if [ ! -z "$1" ]; then
-    DIVERTS=$(dpkg-divert --list | grep $1 | awk '{print $3}')
-    for DIVERT in $DIVERTS; do
-      sudo dpkg-divert --rename --remove $DIVERT
-      # Sometimes it's forbidden to rename diverts
-      CHKDIVERT=$(dpkg-divert --list | grep $DIVERT | awk '{print $3}')
-      if [ "$CHKDIVERT" != "" ]; then
-        sudo dpkg-divert --remove $DIVERT
-      fi
-    done
-  fi
-}
-
 # ==============================================================
-# Configure pre upgrade commands below
+# Leave these as-is
 # ==============================================================
+#handle_pck 'nvidia-kernel-dkms' 'reinstall' 'all'
+handle_cnf '/usr/share/applications/display.im6.desktop' 'NoDisplay=true'
+handle_cnf '/usr/share/applications/debian-uxterm.desktop' 'NoDisplay=true'
+handle_cnf '/usr/share/applications/debian-xterm.desktop' 'NoDisplay=true'
+# Fix Synaptic in SolydX not starting
+if [ -e /usr/share/applications/synaptic.desktop ]; then
+  sed -i 's/synaptic-pkexec/gksudo synaptic/' /usr/share/applications/synaptic.desktop
+fi
+# Remove fake mime types in kde
+if [ -e /usr/share/mime/packages/kde.xml ]; then
+  sed -i -e /\<.*fake.*\>/,/^$/d /usr/share/mime/packages/kde.xml
+fi
 # ==============================================================
-remove_divert 'lmde'
+
+
+# Configure the individual packages, and configuration files here

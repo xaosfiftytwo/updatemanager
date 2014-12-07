@@ -41,6 +41,14 @@ case "$1" in
 	chmod 755 "$DIR/updatemanagertray.py"
 	chmod 755 "/usr/bin/updatemanager"
 	
+	if [ -e "$DIR/files/updatemanager.hist" ]; then
+	  sed -i 's/up=/upd=/g' "$DIR/files/updatemanager.hist"
+	fi
+	
+	if [ -f /etc/xdg/autostart/updatemanager.desktop ]; then
+	  rm /etc/xdg/autostart/updatemanager.desktop
+	fi
+	
 	/usr/lib/solydxk/system/adjust.py
 	
 	# Create group

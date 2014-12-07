@@ -1,3 +1,0 @@
-Acquire::Check-Valid-Until "false";
-Acquire::Language "environment";
-APT::Install-Recommends "true";

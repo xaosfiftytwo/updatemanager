@@ -202,23 +202,12 @@ class UpdateManagerPref(object):
     def fillTreeViewMirrors(self):
         # Fill mirror list
         if len(self.mirrors) > 1:
-            testing = False
-            for repo in self.umglobal.repos:
-                for match in self.umglobal.settings["testing-repo-matches"]:
-                    if match in repo:
-                        testing = True
-                        break
-            if testing:
-                msg = _("You are pointing to the testing repositories.\n\n"
-                        "Only production repositories do have mirrors.\n"
-                        "Please change to production manually.")
-                self.showInfo(self.lblMirrors.get_label(), msg, self.window)
-                self.nbPref.get_nth_page(1).set_visible(False)
-            else:
-                # Fill treeview
-                columnTypesList = ['bool', 'str', 'str', 'str', 'str']
-                self.tvMirrorsHandler.fillTreeview(self.mirrors, columnTypesList, 0, 400, True)
-                self.nbPref.get_nth_page(1).set_visible(True)
+            # Fill treeview
+            columnTypesList = ['bool', 'str', 'str', 'str', 'str']
+            self.tvMirrorsHandler.fillTreeview(self.mirrors, columnTypesList, 0, 400, True)
+
+            # TODO - We have no mirrors: hide the tab until we do
+            self.nbPref.get_nth_page(1).set_visible(False)
         else:
             self.nbPref.get_nth_page(1).set_visible(False)
 
@@ -280,14 +269,8 @@ class UpdateManagerPref(object):
         for mirror in  self.activeMirrors:
             if mirror:
                 self.log.write("Mirror data: %s" % ' '.join(mirror), "UMPref.getMirrors", "debug")
-                if self.umglobal.isStable:
-                    if mirror[1].lower() == 'business':
-                        blnCurrent = self.isUrlInSources(mirror[2])
-                        mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
-                else:
-                    if mirror[1].lower() != 'business':
-                        blnCurrent = self.isUrlInSources(mirror[2])
-                        mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
+                blnCurrent = self.isUrlInSources(mirror[2])
+                mirrors.append([blnCurrent, mirror[0], mirror[1], mirror[2], ''])
         return mirrors
 
     def isUrlInSources(self, url):

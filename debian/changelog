@@ -1,20 +1,50 @@
+updatemanager (2.5.0) solydxk; urgency=low
+
+  * Removed all Update Pack related code
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 01 Dec 2014 18:00:00 +0200
+
+updatemanager (2.4.5) solydxk; urgency=low
+
+  * Resolved bug UM not starting at boot
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sat, 08 Nov 2014 11:00:00 +0200
+
+updatemanager (2.4.4) solydxk; urgency=low
+
+  * Improved translation handling
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 02 Nov 2014 10:00:00 +0200
+
+updatemanager (2.4.3) solydxk; urgency=low
+
+  * Listing old kernel packages now lists all kernel packages that are not booted even if they are still available in the repository.
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 01 Oct 2014 11:00:00 +0100
+
+updatemanager (2.4.2) solydxk; urgency=low
+
+  * Resolved bug not refreshing packages version info.
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 27 Aug 2014 21:00:00 +0100
+
 updatemanager (2.4.1) solydxk; urgency=low
 
   * Resolved bug not finishing correctly after upgrade.
 
- -- Schoelje <schoelje@solydxk.com>  Sun, 16 Aug 2014 21:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 16 Aug 2014 21:00:00 +0100
 
 updatemanager (2.4.0) solydxk; urgency=low
 
   * Resolved bug crashing when available version is not set.
 
- -- Schoelje <schoelje@solydxk.com>  Mon, 28 Jul 2014 16:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 28 Jul 2014 16:00:00 +0100
 
 updatemanager (2.3.9) solydxk; urgency=low
 
   * Emergency fix
 
- -- Schoelje <schoelje@solydxk.com>  Wed, 16 Jul 2014 08:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 16 Jul 2014 08:00:00 +0100
 
 updatemanager (2.3.7) solydxk; urgency=low
 
@@ -23,26 +53,26 @@ updatemanager (2.3.7) solydxk; urgency=low
   * Fix mirror switch whith dead mirrors
   * Minor bugs resolved
 
- -- Schoelje <schoelje@solydxk.com>  Mon, 07 Jul 2014 19:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 07 Jul 2014 19:00:00 +0100
 
 updatemanager (2.2.2) solydxk; urgency=low
 
   * Moved locale to solydxk-locale
 
- -- Schoelje <schoelje@solydxk.com>  Thu, 26 Jun 2014 08:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 26 Jun 2014 08:00:00 +0100
 
 updatemanager (2.2.1) solydxk; urgency=low
 
   * Resolved mirror speed bug throwing errors.
   * Improved error handling when reloading UM.
 
- -- Schoelje <schoelje@solydxk.com>  Thu, 05 Jun 2014 10:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 05 Jun 2014 10:00:00 +0100
 
 updatemanager (2.1.9) solydxk; urgency=low
 
   * Refresh tray after update.
 
- -- Schoelje <schoelje@solydxk.com>  Thu, 28 May 2014 16:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 28 May 2014 16:00:00 +0100
 
 updatemanager (2.1.8) solydxk; urgency=low
 
@@ -50,7 +80,7 @@ updatemanager (2.1.8) solydxk; urgency=low
   * Added general settings tab in preferences window
   * Cleanup old hist file
 
- -- Schoelje <schoelje@solydxk.com>  Thu, 01 May 2014 09:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 01 May 2014 09:00:00 +0100
 
 updatemanager (2.1.0) solydxk; urgency=low
 
@@ -60,17 +90,17 @@ updatemanager (2.1.0) solydxk; urgency=low
   * Minor GUI improvements
   * Some fixes for the BE editions
 
- -- Schoelje <schoelje@solydxk.com>  Tue, 15 Apr 2014 23:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Tue, 15 Apr 2014 23:00:00 +0100
 
 updatemanager (2.0.1) solydxk; urgency=low
 
   * Check for apt errors
   * Resolve upgradable package discrepancy
 
- -- Schoelje <schoelje@solydxk.com>  Sun, 06 Apr 2014 19:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 06 Apr 2014 19:00:00 +0100
 
 updatemanager (2.0.0) solydxk; urgency=low
 
   * Total rework of the old Update Manager
 
- -- Schoelje <schoelje@solydxk.com>  Thu, 27 Feb 2014 19:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 27 Feb 2014 19:00:00 +0100

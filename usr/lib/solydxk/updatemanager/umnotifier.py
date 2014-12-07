@@ -36,20 +36,14 @@ class EventHandler(pyinotify.ProcessEvent):
                 # Use idle_add to let the calling thread handle GUI stuff when there's time left
                 GObject.idle_add(self.changeIcon, "icon-exec", _("Refreshing update list..."))
             if not self.executing:
-                if event.pathname == self.umglobal.umfiles['umemergency'] or \
-                   event.pathname == self.umglobal.umfiles['umnewstable'] or \
-                   event.pathname == self.umglobal.umfiles['umstable'] or \
-                   event.pathname == self.umglobal.umfiles['umup']:
+                if event.pathname == self.umglobal.umfiles['umupd']:
                     print(("Creating: %s" % event.pathname))
                     self.executing = True
                     GObject.idle_add(self.changeIcon, "icon-exec", _("Installing updates..."))
 
     def process_IN_DELETE(self, event):
         print((">>> process_IN_DELETE: %s" % event.pathname))
-        if event.pathname == self.umglobal.umfiles['umemergency'] or \
-           event.pathname == self.umglobal.umfiles['umnewstable'] or \
-           event.pathname == self.umglobal.umfiles['umstable'] or \
-           event.pathname == self.umglobal.umfiles['umup'] or \
+        if event.pathname == self.umglobal.umfiles['umupd'] or \
            event.pathname == self.umglobal.umfiles['umrefresh']:
             print(("Deleting: %s" % event.pathname))
             self.executing = False

@@ -1,16 +1,30 @@
 Source: updatemanager
 Section: admin
 Priority: optional
-Maintainer: Schoelje <schoelje@solydxk.com>
-Build-Depends: debhelper (>= 5)
-Standards-Version: 3.7.2
+Maintainer: Arjen Balfoort <arjenbalfoort@solydxk.com>
+Build-Depends: debhelper (>= 9)
+  , python
+  , intltool
+X-Python-Version: >= 3.0
+Standards-Version: 3.9.5
+Vcs-Git: git://github.com/SolydXK/updatemanager.git
+Vcs-Browser: https://github.com/SolydXK/updatemanager
 
 Package: updatemanager
 Architecture: all
-Maintainer: Schoelje <schoelje@solydxk.com>
-Installed-Size: 450
-Depends: gksu, apt-show-versions, deborphan, apt, curl, python3-gi, python-vte, gir1.2-vte-2.90, gir1.2-webkit-3.0, python3, gir1.2-gtk-3.0, python3-pyinotify
-Section: admin
-Priority: optional
+Depends: ${misc:Depends}, ${python:Depends}
+  , gksu
+  , apt-show-versions
+  , deborphan
+  , apt, curl
+  , python3-gi
+  , python-vte
+  , gir1.2-vte-2.90
+  , gir1.2-webkit-3.0
+  , python3
+  , gir1.2-gtk-3.0
+  , python3-pyinotify
+Conflicts: solydxk-locale
+Replaces: solydxk-locale
 Description: SolydXK Update Manager
  Helps installing security updates and new versions of packages.

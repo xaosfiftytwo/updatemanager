@@ -1,0 +1,795 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: updatemanager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-12-02 10:47+0100\n"
+"PO-Revision-Date: 2013-12-24 11:12+0100\n"
+"Last-Translator: Schoelje <schoelje@solydxk.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: Italiano\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../usr/bin/updatemanager:18
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:396
+#, fuzzy
+msgid "Please enter your password"
+msgstr "Per favore, digitare la password per avviare il gestore aggiornamenti"
+
+#: ../usr/bin/updatemanager:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:47
+#: ../usr/share/applications/updatemanager.desktop.in.h:1
+msgid "Update Manager"
+msgstr "Gestore aggiornamenti"
+
+#: ../usr/bin/updatemanager:100
+msgid ""
+"Update Manager cannot be started in a live environment\n"
+"You can use the --force argument to start UM in a live environment"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:28
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:99
+msgid "Your system is up to date"
+msgstr "Il sistema è aggiornato"
+
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:29
+#, fuzzy
+msgid "There are updates available"
+msgstr "Aggiornamenti disponibili"
+
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:30
+#, fuzzy
+msgid "No internet connection"
+msgstr "Test della connessione iniziale"
+
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:31
+msgid "Unable to retrieve sources information"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:36
+#, fuzzy
+msgid "Refreshing..."
+msgstr "Aggiorna"
+
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:51
+#, fuzzy, python-format
+msgid "New update: %s"
+msgstr "Nessun aggiornamento selezionato"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:92
+#, fuzzy
+msgid "SolydXK Update Manager"
+msgstr "Gestore aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:93
+#, fuzzy
+msgid "Install"
+msgstr "Installa aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:44
+msgid "Refresh"
+msgstr "Aggiorna"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:95
+msgid "Output"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:96
+msgid "Information"
+msgstr "Informazioni"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:53
+msgid "Preferences"
+msgstr "Preferenze"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:98
+#, fuzzy
+msgid "Packages"
+msgstr "Pacchetto"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:100
+msgid "Maintenance"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:101
+msgid "Execute"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:102
+#, fuzzy
+msgid "Select all"
+msgstr "Seleziona tutti"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:103
+#, fuzzy
+msgid "Not needed"
+msgstr "Non è necessaria alcuna installazione"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:104
+msgid "Clean cache"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:105
+#, fuzzy
+msgid "Downgrade"
+msgstr "Aggiorna"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:106
+#, fuzzy
+msgid "Not available"
+msgstr "Aggiornamenti disponibili"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:107
+#, fuzzy
+msgid "Old kernels"
+msgstr "Vecchia versione"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:108
+#, fuzzy
+msgid "Remove not needed packages."
+msgstr "Pacchetti ignorati"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:109
+msgid "Clean up the apt cache."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:110
+msgid "Only lower version is available."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:111
+msgid "Packages not in the repositories."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:112
+msgid "Remove old kernels."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:113
+msgid ""
+"Make sure you create\n"
+"a system image before you\n"
+"continue (e.g. Clonezilla)."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:117
+#, fuzzy
+msgid "The following packages will be upgraded:"
+msgstr "Il seguente pacchetto verrà rimosso:"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:118
+#, fuzzy
+msgid "The following NEW packages will be installed:"
+msgstr "I seguenti %d pacchetti verranno installati:"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:119
+#, fuzzy
+msgid "The following packages will be REMOVED:"
+msgstr "Il seguente pacchetto verrà rimosso:"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:120
+#, fuzzy
+msgid "The following packages have been kept back:"
+msgstr "Il seguente pacchetto verrà installato:"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:121
+#, fuzzy
+msgid "The following packages are going to be downgraded:"
+msgstr "Il seguente pacchetto verrà installato:"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:176
+msgid "Gathering information..."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:190
+#, fuzzy
+msgid "Version"
+msgstr "Vecchia versione"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:245
+#, fuzzy
+msgid "Continue installation?"
+msgstr "Non è necessaria alcuna installazione"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:305
+#, python-format
+msgid ""
+"You might need to run this several times.\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:311
+#, python-format
+msgid ""
+"Removing not available packages may break your system!\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:317
+#, python-format
+msgid ""
+"Once removed you will not be able to boot these kernels!\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:323
+#, python-format
+msgid ""
+"Downgrading packages may break your system!\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:358
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:620
+msgid "Package"
+msgstr "Pacchetto"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:358
+#, fuzzy
+msgid "Installed"
+msgstr "Installa aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:358
+#, fuzzy
+msgid "Available"
+msgstr "Aggiornamenti disponibili"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:364
+msgid "Hit the Execute button to clean the cache."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:417
+#, python-format
+msgid ""
+"\"%s\"\n"
+" did not return any results."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:435
+msgid ""
+"Do you want to completely clean the apt cache?\n"
+"\n"
+"When No, only unavailable installation packages are removed."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:441
+msgid "Apt cache has been cleaned."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:470
+msgid "Execute maintenance changes?"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:576
+#, python-format
+msgid ""
+"Another program is locking the apt cache\n"
+"\n"
+"Please, close the program before refreshing:\n"
+"* %s"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:618
+msgid "blacklisted"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:620
+#, fuzzy
+msgid "Current version"
+msgstr "Nuova versione"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:620
+msgid "New version"
+msgstr "Nuova versione"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:85
+#, fuzzy
+msgid "Update Manager Preferences"
+msgstr "Gestore aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
+#, fuzzy
+msgid "Save mirrors"
+msgstr "Mirror dei repository"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+msgid "Check mirrors speed"
+msgstr "Controlla velocità mirror"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+msgid "Remove"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+msgid "Blacklist"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+msgid "Repository mirrors"
+msgstr "Mirror dei repository"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+msgid "General"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+msgid "Hide maintenance"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
+#, fuzzy
+msgid "Blacklisted packages"
+msgstr "Pacchetti ignorati"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+msgid "Select the fastest production repository"
+msgstr "Seleziona il repository più veloce"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+msgid "Available packages"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+msgid "Global settings"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+msgid "Check status every"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+msgid "hours"
+msgstr "ore"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+msgid "Current"
+msgstr "Attuale"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+msgid "Country"
+msgstr "Stato"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+msgid "Repository"
+msgstr "Repository"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+msgid "URL"
+msgstr "URL"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+msgid "Speed"
+msgstr "Velocità"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:379
+msgid "The new settings will take effect after UM restart."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:37
+msgid "Refreshing update list..."
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:42
+#, fuzzy
+msgid "Installing updates..."
+msgstr "Installazione aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:55
+msgid "Sources changed: start UM to refresh"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:45
+msgid "Quit"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:85
+msgid "Refresh finished"
+msgstr "Aggiornamento completato"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:109
+msgid "Cannot quit: upgrade in progress"
+msgstr ""
+
+#: ../usr/share/applications/updatemanager.desktop.in.h:2
+msgid "Show and install available updates"
+msgstr "Visualizza e installa aggiornamenti disponibili"
+
+#: ../etc/xdg/autostart/updatemanagertray.desktop.in.h:1
+#, fuzzy
+msgid "updatemanagertray"
+msgstr "Gestore aggiornamenti"
+
+#: ../etc/xdg/autostart/updatemanagertray.desktop.in.h:2
+#, fuzzy
+msgid "Update Manager Tray"
+msgstr "Gestore aggiornamenti"
+
+#, fuzzy
+#~ msgid "New stable version available"
+#~ msgstr "Nessun changelog disponibile"
+
+#~ msgid "Checking for updates"
+#~ msgstr "Controllo aggiornamenti"
+
+#~ msgid "Date"
+#~ msgstr "Data"
+
+#~ msgid "Software Updates"
+#~ msgstr "Aggiornamenti software"
+
+#~ msgid "%(selected)d update selected (%(size)s)"
+#~ msgstr "%(selected)d aggiornamento selezionato (%(size)s)"
+
+#~ msgid "%(selected)d updates selected (%(size)s)"
+#~ msgstr "%(selected)d aggiornamenti selezionati (%(size)s)"
+
+#~ msgid "Auto-Refresh"
+#~ msgstr "Aggiorna automaticamente"
+
+#~ msgid "Refresh the list of updates every:"
+#~ msgstr "Aggiorna la lista di aggiornamenti ogni:"
+
+#~ msgid ""
+#~ "Note: The list only gets refreshed while the update manager window is "
+#~ "closed (system tray mode)."
+#~ msgstr ""
+#~ "Nota: La lista viene aggiornata solamente quando la finestra del gestore "
+#~ "aggiornamenti è chiusa (modalità system tray)."
+
+#~ msgid "Update Method"
+#~ msgstr "Metodo di aggiornamento"
+
+#~ msgid "Icons"
+#~ msgstr "Icone"
+
+#~ msgid "Icon"
+#~ msgstr "Icona"
+
+#~ msgid "Status"
+#~ msgstr "Stato"
+
+#~ msgid "New Icon"
+#~ msgstr "Nuova icona"
+
+#~ msgid "Busy"
+#~ msgstr "Occupato"
+
+#~ msgid "System up-to-date"
+#~ msgstr "Sistema aggiornato"
+
+#~ msgid "Error"
+#~ msgstr "Errore"
+
+#~ msgid "Unknown state"
+#~ msgstr "Stato sconosciuto"
+
+#~ msgid "Applying updates"
+#~ msgstr "Applicazione degli aggiornamenti"
+
+#~ msgid "Startup delay (in seconds):"
+#~ msgstr "Ritardo di avvio (in secondi):"
+
+#~ msgid "Internet check (domain name or IP address):"
+#~ msgstr "Controllo Internet (nome dominio o indirizzo IP):"
+
+#~ msgid "Close Synaptic progress window after upgrade"
+#~ msgstr "Chiudi la finestra dei progressi di Synaptic dopo l'aggiornamento"
+
+#~ msgid "minutes"
+#~ msgstr "minuti"
+
+#~ msgid "days"
+#~ msgstr "giorni"
+
+#~ msgid "Please enter a package name:"
+#~ msgstr "Per favore, digitare il nome di un pacchetto:"
+
+#~ msgid "Ignore a package"
+#~ msgstr "Ignora un pacchetto"
+
+#~ msgid "Package name:"
+#~ msgstr "Nome pacchetto:"
+
+#~ msgid "All available upgrades for this package will be ignored."
+#~ msgstr ""
+#~ "Tutti gli aggiornamenti disponibili per questo pacchetto saranno ignorati."
+
+#~ msgid "History of updates"
+#~ msgstr "Cronologia degli aggiornamenti"
+
+#~ msgid "Update Pack Info"
+#~ msgstr "Aggiorna informazioni pacchetto"
+
+#~ msgid "Your system configuration:"
+#~ msgstr "La vostra configurazione di sistema:"
+
+#~ msgid "Current Update Pack available:"
+#~ msgstr "Pacchetto aggiornamenti attuale disponibile:"
+
+#~ msgid "Latest Update Pack used by this system:"
+#~ msgstr "Ultimo Pacchetto Aggiornamenti usato da questo sistema:"
+
+#~ msgid "Could not identify your APT sources"
+#~ msgstr "Impossibile identificare le sorgenti APT"
+
+#~ msgid "Your system is pointing to the LTS repository"
+#~ msgstr "Il sistema punta alla repository LTS"
+
+#~ msgid "Your system is pointing to "
+#~ msgstr "Il sistema punta a "
+
+#~ msgid "These repositories conflict with each other"
+#~ msgstr "Queste repository sono in conflitto"
+
+#~ msgid "Your system is not pointing to the SolydXK repositories"
+#~ msgstr "Il sistema non punta alle repository SolydXK"
+
+#~ msgid "Add \"deb http://"
+#~ msgstr "Aggiungi \"deb http://"
+
+#~ msgid "Your system is not pointing to any Debian repository"
+#~ msgstr "Il sistema non punta ad alcun repository Debian"
+
+#~ msgid "Your system is pointing directly to Debian"
+#~ msgstr "Il sistema punta direttamente a Debian"
+
+#~ msgid "Your system is pointing directly at deb-multimedia.org"
+#~ msgstr "Il sistema punta direttamente a deb-multimedia.org"
+
+#~ msgid ""
+#~ "Replace \"deb http://deb-multimedia.org testing main non-free\" with "
+#~ "\"deb http://"
+#~ msgstr ""
+#~ "Sostituire \"deb http://deb-multimedia.org testing main non-free\" con "
+#~ "\"deb http://"
+
+#~ msgid "Your system is pointing directly at security.debian.org"
+#~ msgstr "Il sistema punta direttamente a security.debian.org"
+
+#~ msgid ""
+#~ "Some of your repositories point to production, others point to testing"
+#~ msgstr "Alcune delle repository puntano a production, altre a testing."
+
+#~ msgid "Please check your APT sources."
+#~ msgstr "Per favore, controllare le sorgenti APT."
+
+#~ msgid "Your system is pointing to the \"SolydXK testing\" repository"
+#~ msgstr "Il sistema punta alla repository \"SolydXK testing\"."
+
+#~ msgid "This is only recommend for experienced users"
+#~ msgstr "È consigliabile solo per utenti esperti"
+
+#~ msgid ""
+#~ "Replace \"deb http://security.debian.org testing/updates main contrib non-"
+#~ "free\" with \"deb http://"
+#~ msgstr ""
+#~ "Sostituire \"deb http://security.debian.org testing/updates main contrib "
+#~ "non-free\" con \"deb http://"
+
+#~ msgid ""
+#~ "Some of your repositories point to production, but multimedia to testing"
+#~ msgstr ""
+#~ "Alcune delle repository puntano a production, ma multimedia a testing"
+
+#~ msgid "Your system is pointing to the \"SolydXK production\" repository"
+#~ msgstr "Il sistema punta alla repository \"SolydXK production"
+
+#~ msgid "Update Manager Log"
+#~ msgstr "Log del Gestore Aggiornamenti"
+
+#~ msgid "Permissions:"
+#~ msgstr "Permessi:"
+
+#~ msgid "Process ID:"
+#~ msgstr "ID Processo:"
+
+#~ msgid "Log file:"
+#~ msgstr "File di log:"
+
+#~ msgid "About"
+#~ msgstr "Informazioni su"
+
+#~ msgid "Exiting - requested by user"
+#~ msgstr "Uscita - richiesta dall'utente"
+
+#~ msgid "Launching updatemanager in root mode..."
+#~ msgstr "Avvio di updatemanager in modalità root..."
+
+#~ msgid "B"
+#~ msgstr "B"
+
+#~ msgid "KB"
+#~ msgstr "KB"
+
+#~ msgid "MB"
+#~ msgstr "MB"
+
+#~ msgid "GB"
+#~ msgstr "GB"
+
+#~ msgid "Ignore updates for this package"
+#~ msgstr "Ignora gli aggiornamenti di questo pacchetto"
+
+#~ msgid "Launching updatemanager in %(mode)s..."
+#~ msgstr "Avvio di updatemanager in %(mode)s..."
+
+#~ msgid "Size"
+#~ msgstr "Dimensione"
+
+#~ msgid "Clear"
+#~ msgstr "Ripristina"
+
+#~ msgid "Description"
+#~ msgstr "Descrizione"
+
+#~ msgid "Changelog"
+#~ msgstr "Changelog"
+
+#~ msgid "_File"
+#~ msgstr "_File"
+
+#~ msgid "Close"
+#~ msgstr "Chiudi"
+
+#~ msgid "_Edit"
+#~ msgstr "Modifica"
+
+#~ msgid "Software sources"
+#~ msgstr "Sorgenti software"
+
+#~ msgid "_View"
+#~ msgstr "_Visualizza"
+
+#~ msgid "Log"
+#~ msgstr "Log"
+
+#~ msgid "Visible columns"
+#~ msgstr "Colonne visibili"
+
+#~ msgid "_Help"
+#~ msgstr "Aiuto"
+
+#~ msgid ""
+#~ "Connection to the Internet successful (tried to read http://%(domain)s)"
+#~ msgstr ""
+#~ "Connesso a internet con successo (tentativo di leggere http://%(domain)s)"
+
+#~ msgid ""
+#~ "No connection found (tried to read http://%(domain)s), and to ping "
+#~ "%(ping)s - sleeping for %(delay)s seconds"
+#~ msgstr ""
+#~ "Nessuna connessione rilevata (tentativo di leggere http://%(domain)s), e "
+#~ "al ping %(ping)s - dormiente per %(delay)s secondi"
+
+#~ msgid "Connection found - checking for updates..."
+#~ msgstr "Connessione trovata - controllo aggiornamenti..."
+
+#~ msgid "Exception occured in main thread: %(error)s"
+#~ msgstr "Si è verificata un'eccezione nel thread principale: %(error)s"
+
+#~ msgid "Downloading changelog..."
+#~ msgstr "Scaricamento changelog"
+
+#~ msgid ""
+#~ "Click on Edit->Software Sources and tick the 'Source code' option to "
+#~ "enable access to the changelogs"
+#~ msgstr ""
+#~ "Cliccare su Modifica->Sorgenti software e spuntare l'opzione 'Codice "
+#~ "sorgente' per abilitare l'accesso ai changelog"
+
+#~ msgid "Install requested by user - check packages to install"
+#~ msgstr ""
+#~ "Installazione richiesta dall'utente - controllo pacchetti da installare"
+
+#~ msgid "This upgrade will trigger additional changes"
+#~ msgstr "Questo aggiornamento comporterà cambiamenti aggiuntivi"
+
+#~ msgid "The following %d packages will be removed:"
+#~ msgstr "I seguenti %d pacchetti verranno rimossi:"
+
+#~ msgid "Pre-install script started: %(pre)s"
+#~ msgstr "Script di preinstallazione avviato: %(pre)s"
+
+#~ msgid "Launch Synaptic to start the upgrade"
+#~ msgstr "Avviare Synaptic per avviare l'aggiornamento"
+
+#~ msgid "Please wait, this can take some time"
+#~ msgstr "Attendere, per favore, potrebbe volerci un po' di tempo"
+
+#~ msgid "Update is complete"
+#~ msgstr "L'aggiornamento è stato completato"
+
+#~ msgid "Synaptic has finished the upgrade"
+#~ msgstr "Synaptic ha completato l'aggiornamento"
+
+#~ msgid "Post-install script started: %(post)s"
+#~ msgstr "Script di postinstallazione avviato: %(post)s"
+
+#~ msgid "write new UP version %(newUpVersion)s to %(uphist)s/"
+#~ msgstr "scrivere la nuova versione UP %(newUpVersion)s in %(uphist)s/"
+
+#~ msgid "Installation finished"
+#~ msgstr "Installazione completata"
+
+#~ msgid "Updatemanager was updated, restarting it in root mode..."
+#~ msgstr "Updatemanager è stato aggiornato, riavvio in modalità root..."
+
+#~ msgid "Please enter your password to restart the update manager"
+#~ msgstr ""
+#~ "Per favore, digitare la password per riavviare il gestore aggiornamenti"
+
+#~ msgid "Installation aborted"
+#~ msgstr "Installazione annullata"
+
+#~ msgid "Could not install the security updates"
+#~ msgstr "Impossibile installare gli aggiornamenti di sicurezza"
+
+#~ msgid "Starting refresh..."
+#~ msgstr "Avvio aggiornamento..."
+
+#~ msgid "Another application is using APT"
+#~ msgstr "Un'altra applicazione sta usando APT"
+
+#~ msgid "Finding the list of updates..."
+#~ msgstr "Ricerca della lista di aggiornamenti..."
+
+#~ msgid ""
+#~ "An error has occurred while updating the apt cache. Please, check your "
+#~ "sources.list"
+#~ msgstr ""
+#~ "Si è verificato un errore durante l'aggiornamento della cache apt. Per "
+#~ "favore, controllare il file sources.list"
+
+#~ msgid "Could not refresh the list of packages"
+#~ msgstr "Impossibile aggiornare la lista di pacchetti"
+
+#~ msgid "A new version of the update manager is available"
+#~ msgstr "È disponibile una nuova versione del gestore aggiornamenti"
+
+#~ msgid "A new update pack is available (version: %s)"
+#~ msgstr "È disponibile un nuovo pacchetto aggiornamenti (versione: %s)"
+
+#~ msgid "1 recommended update available (%(size)s)"
+#~ msgstr "È disponibile un aggiornamento raccomandato (%(size)s)"
+
+#~ msgid "1 recommended update available (%(size)s), 1 ignored"
+#~ msgstr "È disponibile un aggiornamento raccomandato (%(size)s), 1 ignorato"
+
+#~ msgid "1 recommended update available (%(size)s), %(ignored)d ignored"
+#~ msgstr ""
+#~ "È disponibile un aggiornamento raccomandato (%(size)s), %(ignored)d "
+#~ "ignorati"
+
+#~ msgid "%(recommended)d recommended updates available (%(size)s)"
+#~ msgstr ""
+#~ "Sono disponibili %(recommended)d aggiornamenti raccomandati (%(size)s)"
+
+#~ msgid "%(recommended)d recommended updates available (%(size)s), 1 ignored"
+#~ msgstr ""
+#~ "Sono disponibili %(recommended)d aggiornamenti raccomandati (%(size)s), 1 "
+#~ "ignorato"
+
+#~ msgid ""
+#~ "%(recommended)d recommended updates available (%(size)s), %(ignored)d "
+#~ "ignored"
+#~ msgstr ""
+#~ "Sono disponibili %(recommended)d aggiornamenti raccomandati (%(size)s), "
+#~ "%(ignored) ignorati"
+
+#~ msgid "Server %(mirror)s returns HTTP code %(return_code)d"
+#~ msgstr "Il server %(mirror)s ha restituito il codice HTTP %(return_code)d"
