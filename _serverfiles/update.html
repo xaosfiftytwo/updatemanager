@@ -7,7 +7,7 @@ body {
 	    font-size: 12px;
 	    color: #555555;
 	    background: #ffffff;
-	}
+}
 .code {
 	background: #f1f1f1 url(http://home.solydxk.com/pics/terminal.png) center no-repeat;
 	background-position: 15px 50%; /* x-pos y-pos */
@@ -18,38 +18,51 @@ body {
 	font-family: monospace, courier;  
 	font-style: normal;
 	font-weight: bold;  
-	}
+}
 .screenshot {
 	width: 500px;
 	height: 350px;
-	}
+}
+.important {
+		font-size: 16px;
+	    color: #FF0000;
+}
 </style>
 </head>
 <body>
     
 <h1>Update information</h1>
 
-<h2>Latest update: 2014.10.15</h2>
-<p>There is currently no SolydXK update information.</p>
-<!--<h3>Read this whether you update with the Update Manager, or terminal.</h3>
+<h2>Latest update: 2015.01.31</h2>
+
+<h3  class="important">Important information:</h3>
+<p>
+	<strong>On November 25, 2014 we announced the <a href="http://solydxk.com/important-solydxk-news/" target="_blank">upcoming changes</a> where we move from Debian testing to Debian stable.<br><br>
+	This upgrade will point your system to either Debian Jessie (Home Editions) or Debian Wheezy (Business Editions).<br>
+	The Update Manager will automate the process but if you prefer to upgrade by terminal or if you want to upgrade your Business Edition to Jessie, please follow the support links below.</strong>
+</p>
+
+<p>These topics were made available on our forum if you need support:<br>
+	<a href="http://forums.solydxk.com/viewtopic.php?f=33&t=5095" target="_blank">HE to Jessie upgrade</a><br>
+	<a href="http://forums.solydxk.com/viewtopic.php?f=32&t=5246" target="_blank">BE to Wheezy upgrade</a><br>
+	<a href="http://forums.solydxk.com/viewtopic.php?f=33&t=5092" target="_blank">BE to Jessie upgrade</a>
+</p>
+
+<p>&nbsp;</p>
+
+<h3>Read this whether you update with the Update Manager, or terminal.</h3>
 <p>
 <ul>
-	<li><strong>After the upgrade</strong><br>After the upgrade you won't be able to reboot or shutdown the system the usual way. You need to do that in the terminal. After that all will function as expected.<br><div class="code">sudo reboot</div>or<br><div class="code">sudo shutdown</div><br></li>
 	<li>These are some warnings you can safely ignore:<br><br>
 	<div class="code">GdkPixbuf-WARNING **: Cannot open pixbuf loader module file '/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache': No such file or directory</div><br></li>
-</ul>
-</p>
-<p>
-<ul>
-    <li><p><strong>Pre upgrade</strong><br>There are some things that need to be cleaned up first (left overs from the LMDE period). So, it's best to download and run the pre-UP script:<br><div class="code">wget http://repository.solydxk.com/umfiles/tst/pre-up-2014.10.15; chmod +x pre-up-2014.10.15; sudo ./pre-up-2014.10.15</div></p></li>
+	<li><strong>Grub</strong><br>
+	When you upgrade to Jessie, you'll be asked to select where you installed Grub. Usually it's the first item in the list:<br><br>
+	<img src="http://repository.solydxk.com/umfiles/pics/grub-pc-installdevices.png" /><br><br></li>
     <li><strong>Configuration files</strong><br>You might be asked to replace certain configuration files. It is recommended to keep the currently installed file (default selected).<br><br></li>
     <li><strong>Post upgrade</strong><br>If you're using Nvidia, you run the following command before reboot:<br><div class="code">sudo apt-get install --reinstall nvidia-kernel-dkms</div><br>
-    If you have systemd-sysv installed, you need to purge systemd-shim:<br><div class="code">sudo apt-get purge systemd-shim</div><br>
-    and finally, remove some unneeded symbolic links:<br><div class="code">sudo update-rc.d -f samba remove</div><br>
-    </li>
+    If you want, you can configure your account to use the new default SolydXK theme (you can do the same for root):<br><div class="code">configure-theme</div><br><br></li></li>
 </ul>
 </p>
--->
 
 <p>&nbsp;</p>
 <hr>    

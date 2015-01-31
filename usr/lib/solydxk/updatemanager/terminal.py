@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 #      Reference documentation: https://developer.gnome.org/vte/0.28/VteTerminal.html
 
@@ -51,7 +50,10 @@ class VirtualTerminal(Vte.Terminal):
         self.set_visible(True)
         self.set_encoding("UTF-8")
         self.set_scrollback_lines(-1)
-        self.set_font_from_string("monospace 10")
+        try:
+            self.set_font_from_string("monospace 10")
+        except:
+            pass
         if not userInputAllowed:
             self.set_can_focus(False)
 

@@ -51,6 +51,24 @@ case "$1" in
 	
 	/usr/lib/solydxk/system/adjust.py
 	
+	CONF='/usr/lib/solydxk/updatemanager/files/updatemanager.conf'
+	if [ -e $CONF ]; then
+	  sed -i -e 's/solydxk\s*=.*/solydxk = http:\/\/repository.solydxk.com/' $CONF
+	  sed -i -e 's/up-info\s*=.*/up-info = update.html/' $CONF
+	  sed -i -e '/^solydxk-debian\s*=/d' $CONF
+	  sed -i -e '/^debian\s*=/d' $CONF
+	  sed -i -e '/.*stable.*/d' $CONF
+	  sed -i -e '/.*emergency.*/d' $CONF
+	  sed -i -e '/.*testing.*/d' $CONF
+	  sed -i -e '/.*-up\s*=/d' $CONF
+	  sed -i -e '/^umfilessubdir.*/d' $CONF
+	fi
+	
+	CONF='/etc/apt/apt.conf.d/80updatemanager'
+	if [ -e $CONF ]; then
+	  rm $CONF
+	fi
+	
 	# Create group
 	#addgroup --quiet updatemanager
 	# Add existing users to group

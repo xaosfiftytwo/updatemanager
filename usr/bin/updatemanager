@@ -1,18 +1,18 @@
-#! /usr/bin/env python3
-#-*- coding: utf-8 -*-
+#! /usr/bin/python3
 
 import os
 import sys
+sys.path.append('/usr/lib/solydxk/updatemanager')
 import pwd
 import gettext
 import getopt
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from os.path import join, abspath, dirname, exists
+from dialogs import MessageDialog, QuestionDialog
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-#t = gettext.translation("updatemanager", "/usr/share/locale")
-#_ = t.lgettext
+_ = gettext.gettext
 
 
 msg = _('Please enter your password')
@@ -33,6 +33,7 @@ def clearUpHistory():
              with open(histFile, 'w') as f:
                 f.write(resetLine)
 
+
 # Help
 def usage():
     # Show usage
@@ -40,6 +41,7 @@ def usage():
 
 Options:
   -p (--pref): Show the preference window
+  -q (--quick): Quick upgrade
   -t (--tray): Load the tray icon only
   -f (--force): Force start in a live environment
   -u (--clear-upd): Clear Update Pack history
@@ -48,18 +50,22 @@ Options:
 
 # Handle arguments
 try:
-    opts, args = getopt.getopt(sys.argv[1:], 'hptfru', ['help', 'pref', 'tray', 'force', 'reload', 'clear-upd'])
+    opts, args = getopt.getopt(sys.argv[1:], 'hpqtfru', ['help', 'pref', 'quick', 'tray', 'force', 'reload', 'clear-upd'])
 except getopt.GetoptError:
     usage()
-    sys.exit(2)
+    sys.exit(1)
 
 pref = False
 tray = False
 force = False
-args = pwd.getpwuid(os.getuid()).pw_name
+quick = False
+args = ""
 for opt, arg in opts:
     if opt in ('-p', '--pref'):
         pref = True
+    elif opt in ('-q', '--quick'):
+        quick = True
+        args += "-q "
     elif opt in ('-t', '--tray'):
         tray = True
     elif opt in ('-f', '--force'):
@@ -68,9 +74,25 @@ for opt, arg in opts:
         usage()
         sys.exit()
     elif opt in ('-r', '--reload'):
-        args += " reload"
+        args += "-r "
     elif opt in ('-u', '--clear-up'):
         clearUpHistory()
+
+args += "&"
+
+if quick:
+    title = _("Quick Update")
+    question = _("This will update your system.\n"
+            "Do you want to continue?")
+    dialog = QuestionDialog(title, question)
+    dialog.set_gravity(Gdk.Gravity.SOUTH_EAST)
+    width, height = dialog.get_size()
+    dialog.move(Gdk.Screen.width() - width, Gdk.Screen.height() - height)
+    if (dialog.run()):
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+    else:
+        sys.exit(2)
 
 # Add launcher string, only when not root
 launcher = ''
@@ -88,33 +110,25 @@ def isRunningLive():
             return True
     return False
 
-def showMsg(title, message):
-        dialog = Gtk.MessageDialog(None, Gtk.DialogFlags.MODAL, Gtk.MessageType.INFO, Gtk.ButtonsType.OK, message)
-        dialog.set_markup("<b>%s</b>" % title)
-        dialog.format_secondary_markup(message)
-        dialog.set_icon_name("update-manager")
-        dialog.run()
-        dialog.destroy()
-
 title = _("Update Manager")
 msg = _("Update Manager cannot be started in a live environment\n"
         "You can use the --force argument to start UM in a live environment")
 if pref:
     if isRunningLive():
-        showMsg(title, msg)
+        MessageDialog(title, msg, Gtk.MessageType.WARNING)
     else:
-        cmd = "%(launcher)s '%(dir)s/updatemanagerpref.py %(args)s &'" % { "launcher": launcher, "dir": scriptDir, "args": args }
+        cmd = "%(launcher)s '%(dir)s/updatemanagerpref.py %(args)s'" % { "launcher": launcher, "dir": scriptDir, "args": args }
         print(cmd)
         os.system(cmd)
 else:
     if not isRunningLive():
-        cmd = "%(dir)s/updatemanagertray.py %(args)s &" % { "dir": scriptDir, "args": args }
+        cmd = "%(dir)s/updatemanagertray.py %(args)s" % { "dir": scriptDir, "args": args }
         print(cmd)
         os.system(cmd)
     if not tray:
         if isRunningLive():
-            showMsg(title, msg)
+            MessageDialog(title, msg, Gtk.MessageType.WARNING)
         else:
-            cmd = "%(launcher)s '%(dir)s/updatemanager.py %(args)s &'" % { "launcher": launcher, "dir": scriptDir, "args": args }
+            cmd = "%(launcher)s '%(dir)s/updatemanager.py %(args)s'" % { "launcher": launcher, "dir": scriptDir, "args": args }
             print(cmd)
             os.system(cmd)

@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
 from gi.repository import Gtk, Gdk, GObject
@@ -9,11 +8,12 @@ from os import remove, chmod, makedirs
 from shutil import move
 import gettext
 import threading
+import getopt
 # abspath, dirname, join, expanduser, exists, basename
 from os.path import join, abspath, dirname, exists, basename
 from execcmd import ExecCmd
 from treeview import TreeViewHandler
-from dialogs import MessageDialogSafe, QuestionDialog, CustomQuestionDialog
+from dialogs import MessageDialog, QuestionDialog, CustomQuestionDialog
 from umapt import UmApt
 from logger import Logger
 from urllib.request import urlopen
@@ -24,8 +24,7 @@ from simplebrowser import SimpleBrowser
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-#t = gettext.translation("updatemanager", "/usr/share/locale")
-#_ = t.lgettext
+_ = gettext.gettext
 
 # Need to initiate threads for Gtk
 GObject.threads_init()
@@ -37,32 +36,88 @@ class UpdateManager(object):
     def __init__(self):
         # Check if script is running
         self.scriptName = basename(__file__)
+        self.scriptDir = abspath(dirname(__file__))
+        self.filesDir = join(self.scriptDir, "files")
         self.umglobal = UmGlobal()
-        print((sys.argv[1:]))
-        self.user = sys.argv[1:][0].strip()
-        if self.user == "root" or self.user == "reload":
-            self.user = ""
+        self.user = self.umglobal.getLoginName()
+
+        # Initiate logging
+        self.logFile = join('/var/log', self.umglobal.settings['log'])
+        print(("UM log = %s" % self.logFile))
+        self.log = Logger(self.logFile, maxSizeKB=5120)
+
+        # Remove scripts
+        self.deleteScripts(self.umglobal.localUpdVersion)
+
+        # Initialize
+        self.ec = ExecCmd(loggerObject=self.log)
+        self.apt = UmApt(self.umglobal)
+        self.kernelVersion = self.umglobal.getKernelVersion()
+        self.upgradables = []
+        self.upgradableUM = []
+        self.window = None
+
+        # Handle arguments
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], 'qr', ['quick', 'reload'])
+        except getopt.GetoptError:
+            sys.exit(1)
+
+        self.quickUpdate = False
+        reloadScript = False
+        #print((">> opts = {} / args = {}".format(opts, args)))
+        for opt, arg in opts:
+            #print((">> opt = {} / arg = {}".format(opt, arg)))
+            if opt in ('-q', '--quick'):
+                self.quickUpdate = True
+            if opt in ('-r', '--reload'):
+                reloadScript = True
+
+        # Set some global translations
+        self.aptErrorText = _("Apt error")
+        self.upgradablePackagesText = _("The following packages will be upgraded:")
+        self.newPackagesText = _("The following NEW packages will be installed:")
+        self.removedPackagesText = _("The following packages will be REMOVED:")
+        self.heldbackPackagesText = _("The following packages have been kept back:")
+        self.downgradePackagesText = _("The following packages are going to be downgraded:")
+
+        # Cleanup first
+        for fle in glob(join(self.filesDir, '.um*')):
+            remove(fle)
+
+        # Load window and widgets
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(join(self.scriptDir, '../../../share/solydxk/updatemanager/updatemanager.glade'))
+        go = self.builder.get_object
+
+        # Quick update
+        if self.quickUpdate:
+            #print((">> Run minimal upgrade"))
+            # Refresh data
+            self.umglobal.collectData()
+            self.apt.createPackagesInfoList()
+            self.apt.createPackageLists()
+            self.fillTreeView()
+
+            # Run upgrade
+            nid = self.run_upgrade()
+
+            if nid != "":
+                self.on_command_done(None, 0, nid)
+
+            #print((">> Minimal upgrade done"))
+            sys.exit(2)
 
         # Handle previous instances of UM
-        reloadScript = False
-        if 'reload' in sys.argv[1:]:
-            reloadScript = True
         oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
         if not reloadScript and not oneScript:
             print(("Exit - UM already running"))
-            sys.exit(1)
-
-        # Load window and widgets
-        self.scriptDir = abspath(dirname(__file__))
-        self.filesDir = join(self.scriptDir, "files")
-        self.builder = Gtk.Builder()
-        self.builder.add_from_file(join(self.scriptDir, '../../../share/solydxk/updatemanager/updatemanager.glade'))
+            sys.exit(3)
 
         # Make sure the files directory is set correctly
         self.checkFilesDir()
 
         # Main window objects
-        go = self.builder.get_object
         self.window = go("windowMain")
         self.window.set_icon_from_file(self.umglobal.settings["icon-base"])
         self.tvPck = go("tvPck")
@@ -114,21 +169,6 @@ class UpdateManager(object):
                                              "a system image before you\n"
                                              "continue (e.g. Clonezilla)."))
 
-        self.upgradablePackagesText = _("The following packages will be upgraded:")
-        self.newPackagesText = _("The following NEW packages will be installed:")
-        self.removedPackagesText = _("The following packages will be REMOVED:")
-        self.heldbackPackagesText = _("The following packages have been kept back:")
-        self.downgradePackagesText = _("The following packages are going to be downgraded:")
-
-        # Cleanup first
-        for fle in glob(join(self.filesDir, '.um*')):
-            remove(fle)
-
-        # Initiate logging
-        self.logFile = join('/var/log', self.umglobal.settings['log'])
-        print(("UM log = %s" % self.logFile))
-        self.log = Logger(self.logFile, maxSizeKB=5120)
-
         # VTE Terminal
         self.terminal = VirtualTerminal(userInputAllowed=self.umglobal.settings["allow-terminal-user-input"])
         self.swTerminal.add(self.terminal)
@@ -177,12 +217,7 @@ class UpdateManager(object):
         self.terminal.executeCommand('echo "%s"' % msg, 'init')
         self.showOutput()
 
-        # Initialize
-        self.ec = ExecCmd(loggerObject=self.log)
-        self.apt = UmApt(self.umglobal)
-        self.kernelVersion = self.umglobal.getKernelVersion()
-        self.upgradables = []
-        self.upgradableUM = []
+        # Treeview handlers
         self.tvHandler = TreeViewHandler(self.tvPck)
         self.tvMaintenanceHandler = TreeViewHandler(self.tvMaintenance)
 
@@ -193,9 +228,6 @@ class UpdateManager(object):
         if self.umglobal.localUpdVersion != "2000.01.01":
             versionInfo = "%(ver)s: %(pckVer)s" % { "ver": ver, "pckVer": pckVer }
         self.pushMessage(versionInfo)
-
-        # Remove scripts
-        self.deleteScripts(self.umglobal.localUpdVersion)
 
         # Log basic information
         self.log.write("==============================================", "UM.init", "debug")
@@ -223,9 +255,14 @@ class UpdateManager(object):
     # ===============================================
 
     def on_btnInstall_clicked(self, widget):
+        self.run_upgrade()
+
+    def run_upgrade(self):
+        nid = ""
         aptHasErrors = self.apt.aptHasErrors()
+        #print((">> aptHassError = {} / self.upgradables = {} / self.upgradableUM = {}".format(aptHasErrors, self.upgradables, self.upgradableUM)))
         if aptHasErrors is not None:
-            self.showInfoDlg(self.btnInstall.get_label(), aptHasErrors)
+            self.showInfoDlg(self.aptErrorText, aptHasErrors)
         elif self.upgradables:
 
             if self.apt.upgradablePackages:
@@ -241,14 +278,18 @@ class UpdateManager(object):
                 self.log.write("=================== kept back packages =====================", "UM.on_command_done", "debug")
                 self.log.write(self.createLogString(self.apt.heldbackPackages), "UM.on_command_done", "debug")
 
-            self.showOutput()
+            if not self.quickUpdate:
+                self.showOutput()
             contMsg = _("Continue installation?")
             if self.upgradableUM:
                 cmd = "%s install updatemanager" % self.umglobal.settings['apt-get-string']
                 cmd += "; %s install %s" % (self.umglobal.settings['apt-get-string'], " ".join(self.umglobal.settings["um-dependencies"]))
                 nid = 'uminstallum'
                 self.prepForCommand(nid)
-                self.terminal.executeCommand(cmd, nid)
+                if self.quickUpdate:
+                    self.ec.run(cmd)
+                else:
+                    self.terminal.executeCommand(cmd, nid)
                 self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
             else:
                 msg = self.getDistUpgradeInfo()
@@ -266,11 +307,17 @@ class UpdateManager(object):
                         cmd = "%(cmd)s; /bin/bash %(post)s" % { "cmd": cmd, "post": post }
                     nid = 'umupd'
                     self.prepForCommand(nid)
-                    self.terminal.executeCommand(cmd, nid)
+                    if self.quickUpdate:
+                        self.ec.run(cmd)
+                    else:
+                        self.terminal.executeCommand(cmd, nid)
                     self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.on_btnInstall_clicked", "debug")
 
         else:
-            self.showInfoDlg(self.btnInstall.get_label(), self.uptodateText)
+            if not self.quickUpdate:
+                self.showInfoDlg(self.btnInstall.get_label(), self.uptodateText)
+
+        return nid
 
     def on_btnRefresh_clicked(self, widget):
         self.refresh()
@@ -303,25 +350,25 @@ class UpdateManager(object):
     def on_radUnneeded_toggled(self, widget):
         if widget.get_active():
             message = _("You might need to run this several times.\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
-            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            MessageDialog(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window)
             self.fillTreeViewMaintenance()
 
     def on_radNotavailable_toggled(self, widget):
         if widget.get_active():
             message = _("Removing not available packages may break your system!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
-            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            MessageDialog(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window)
             self.fillTreeViewMaintenance()
 
     def on_radOldKernel_toggled(self, widget):
         if widget.get_active():
             message = _("Once removed you will not be able to boot these kernels!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
-            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            MessageDialog(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window)
             self.fillTreeViewMaintenance()
 
     def on_radDowngradable_toggled(self, widget):
         if widget.get_active():
             message = _("Downgrading packages may break your system!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
-            MessageDialogSafe(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window).show()
+            MessageDialog(self.btnMaintenance.get_label(), message, Gtk.MessageType.WARNING, self.window)
             self.fillTreeViewMaintenance()
 
     def on_btnMaintenanceExecute_clicked(self, widget):
@@ -387,10 +434,11 @@ class UpdateManager(object):
                 if "headers-486" not in pck[0] \
                     and "headers-586" not in pck[0] \
                     and "headers-686" not in pck[0] \
+                    and "headers-amd64" not in pck[0] \
                     and "image-486" not in pck[0] \
                     and "image-586" not in pck[0] \
                     and "image-686" not in pck[0] \
-                    and "amd64" not in pck[0]:
+                    and "image-amd64" not in pck[0]:
 
                     checkVersion = self.kernelVersion
                     if "kbuild" in pck[0]:
@@ -435,7 +483,7 @@ class UpdateManager(object):
             msg = _("Do you want to completely clean the apt cache?\n\n"
                     "When No, only unavailable installation packages are removed.")
             dialog = QuestionDialog(self.radCleanCache.get_label(), msg, self.window)
-            if (dialog.show()):
+            if (dialog.run()):
                 safe = True
             self.apt.cleanCache(safe)
             msg = _("Apt cache has been cleaned.")
@@ -488,9 +536,10 @@ class UpdateManager(object):
 
     def prepForCommand(self, nid):
         os.system("touch %s" % self.umglobal.umfiles[nid])
-        self.btnRefresh.set_sensitive(False)
-        self.btnInstall.set_sensitive(False)
-        self.btnMaintenance.set_sensitive(False)
+        if not self.quickUpdate:
+            self.btnRefresh.set_sensitive(False)
+            self.btnInstall.set_sensitive(False)
+            self.btnMaintenance.set_sensitive(False)
 
     def on_line_added(self, terminal, line):
         if line.strip()[0:2].upper() == "E:":
@@ -514,7 +563,10 @@ class UpdateManager(object):
                     os.system(cmd)
                     self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
                 # Reload UM window
-                script = join(self.scriptDir, "updatemanager.py")
+                if self.quickUpdate:
+                    script = join(self.scriptDir, "updatemanager.py -q")
+                else:
+                    script = join(self.scriptDir, "updatemanager.py")
                 self.umglobal.reloadWindow(script, self.user)
                 self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
 
@@ -543,22 +595,27 @@ class UpdateManager(object):
                 self.umglobal.collectData()
                 self.apt.createPackageLists()
                 self.fillTreeView()
-                self.btnInstall.set_sensitive(True)
-                self.btnRefresh.set_sensitive(True)
-                self.btnPackages.set_sensitive(True)
-                self.btnMaintenance.set_sensitive(True)
-                self.loadInfo()
+
+                if not self.quickUpdate:
+                    self.btnInstall.set_sensitive(True)
+                    self.btnRefresh.set_sensitive(True)
+                    self.btnPackages.set_sensitive(True)
+                    self.btnMaintenance.set_sensitive(True)
+                    self.loadInfo()
+
                 if self.umglobal.newUpd:
                     self.showInfo()
                 else:
                     aptHasErrors = self.apt.aptHasErrors()
                     if aptHasErrors is not None:
-                        self.showInfoDlg(self.btnInfo.get_label(), aptHasErrors)
+                        self.showInfoDlg(self.aptErrorText, aptHasErrors)
                     elif self.upgradables:
-                        self.showPackages()
+                        if not self.quickUpdate:
+                            self.showPackages()
                     else:
-                        self.showInfo()
-                        self.showInfoDlg(self.btnInfo.get_label(), self.uptodateText)
+                        if not self.quickUpdate:
+                            self.showInfo()
+                            self.showInfoDlg(self.btnInfo.get_label(), self.uptodateText)
 
             # Cleanup name file(s)
             for fle in glob(join(self.filesDir, '.um*')):
@@ -610,15 +667,16 @@ class UpdateManager(object):
             # Get a list of packages that can be upgraded
             self.upgradableUM = []
             self.upgradables = self.getUpgradablePackages()
-            if not self.upgradables:
-                # Check for black listed packages
-                cmd = "dpkg --get-selections | grep hold$ | awk '{print $1}'"
-                lst = self.ec.run(cmd, False)
-                for pck in lst:
-                    self.upgradables.append([pck.strip(), _("blacklisted"), ""])
+            #if not self.upgradables:
+                ## Check for black listed packages
+                #cmd = "dpkg --get-selections | grep hold$ | awk '{print $1}'"
+                #lst = self.ec.run(cmd, False)
+                #for pck in lst:
+                    #self.upgradables.append([pck.strip(), _("blacklisted"), ""])
 
-        contentList = [[_("Package"), _("Current version"), _("New version")]] + self.upgradables
-        self.tvHandler.fillTreeview(contentList=contentList, columnTypesList=['str', 'str', 'str'], firstItemIsColName=True)
+        if not self.quickUpdate:
+            contentList = [[_("Package"), _("Current version"), _("New version")]] + self.upgradables
+            self.tvHandler.fillTreeview(contentList=contentList, columnTypesList=['str', 'str', 'str'], firstItemIsColName=True)
 
     def getUpgradablePackages(self, packageNames=[]):
         upckList = []
@@ -679,7 +737,7 @@ class UpdateManager(object):
         self.nbMain.set_current_page(3)
 
     def showInfoDlg(self, title, message):
-        MessageDialogSafe(title, message, Gtk.MessageType.INFO, self.window).show()
+        MessageDialog(title, message, parent=self.window)
 
     def showConfirmationDlg(self, title, message):
         head = "<html><head><style>body { font-family: Arial, Helvetica, Verdana, Sans-serif; font-size: 12px; color: #555555; background: #ffffff; }</style></head><body>"

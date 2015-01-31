@@ -1,13 +1,17 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 import re
 from config import Config
 import os
+import gettext
 from os.path import join, abspath, dirname, exists, basename
 from urllib.request import urlopen
 from datetime import date
 from execcmd import ExecCmd
+
+# i18n: http://docs.python.org/2/library/gettext.html
+gettext.install("updatemanager", "/usr/share/locale")
+_ = gettext.gettext
 
 
 class UmGlobal(object):
@@ -440,3 +444,6 @@ class UmGlobal(object):
             return True
         else:
             return False
+
+    def getLoginName(self):
+        return self.ec.run(cmd="logname", realTime=False, returnAsList=False)

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 from execcmd import ExecCmd
 import gettext
@@ -43,19 +42,34 @@ class UmApt(object):
         # Loop through each line and fill the package lists
         for line in lst:
             items = line.split(" ")
-            pck = items[0].split(":")[0]
+
+            # Get package name
             if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
                 pck = items[0].split("/")[0]
-            ver = items[1]
+            else:
+                pck = items[0].split(":")[0]
+
+            # In case your in Wheezy or older
+            if "/" in pck:
+                pck = pck.split("/")[0]
+                ver = items[len(items) - 3]
+            else:
+                ver = items[1]
+
+            # Get available version
             avVer = ''
             if "uptodate" in line:
                 avVer = ver
             elif "upgradeable" in line:
                 avVer = items[len(items) - 1]
+
+            # Add info to list
             self.packagesInfo.append([pck, ver, avVer])
 
     def createPackageLists(self, customAptGetCommand=""):
         # Reset variables
+        upgradablePackagesTmp = []
+        heldbackPackagesTmp = []
         self.upgradablePackages = []
         self.newPackages = []
         self.removedPackages = []
@@ -84,11 +98,20 @@ class UmApt(object):
                 elif "new packages" in prevLine.lower():
                     self.fillPackageList(self.newPackages, line.strip(), True)
                 elif "kept back:" in prevLine.lower():
-                    self.fillPackageList(self.heldbackPackages, line.strip())
+                    heldbackPackagesTmp.append(line.strip())
                 elif "upgraded:" in prevLine.lower():
-                    self.fillPackageList(self.upgradablePackages, line.strip())
+                    upgradablePackagesTmp.append(line.strip())
             else:
                 prevLine = line
+
+        # Create upgradable packages list without held back packages
+        for pck in upgradablePackagesTmp:
+            if pck not in heldbackPackagesTmp:
+                self.fillPackageList(self.upgradablePackages, pck)
+
+        # Create list with held back packages
+        for pck in heldbackPackagesTmp:
+            self.fillPackageList(self.heldbackPackages, pck)
 
     def initAptShowVersions(self):
         # Initialize or update package cache only

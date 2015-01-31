@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 # Depends: python3-pyinotify
 # Documentation: http://pyinotify.sourceforge.net/
@@ -15,8 +14,7 @@ GObject.threads_init()
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-#t = gettext.translation("updatemanager", "/usr/share/locale")
-#_ = t.gettext
+_ = gettext.gettext
 
 
 class EventHandler(pyinotify.ProcessEvent):

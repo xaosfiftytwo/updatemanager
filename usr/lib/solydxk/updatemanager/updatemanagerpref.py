@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 # Depends: python3-gi, python-vte, gir1.2-vte-2.90
 
@@ -11,11 +10,12 @@
 from gi.repository import Gtk, GLib
 import sys
 import gettext
+import getopt
 # abspath, dirname, join, expanduser, exists, basename
 from os.path import join, abspath, dirname, basename
 from execcmd import ExecCmd
 from treeview import TreeViewHandler
-from dialogs import MessageDialogSafe
+from dialogs import MessageDialog
 from mirror import MirrorGetSpeed, Mirror
 from queue import Queue
 from umglobal import UmGlobal
@@ -25,8 +25,7 @@ from os import remove, system
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-#t = gettext.translation("updatemanager", "/usr/share/locale")
-#_ = t.lgettext
+_ = gettext.gettext
 
 
 #class for the main window
@@ -36,15 +35,21 @@ class UpdateManagerPref(object):
         # Check if script is running
         self.scriptName = basename(__file__)
         self.umglobal = UmGlobal()
-        print((sys.argv[1:]))
-        self.user = sys.argv[1:][0].strip()
-        if self.user == "root" or self.user == "reload":
-            self.user = ""
+        self.user = self.umglobal.getLoginName()
+
+        # Handle arguments
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], 'r', ['reload'])
+        except getopt.GetoptError:
+            sys.exit(2)
+
+        reloadScript = False
+        for opt, arg in opts:
+            print((">> opt = {} / arg = {}".format(opt, arg)))
+            if opt in ('-r', '--reload'):
+                reloadScript = True
 
         # Handle previous instances of UM
-        reloadScript = False
-        if 'reload' in sys.argv[1:]:
-            reloadScript = True
         oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
         if not reloadScript and not oneScript:
             print(("Exit - UM preferences already running"))
@@ -386,7 +391,7 @@ class UpdateManagerPref(object):
         widget.connect('changed', filter)
 
     def showInfo(self, title, message, parent):
-        MessageDialogSafe(title, message, Gtk.MessageType.INFO, parent).show()
+        MessageDialog(title, message, parent=parent)
 
     # Close the gui
     def on_windowPref_destroy(self, widget):

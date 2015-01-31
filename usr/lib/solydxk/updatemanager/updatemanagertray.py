@@ -1,21 +1,20 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
 from gi.repository import Gtk, GObject
 import sys
 import gettext
 import threading
+import getopt
 from umglobal import UmGlobal
 from umnotifier import UmNotifier
 from umrefresh import UmRefresh
 from os.path import join, abspath, dirname, basename
-from dialogs import MessageDialogSafe
+from dialogs import MessageDialog
 from execcmd import ExecCmd
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-#t = gettext.translation("updatemanager", "/usr/share/locale")
-#_ = t.gettext
+_ = gettext.gettext
 
 # Need to initiate threads for Gtk
 GObject.threads_init()
@@ -31,10 +30,19 @@ class UpdateManagerTray(object):
         self.umglobal = UmGlobal()
         self.ec = ExecCmd()
 
-        # Handle previous instances of UM
+        # Handle arguments
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], 'r', ['reload'])
+        except getopt.GetoptError:
+            sys.exit(2)
+
         reloadScript = False
-        if 'reload' in sys.argv[1:]:
-            reloadScript = True
+        for opt, arg in opts:
+            print((">> opt = {} / arg = {}".format(opt, arg)))
+            if opt in ('-r', '--reload'):
+                reloadScript = True
+
+        # Handle previous instances of UM
         oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
         if not reloadScript and not oneScript:
             print(("Exit - UM tray already running"))
@@ -45,7 +53,7 @@ class UpdateManagerTray(object):
         self.quitText = _("Quit")
         menu = Gtk.Menu()
         menuUm = Gtk.MenuItem(_("Update Manager"))
-        menuUm.connect('activate', self.icon_activate)
+        menuUm.connect('activate', self.open_um)
         menu.append(menuUm)
         # Separator not functioning in wheezy
         #menuSep1 = Gtk.SeparatorMenuItem()
@@ -82,16 +90,26 @@ class UpdateManagerTray(object):
 
     def manualRefresh(self, widget=None):
         self.umrefresh.refresh()
-        self.showInfoDlg(self.refreshText, _("Refresh finished"))
 
     def popup_menu(self, widget, button, time, data):
         data.show_all()
         data.popup(None, None, None, None, button, time)
 
-    def icon_activate(self, widget):
+    def open_um(self, widget):
         if not self.umglobal.scriptIsRunning("updatemanager.py"):
             # Run UM in its own thread
             pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager",))
+            pref_thread.setDaemon(True)
+            pref_thread.start()
+
+    def icon_activate(self, widget):
+        if not self.umglobal.scriptIsRunning("updatemanager.py"):
+            parm = ""
+            if not self.umglobal.newUpd:
+                # Quick update
+                parm = "-q"
+            # Run UM in its own thread
+            pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager {}".format(parm),))
             pref_thread.setDaemon(True)
             pref_thread.start()
 
@@ -102,7 +120,7 @@ class UpdateManagerTray(object):
         pref_thread.start()
 
     def showInfoDlg(self, title, message):
-        MessageDialogSafe(title, message, Gtk.MessageType.INFO, None).show()
+        MessageDialog(title, message)
 
     def quit_tray(self, widget):
         if self.umglobal.isUpgrading():

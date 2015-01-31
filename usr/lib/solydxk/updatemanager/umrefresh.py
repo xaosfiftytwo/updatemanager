@@ -1,11 +1,18 @@
 #! /usr/bin/env python3
-#-*- coding: utf-8 -*-
 
-from gi.repository import GdkPixbuf
+from gi.repository import GdkPixbuf, GObject
 from execcmd import ExecCmd
 from os.path import join, abspath, dirname
 from os import remove
 from glob import glob
+import gettext
+
+# i18n: http://docs.python.org/2/library/gettext.html
+gettext.install("updatemanager", "/usr/share/locale")
+_ = gettext.gettext
+
+# Need to initiate threads for Gtk
+GObject.threads_init()
 
 
 class UmRefresh(object):
@@ -58,6 +65,9 @@ class UmRefresh(object):
             else:
                 self.statusIcon.set_from_pixbuf(self.pbDisconnected)
                 self.statusIcon.set_tooltip_text(noConText)
+                # Check every 60 seconds if there is a connection
+                GObject.timeout_add_seconds(60, self.refresh)
+                return True
         else:
             self.statusIcon.set_from_pixbuf(self.pbError)
             self.statusIcon.set_tooltip_text(errText)
