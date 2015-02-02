@@ -212,7 +212,7 @@ class UpdateManagerPref(object):
             self.tvMirrorsHandler.fillTreeview(self.mirrors, columnTypesList, 0, 400, True)
 
             # TODO - We have no mirrors: hide the tab until we do
-            self.nbPref.get_nth_page(1).set_visible(False)
+            #self.nbPref.get_nth_page(1).set_visible(False)
         else:
             self.nbPref.get_nth_page(1).set_visible(False)
 
@@ -317,10 +317,11 @@ class UpdateManagerPref(object):
             return True
 
         # Thread is done
-        lst = self.queue.get()
-        if lst:
-            self.writeSpeed(lst[0], lst[1])
-        self.queue.task_done()
+        if not self.queue.empty():
+            lst = self.queue.get()
+            if lst:
+                self.writeSpeed(lst[0], lst[1])
+            self.queue.task_done()
         del self.threads[name]
         self.btnCheckMirrorsSpeed.set_sensitive(True)
         self.btnSaveMirrors.set_sensitive(True)
@@ -334,6 +335,8 @@ class UpdateManagerPref(object):
             if repo == url:
                 self.log.write("Mirror speed for %s = %s" % (url, speed), "UMPref.writeSpeed", "debug")
                 model.set_value(itr, 4, speed)
+                path = model.get_path(itr)
+                self.tvMirrors.scroll_to_cell(path)
             itr = model.iter_next(itr)
         self.tvMirrors.set_model(model)
         # Repaint GUI, or the update won't show

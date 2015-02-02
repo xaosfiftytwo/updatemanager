@@ -194,3 +194,11 @@ fi
 #  chmod 4755 /usr/sbin/hddtemp
 #fi
 # ==============================================================
+handle_pck 'cups-pdf' 'install' 'all'
+PCKINSTALLED=false
+pck_isinstalled 'systemd-shim'
+if $PCKINSTALLED; then
+  handle_pck 'systemd-shim' 'purge' 'all'
+  handle_pck 'hal-info' 'purge' 'all'
+  handle_pck 'libhal1' 'purge' 'all'
+fi

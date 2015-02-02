@@ -177,41 +177,41 @@ function remove_divert {
 # Configure pre upgrade commands below
 # ==============================================================
 # ==============================================================
-apt-get purge --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes ^live-*
+remove_divert 'lmde'
+apt-get purge --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes ^live-* 
 
 handle_pck 'solydx-system-adjustments' 'install' 'solydxbe64'
 handle_pck 'solydx-info' 'install' 'solydxbe64'
 
-handle_pck 'solydx-system-adjustments' 'install' 'solydxbe32'
-handle_pck 'solydx-info' 'install' 'solydxbe32'
-
 handle_pck 'solydk-system-adjustments' 'install' 'solydkbe64'
 handle_pck 'solydk-info' 'install' 'solydkbe64'
 handle_pck 'userconfig' 'purge' 'solydkbe64'
-handle_pck 'kuser' 'install' 'solydkbe64'
 handle_pck 'kcm-ufw' 'purge' 'solydkbe64'
-handle_pck 'gufw' 'install' 'solydkbe64'
-
-handle_pck 'solydk-system-adjustments' 'install' 'solydkbe32'
-handle_pck 'solydk-info' 'install' 'solydkbe32'
-handle_pck 'userconfig' 'purge' 'solydkbe32'
-handle_pck 'kuser' 'install' 'solydkbe32'
-handle_pck 'kcm-ufw' 'purge' 'solydkbe32'
-handle_pck 'gufw' 'install' 'solydkbe32'
 
 handle_pck 'solydk-system-adjustments' 'install' 'solydkbo64'
 handle_pck 'solydk-info' 'install' 'solydkbo64'
 handle_pck 'userconfig' 'purge' 'solydkbo64'
-handle_pck 'kuser' 'install' 'solydkbo64'
 handle_pck 'kcm-ufw' 'purge' 'solydkbo64'
+
+handle_pck 'cups-pdf' 'remove' 'all'
+handle_pck 'printer-driver-cups-pdf' 'remove' 'all'
+handle_pck 'userconfig' 'purge' 'all'
+
+handle_pck 'solydxk-system' 'reinstall' 'all'
+apt-get update
+
+handle_pck 'libjpeg-turbo-progs' 'install' 'all'
+handle_pck 'libjpeg62-turbo' 'install' 'all'
+handle_pck 'kuser' 'install' 'solydkbe64'
+handle_pck 'gufw' 'install' 'solydkbe64'
+handle_pck 'kuser' 'install' 'solydkbo64'
 handle_pck 'gufw' 'install' 'solydkbo64'
 
-handle_pck 'solydk-system-adjustments' 'install' 'solydkbo32'
-handle_pck 'solydk-info' 'install' 'solydkbo32'
-handle_pck 'userconfig' 'purge' 'solydkbo32'
-handle_pck 'kuser' 'install' 'solydkbo32'
-handle_pck 'kcm-ufw' 'purge' 'solydkbo32'
-handle_pck 'gufw' 'install' 'solydkbo32'
-
-handle_pck 'solydxk-system' 'forceinstall' 'all'
-apt-get update
+PCKINSTALLED=false
+pck_isinstalled 'plymouth'
+if $PCKINSTALLED; then
+  handle_pck 'plymouth-themes' 'install' 'solydk64'
+  handle_pck 'plymouth-themes' 'install' 'solydk32'
+  handle_pck 'plymouth-themes' 'install' 'solydx64'
+  handle_pck 'plymouth-themes' 'install' 'solydx32'
+fi

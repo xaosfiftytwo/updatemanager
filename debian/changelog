@@ -1,26 +1,32 @@
+updatemanager (2.5.2) solydxk; urgency=low
+
+  * Enabled and adapted mirror selection in the preferences window
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 02 Feb 2015 16:00:00 +0100
+
 updatemanager (2.5.1) solydxk; urgency=low
 
   * Refresh every minute when no internet connection is available
   
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 21 Jan 2015 09:00:00 +0200
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 21 Jan 2015 09:00:00 +0100
 
 updatemanager (2.5.0) solydxk; urgency=low
 
   * Removed all Update Pack related code
   
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 01 Dec 2014 18:00:00 +0200
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 01 Dec 2014 18:00:00 +0100
 
 updatemanager (2.4.5) solydxk; urgency=low
 
   * Resolved bug UM not starting at boot
   
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sat, 08 Nov 2014 11:00:00 +0200
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sat, 08 Nov 2014 11:00:00 +0100
 
 updatemanager (2.4.4) solydxk; urgency=low
 
   * Improved translation handling
   
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 02 Nov 2014 10:00:00 +0200
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 02 Nov 2014 10:00:00 +0100
 
 updatemanager (2.4.3) solydxk; urgency=low
 

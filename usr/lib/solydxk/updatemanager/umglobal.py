@@ -270,7 +270,7 @@ class UmGlobal(object):
             settings["timeout-secs"] = int(self.cfg.getValue(section, 'timeout-secs'))
         except:
             settings["mirrors-list"] = 'http://home.solydxk.com/mirrors.list'
-            settings["dl-test"] = 'production/speedtest.1mb'
+            settings["dl-test"] = 'README.mirrors.html'
             settings["timeout-secs"] = 10
             self.saveSettings(section, 'mirrors-list', settings["mirrors-list"])
             self.saveSettings(section, 'dl-test', settings["dl-test"])
@@ -331,11 +331,6 @@ class UmGlobal(object):
             self.saveSettings(section, 'hide-tabs', ",".join(settings["hide-tabs"]))
             self.saveSettings(section, 'um-dependencies', ",".join(settings["um-dependencies"]))
             self.saveSettings(section, 'apt-get-string', settings["apt-get-string"])
-
-        # These settings were changed, and we need to be sure they have a certain value
-        if settings["dl-test"] != 'production/speedtest.1mb':
-            settings["dl-test"] = 'production/speedtest.1mb'
-            self.saveSettings('mirror', 'dl-test', settings["dl-test"])
 
         return settings
 

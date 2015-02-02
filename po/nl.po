@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linuxmint\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-29 12:36+0100\n"
+"POT-Creation-Date: 2015-02-02 15:57+0100\n"
 "PO-Revision-Date: 2014-07-04 19:51+0100\n"
 "Last-Translator: Schoelje <schoelje@solydxk.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 
 #: ../usr/bin/updatemanager:18
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:400
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:395
 msgid "Please enter your password"
 msgstr "Voer uw wachtwoord in"
 
@@ -384,7 +384,7 @@ msgstr "URL"
 msgid "Speed"
 msgstr "Snelheid"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:387
 msgid "The new settings will take effect after UM restart."
 msgstr "Herstart UM om de nieuwe instellingen te gebruiken."
 

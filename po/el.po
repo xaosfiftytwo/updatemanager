@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-29 12:36+0100\n"
+"POT-Creation-Date: 2015-02-02 15:57+0100\n"
 "PO-Revision-Date: 2014-06-04 11:07+0100\n"
 "Last-Translator: Stelios Roumeliotis <stel.roum@gmail.com>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: ../usr/bin/updatemanager:18
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:400
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:395
 msgid "Please enter your password"
 msgstr "Παρακαλώ εισάγετε το συνθηματικό σας"
 
@@ -374,7 +374,7 @@ msgstr "Διεύθυνση"
 msgid "Speed"
 msgstr "Ταχύτητα"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:387
 msgid "The new settings will take effect after UM restart."
 msgstr ""
 
