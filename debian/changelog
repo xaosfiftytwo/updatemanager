@@ -1,3 +1,15 @@
+updatemanager (2.5.5) solydxk; urgency=low
+
+  * Removed /etc/apt/apt.conf.d/02periodic
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 09 Feb 2015 12:00:00 +0100
+
+updatemanager (2.5.4) solydxk; urgency=low
+
+  * Allow only one Quick Update dialog
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 04 Feb 2015 11:00:00 +0100
+
 updatemanager (2.5.2) solydxk; urgency=low
 
   * Enabled and adapted mirror selection in the preferences window

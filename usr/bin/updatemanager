@@ -8,6 +8,7 @@ import gettext
 import getopt
 from gi.repository import Gtk, Gdk
 from os.path import join, abspath, dirname, exists
+from umglobal import UmGlobal
 from dialogs import MessageDialog, QuestionDialog
 
 # i18n: http://docs.python.org/2/library/gettext.html
@@ -78,6 +79,12 @@ for opt, arg in opts:
         clearUpHistory()
 
 if quick:
+    # Only one dialog allowed
+    umglobal = UmGlobal()
+    pids = umglobal.getScriptPids("/usr/bin/updatemanager -q")
+    if len(pids) > 1:
+        sys.exit(2)
+
     builder = Gtk.Builder()
     builder.add_from_file(join(scriptDir, '../../../share/solydxk/updatemanager/updatemanagerqu.glade'))
     go = builder.get_object
@@ -96,7 +103,7 @@ if quick:
             Gtk.main_iteration()
     else:
         # cancelled
-        sys.exit(2)
+        sys.exit(3)
 
 # Finish arguments string
 args += "&"

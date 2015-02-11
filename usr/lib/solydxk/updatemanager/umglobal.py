@@ -367,7 +367,7 @@ class UmGlobal(object):
     def getScriptPids(self, script, returnExistingPid=False):
         pids = []
         try:
-            procs = self.ec.run(cmd="ps -ef | grep %s" % script, realTime=False)
+            procs = self.ec.run(cmd="ps -ef | grep '%s'" % script, realTime=False)
             for pline in procs:
                 matchObj = re.search("([0-9]+).*:\d\d\s.*python", pline)
                 if matchObj:

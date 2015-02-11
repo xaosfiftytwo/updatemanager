@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-03 11:56+0100\n"
+"POT-Creation-Date: 2015-02-04 11:33+0100\n"
 "PO-Revision-Date: 2013-12-26 22:06+0200\n"
 "Last-Translator: Taylan Tatlı <taylantatli90@gmail.com>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -18,23 +18,23 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: ../usr/bin/updatemanager:18
+#: ../usr/bin/updatemanager:19
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:395
 #, fuzzy
 msgid "Please enter your password"
 msgstr "Güncelleştirme yöneticisini başlatmak için lütfen parolanızı girin"
 
-#: ../usr/bin/updatemanager:85
+#: ../usr/bin/updatemanager:92
 msgid "Quick update silently updates your system."
 msgstr ""
 
-#: ../usr/bin/updatemanager:134
+#: ../usr/bin/updatemanager:141
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:55
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Güncelleştirme Yöneticisi"
 
-#: ../usr/bin/updatemanager:135
+#: ../usr/bin/updatemanager:142
 msgid ""
 "Update Manager cannot be started in a live environment\n"
 "You can use the --force argument to start UM in a live environment"
