@@ -64,14 +64,16 @@ class UpdateManager(object):
             sys.exit(1)
 
         self.quickUpdate = False
-        reloadScript = False
         #print((">> opts = {} / args = {}".format(opts, args)))
         for opt, arg in opts:
             #print((">> opt = {} / arg = {}".format(opt, arg)))
             if opt in ('-q', '--quick'):
                 self.quickUpdate = True
             if opt in ('-r', '--reload'):
-                reloadScript = True
+                pids = self.umglobal.getScriptPids("updatemanager.py")
+                if len(pids) > 1:
+                    print(("updatemanager.py already running - kill pid {}".format(pids[0])))
+                    os.system("kill {}".format(pids[0]))
 
         # Set some global translations
         self.aptErrorText = _("Apt error")
@@ -107,12 +109,6 @@ class UpdateManager(object):
 
             #print((">> Minimal upgrade done"))
             sys.exit(2)
-
-        # Handle previous instances of UM
-        oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
-        if not reloadScript and not oneScript:
-            print(("Exit - UM already running"))
-            sys.exit(3)
 
         # Make sure the files directory is set correctly
         self.checkFilesDir()
@@ -338,7 +334,7 @@ class UpdateManager(object):
         pref_thread.start()
 
     def openPreferences(self):
-        os.system(join(self.scriptDir, "updatemanagerpref.py %s &" % self.user))
+        os.system("updatemanager -p")
 
     def on_btnMaintenance_clicked(self, widget):
         self.showMaintenance()
@@ -557,18 +553,15 @@ class UpdateManager(object):
                 # Reload tray as user
                 self.log.write("Updating UM: kill process of updatemanagertray.py", "UM.on_command_done", "debug")
                 self.umglobal.killScriptProcess("updatemanagertray.py")
-                if self.user != "":
-                    script = join(self.scriptDir, "updatemanagertray.py")
-                    cmd = "sudo -u %s %s &" % (self.user, script)
-                    os.system(cmd)
-                    self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
+                cmd = "sudo -u {} updatemanager -t -r".format(self.user)
+                os.system(cmd)
+                self.log.write("UM updated: reload tray as user {}".format(self.user), "UM.on_command_done", "debug")
                 # Reload UM window
+                cmd = join(self.scriptDir, "updatemanager.py")
                 if self.quickUpdate:
-                    script = join(self.scriptDir, "updatemanager.py -q")
-                else:
-                    script = join(self.scriptDir, "updatemanager.py")
-                self.umglobal.reloadWindow(script, self.user)
-                self.log.write("UM updated: reload %s as %s" % (script, self.user), "UM.on_command_done", "debug")
+                    cmd = join(self.scriptDir, "updatemanager.py -q")
+                self.umglobal.reloadWindow(cmd, self.user)
+                self.log.write("UM updated: reload {0} as user {1}".format(cmd, self.user), "UM.on_command_done", "debug")
 
             if nid == "umrefresh":
                 # Build installed packages info list

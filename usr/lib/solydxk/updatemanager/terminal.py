@@ -67,14 +67,24 @@ class VirtualTerminal(Vte.Terminal):
         if os.path.exists("/usr/bin/kde-add-printer"):
             self.connect('contents-changed', self.on_contents_changed)
 
+    def getRGBA(self, hexColor):
+        color = Gdk.RGBA()
+        color.parse(hexColor)
+        return color
+
     def setTerminalColors(self, foreground, background, palletList=[]):
         # Set colors (SolydXK terminal colors - use KColorChooser for hexadecimal values)
         # palletList = ['#4A4A4A', '#BD1919', '#118011', '#CE6800', '#1919BC', '#8D138D', '#139494', '#A7A7A7']
         palette = []
         for hexColor in palletList:
-            palette.append(Gdk.color_parse(hexColor))
+            palette.append(self.getRGBA(hexColor))
         # foreground, background, pallete
-        self.set_colors(Gdk.color_parse(foreground), Gdk.color_parse(background), palette)
+        try:
+            # Jessie
+            self.set_colors(self.getRGBA(foreground), self.getRGBA(background), palette)
+        except:
+            # Wheezy
+            self.set_colors_rgba(self.getRGBA(foreground), self.getRGBA(background), palette)
 
     def on_contents_changed(self, terminal):
         # Get current visible text
@@ -112,7 +122,18 @@ class VirtualTerminal(Vte.Terminal):
 
         self.nid = id_name
         print(("Terminal execute command: %s" % command_string))
-        self.pid = self.fork_command_full(Vte.PtyFlags.DEFAULT,
+        try:
+            # Jessie
+            self.pid = self.spawn_sync(Vte.PtyFlags.DEFAULT,
+                                           working_directory,
+                                           argv,
+                                           envv,
+                                           GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                           None,
+                                           None)[1]
+        except:
+            # Wheezy
+            self.pid = self.fork_command_full(Vte.PtyFlags.DEFAULT,
                                            working_directory,
                                            argv,
                                            envv,
@@ -120,7 +141,7 @@ class VirtualTerminal(Vte.Terminal):
                                            None,
                                            None)[1]
 
-    def on_command_done(self, terminal):
+    def on_command_done(self, status=None, user_data=None):
         Gdk.threads_enter()
         self.emit('command-done', self.pid, self.nid)
         Gdk.threads_leave()

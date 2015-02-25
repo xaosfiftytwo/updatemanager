@@ -1,3 +1,27 @@
+updatemanager (2.6.0) solydxk; urgency=low
+
+  * Solve crash with latest Vte version 0.38 (gir1.2-vte-2.91)
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 25 Feb 2015 11:00:00 +0100
+
+updatemanager (2.5.8) solydxk; urgency=low
+
+  * Emergency update: Quick Update not functioning
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sat, 21 Feb 2015 15:00:00 +0100
+
+updatemanager (2.5.7) solydxk; urgency=low
+
+  * Lowered gtk+ version for Wheezy
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sat, 21 Feb 2015 13:00:00 +0100
+
+updatemanager (2.5.6) solydxk; urgency=low
+
+  * Force use of python3
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Fri, 20 Feb 2015 11:00:00 +0100
+
 updatemanager (2.5.5) solydxk; urgency=low
 
   * Removed /etc/apt/apt.conf.d/02periodic

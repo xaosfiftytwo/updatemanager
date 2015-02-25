@@ -5,6 +5,7 @@ import sys
 import gettext
 import threading
 import getopt
+import os
 from umglobal import UmGlobal
 from umnotifier import UmNotifier
 from umrefresh import UmRefresh
@@ -36,17 +37,13 @@ class UpdateManagerTray(object):
         except getopt.GetoptError:
             sys.exit(2)
 
-        reloadScript = False
         for opt, arg in opts:
             print((">> opt = {} / arg = {}".format(opt, arg)))
             if opt in ('-r', '--reload'):
-                reloadScript = True
-
-        # Handle previous instances of UM
-        oneScript = self.umglobal.confirmOneSrciptRunning(self.scriptName, reloadScript)
-        if not reloadScript and not oneScript:
-            print(("Exit - UM tray already running"))
-            sys.exit(1)
+                pids = self.umglobal.getScriptPids("updatemanagertray.py")
+                if len(pids) > 1:
+                    print(("updatemanagertray.py already running - kill pid {}".format(pids[0])))
+                    os.system("kill {}".format(pids[0]))
 
         # Build status icon menu
         self.refreshText = _("Refresh")
@@ -96,28 +93,29 @@ class UpdateManagerTray(object):
         data.popup(None, None, None, None, button, time)
 
     def open_um(self, widget):
-        if not self.umglobal.scriptIsRunning("updatemanager.py"):
+        if not self.umglobal.isSrciptRunning("updatemanager.py"):
             # Run UM in its own thread
             pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager",))
             pref_thread.setDaemon(True)
             pref_thread.start()
 
     def icon_activate(self, widget):
-        if not self.umglobal.scriptIsRunning("updatemanager.py"):
+        if not self.umglobal.isSrciptRunning("updatemanager.py"):
             parm = ""
             if not self.umglobal.newUpd:
                 # Quick update
-                parm = "-q"
+                parm = " -q"
             # Run UM in its own thread
-            pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager {}".format(parm),))
+            pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager{}".format(parm),))
             pref_thread.setDaemon(True)
             pref_thread.start()
 
     def open_preferences(self, widget):
         # Run preferences in its own thread
-        pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager -p",))
-        pref_thread.setDaemon(True)
-        pref_thread.start()
+        if not self.umglobal.isSrciptRunning("updatemanagerpref.py"):
+            pref_thread = threading.Thread(target=self.ec.run, args=("updatemanager -p",))
+            pref_thread.setDaemon(True)
+            pref_thread.start()
 
     def showInfoDlg(self, title, message):
         MessageDialog(title, message)

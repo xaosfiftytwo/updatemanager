@@ -156,13 +156,15 @@ class UmGlobal(object):
             os.system("awk '!a[$0]++' %s" % upHistFile)
             #os.chmod(upHistFile, 0o666)
 
-    def saveHistVersion(self, parameter, value):
-        # Check if parameter with value already exists
-        if self.getHistVersion(parameter, value) is None:
-            # Not found: save the file
+    def saveHistVersion(self, parameter, newVersion):
+        histVersion = self.getHistVersion(parameter, newVersion)
+        if histVersion != newVersion:
+            # Save the file
             upHistFile = join(self.filesDir, self.settings['hist'])
             with open(upHistFile, 'a') as f:
-                f.write("%s=%s\n" % (parameter, value))
+                line = "{0}={1}\n".format(parameter, newVersion)
+                print(("> Save history: {}".format(line)))
+                f.write(line)
 
     def getMirrorData(self, excludeMirrors=[], getDeadMirrors=False):
         mirrorData = []
@@ -367,7 +369,7 @@ class UmGlobal(object):
     def getScriptPids(self, script, returnExistingPid=False):
         pids = []
         try:
-            procs = self.ec.run(cmd="ps -ef | grep '%s'" % script, realTime=False)
+            procs = self.ec.run(cmd="ps -ef | grep '{}'".format(script), realTime=False)
             for pline in procs:
                 matchObj = re.search("([0-9]+).*:\d\d\s.*python", pline)
                 if matchObj:
@@ -376,20 +378,11 @@ class UmGlobal(object):
         except:
             return pids
 
-    def confirmOneSrciptRunning(self, scriptName, reloadScript=False):
+    def isSrciptRunning(self, scriptName):
         pids = self.getScriptPids(scriptName)
-        cnt = 0
-        ret = True
-        for pid in pids:
-            cnt += 1
-            if cnt > 1:
-                if reloadScript or cnt > 2:
-                    print(("Kill %s process with pid: %d" % (scriptName, pid)))
-                    cmd = "kill %d" % pid
-                    self.ec.run(cmd, False)
-                elif cnt == 2:
-                    ret = False
-        return ret
+        if len(pids) > 0:
+            return True
+        return False
 
     def killScriptProcess(self, scriptName):
         msg = _('Please enter your password')
@@ -398,13 +391,6 @@ class UmGlobal(object):
             print(("Kill %s process with pid: %d" % (scriptName, pid)))
             cmd = "gksudo --message \"<b>%s</b>\" kill %d" % (msg, pid)
             self.ec.run(cmd, False)
-
-    def scriptIsRunning(self, scriptName):
-        pids = self.getScriptPids(scriptName)
-        if len(pids) > 0:
-            return True
-        else:
-            return False
 
     def reloadWindow(self, scriptPath, runAsUser):
         path = self.ec.run(cmd="which python3", returnAsList=False)

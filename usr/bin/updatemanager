@@ -15,24 +15,40 @@ from dialogs import MessageDialog, QuestionDialog
 gettext.install("updatemanager", "/usr/share/locale")
 _ = gettext.gettext
 
-
 msg = _('Please enter your password')
 scriptDir = join(abspath(dirname(__file__)), "../lib/solydxk/updatemanager")
+umglobal = UmGlobal()
 
 # Clear update history
 def clearUpHistory():
     histFile = join(scriptDir, "files/updatemanager.hist")
     resetLine = None
     if exists(histFile):
-        print(("> Clear update history file"))
         with open(histFile, 'r') as f:
             for line in reversed(f.readlines()):
                 if "upd=" in line:
                     resetLine = "upd=2000.01.01\n"
                     break
         if resetLine is not None:
-             with open(histFile, 'w') as f:
+            print(("> Clear update history file"))
+            with open(histFile, 'w') as f:
                 f.write(resetLine)
+
+def isRunningLive():
+    liveDirs = ['/live', '/lib/live', '/rofs']
+    for ld in liveDirs:
+        if os.path.exists(ld):
+            return True
+    return False
+
+
+def getLauncher():
+    launcher = ""
+    if os.geteuid() > 0:
+        launcher = "gksudo --message \"<b>%s</b>\"" % msg
+        if os.path.exists('/usr/bin/kdesudo'):
+            launcher = "kdesudo -n -i 'update-manager' -d --comment \"<b>%s</b>\"" % msg
+    return launcher
 
 
 # Help
@@ -60,7 +76,7 @@ pref = False
 tray = False
 force = False
 quick = False
-args = ""
+arguments = []
 for opt, arg in opts:
     if opt in ('-p', '--pref'):
         pref = True
@@ -74,13 +90,12 @@ for opt, arg in opts:
         usage()
         sys.exit()
     elif opt in ('-r', '--reload'):
-        args += "-r "
+        arguments.append("-r")
     elif opt in ('-u', '--clear-up'):
         clearUpHistory()
 
 if quick:
     # Only one dialog allowed
-    umglobal = UmGlobal()
     pids = umglobal.getScriptPids("/usr/bin/updatemanager -q")
     if len(pids) > 1:
         sys.exit(2)
@@ -94,7 +109,7 @@ if quick:
     dialogQu.hide()
     if ret == 0:
         # run quick update
-        args += "-q "
+        arguments.append("-q")
         while Gtk.events_pending():
             Gtk.main_iteration()
     elif ret == 1:
@@ -106,57 +121,44 @@ if quick:
         sys.exit(3)
 
 # Finish arguments string
-args += "&"
-
-#if quick:
-    #title = _("Quick Update")
-    #question = _("This will update your system.\n"
-            #"Do you want to continue?")
-    #dialog = QuestionDialog(title, question)
-    #dialog.set_gravity(Gdk.Gravity.SOUTH_EAST)
-    #width, height = dialog.get_size()
-    #dialog.move(Gdk.Screen.width() - width, Gdk.Screen.height() - height)
-    #if (dialog.run()):
-        #while Gtk.events_pending():
-            #Gtk.main_iteration()
-    #else:
-        #sys.exit(2)
+arguments.append("&")
 
 # Add launcher string, only when not root
-launcher = ''
-if os.geteuid() > 0:
-    launcher = "gksudo --message \"<b>%s</b>\"" % msg
-    if os.path.exists('/usr/bin/kdesudo'):
-        launcher = "kdesudo -n -i 'update-manager' -d --comment \"<b>%s</b>\"" % msg
-
-def isRunningLive():
-    if force:
-        return False
-    liveDirs = ['/live', '/lib/live', '/rofs']
-    for ld in liveDirs:
-        if os.path.exists(ld):
-            return True
-    return False
+launcher = getLauncher()
 
 title = _("Update Manager")
 msg = _("Update Manager cannot be started in a live environment\n"
         "You can use the --force argument to start UM in a live environment")
+
 if pref:
-    if isRunningLive():
+    if isRunningLive() and not force:
         MessageDialog(title, msg, Gtk.MessageType.WARNING)
     else:
-        cmd = "%(launcher)s '%(dir)s/updatemanagerpref.py %(args)s'" % { "launcher": launcher, "dir": scriptDir, "args": args }
-        print(cmd)
-        os.system(cmd)
-else:
-    if not isRunningLive():
-        cmd = "%(dir)s/updatemanagertray.py %(args)s" % { "dir": scriptDir, "args": args }
-        print(cmd)
-        os.system(cmd)
-    if not tray:
-        if isRunningLive():
-            MessageDialog(title, msg, Gtk.MessageType.WARNING)
+        if umglobal.isSrciptRunning("updatemanagerpref.py"):
+            print(("updatemanagerpref.py already running - exiting"))
         else:
-            cmd = "%(launcher)s '%(dir)s/updatemanager.py %(args)s'" % { "launcher": launcher, "dir": scriptDir, "args": args }
+            cmd = "python3 {0}/updatemanagerpref.py {1}".format(scriptDir, " ".join(arguments))
+            if launcher != "":
+                cmd = "{0} '{1}'".format(launcher, cmd)
             print(cmd)
             os.system(cmd)
+else:
+    if not isRunningLive() and not force:
+        if umglobal.isSrciptRunning("updatemanagertray.py"):
+            print(("updatemanagertray.py already running - exiting"))
+        else:
+            cmd = "python3 {0}/updatemanagertray.py {1}".format(scriptDir, " ".join(arguments))
+            print(cmd)
+            os.system(cmd)
+    if not tray:
+        if isRunningLive() and not force:
+            MessageDialog(title, msg, Gtk.MessageType.WARNING)
+        else:
+            if umglobal.isSrciptRunning("updatemanager.py"):
+                print(("updatemanager.py already running - exiting"))
+            else:
+                cmd = "python3 {0}/updatemanager.py {1}".format(scriptDir, " ".join(arguments))
+                if launcher != "":
+                    cmd = "{0} '{1}'".format(launcher, cmd)
+                print(cmd)
+                os.system(cmd)
