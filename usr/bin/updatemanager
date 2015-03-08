@@ -15,9 +15,8 @@ from dialogs import MessageDialog, QuestionDialog
 gettext.install("updatemanager", "/usr/share/locale")
 _ = gettext.gettext
 
-msg = _('Please enter your password')
+title = _("Update Manager")
 scriptDir = join(abspath(dirname(__file__)), "../lib/solydxk/updatemanager")
-umglobal = UmGlobal()
 
 # Clear update history
 def clearUpHistory():
@@ -41,15 +40,13 @@ def isRunningLive():
             return True
     return False
 
-
-def getLauncher():
-    launcher = ""
-    if os.geteuid() > 0:
-        launcher = "gksudo --message \"<b>%s</b>\"" % msg
-        if os.path.exists('/usr/bin/kdesudo'):
-            launcher = "kdesudo -n -i 'update-manager' -d --comment \"<b>%s</b>\"" % msg
-    return launcher
-
+# Get the launcher if not root
+launcher = ""
+if os.geteuid() > 0:
+    msg = _('Please enter your password')
+    launcher = "gksudo --message \"<b>%s</b>\"" % msg
+    if os.path.exists('/usr/bin/kdesudo'):
+        launcher = "kdesudo -n -i 'update-manager' -d --comment \"<b>%s</b>\"" % msg
 
 # Help
 def usage():
@@ -57,6 +54,7 @@ def usage():
     hlp = """updatemanager [options]
 
 Options:
+  -c (--conf): Re-create configuration file
   -p (--pref): Show the preference window
   -q (--quick): Quick upgrade
   -t (--tray): Load the tray icon only
@@ -67,7 +65,7 @@ Options:
 
 # Handle arguments
 try:
-    opts, args = getopt.getopt(sys.argv[1:], 'hpqtfru', ['help', 'pref', 'quick', 'tray', 'force', 'reload', 'clear-upd'])
+    opts, args = getopt.getopt(sys.argv[1:], 'chpqtfru', ['conf', 'help', 'pref', 'quick', 'tray', 'force', 'reload', 'clear-upd'])
 except getopt.GetoptError:
     usage()
     sys.exit(1)
@@ -78,7 +76,15 @@ force = False
 quick = False
 arguments = []
 for opt, arg in opts:
-    if opt in ('-p', '--pref'):
+    if opt in ('-c', '--conf'):
+        conf = "/usr/lib/solydxk/updatemanager/files/updatemanager.conf"
+        if exists(conf):
+            cmd = "rm -f {}".format(conf)
+            if launcher != "":
+                cmd = "{0} '{1}'".format(launcher, cmd)
+            print(cmd)
+            os.system(cmd)
+    elif opt in ('-p', '--pref'):
         pref = True
     elif opt in ('-q', '--quick'):
         quick = True
@@ -88,17 +94,18 @@ for opt, arg in opts:
         force = True
     elif opt in ('-h', '--help'):
         usage()
-        sys.exit()
+        sys.exit(3)
     elif opt in ('-r', '--reload'):
         arguments.append("-r")
     elif opt in ('-u', '--clear-up'):
         clearUpHistory()
 
+umglobal = UmGlobal()
 if quick:
     # Only one dialog allowed
     pids = umglobal.getScriptPids("/usr/bin/updatemanager -q")
     if len(pids) > 1:
-        sys.exit(2)
+        sys.exit(4)
 
     builder = Gtk.Builder()
     builder.add_from_file(join(scriptDir, '../../../share/solydxk/updatemanager/updatemanagerqu.glade'))
@@ -118,15 +125,11 @@ if quick:
             Gtk.main_iteration()
     else:
         # cancelled
-        sys.exit(3)
+        sys.exit(5)
 
 # Finish arguments string
 arguments.append("&")
 
-# Add launcher string, only when not root
-launcher = getLauncher()
-
-title = _("Update Manager")
 msg = _("Update Manager cannot be started in a live environment\n"
         "You can use the --force argument to start UM in a live environment")
 

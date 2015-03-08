@@ -54,12 +54,14 @@ case "$1" in
 	CONF='/usr/lib/solydxk/updatemanager/files/updatemanager.conf'
 	if [ -e $CONF ]; then
 	  sed -i -e 's/solydxk\s*=.*/solydxk = http:\/\/repository.solydxk.com/' $CONF
-	  sed -i -e 's/up-info\s*=.*/up-info = update.html/' $CONF
+	  sed -i -e 's/mirrors-list\s*=.*/mirrors-list = http:\/\/repository.solydxk.com\/mirrors.list/' $CONF
+	  sed -i -e 's/dl-test\s*=.*/dl-test = README.mirrors.html/' $CONF
 	  sed -i -e '/^solydxk-debian\s*=/d' $CONF
 	  sed -i -e '/^debian\s*=/d' $CONF
 	  sed -i -e '/.*stable.*/d' $CONF
 	  sed -i -e '/.*emergency.*/d' $CONF
 	  sed -i -e '/.*testing.*/d' $CONF
+	  sed -i -e '/^up-info\s*=/d' $CONF
 	  sed -i -e '/.*-up\s*=/d' $CONF
 	  sed -i -e '/^umfilessubdir.*/d' $CONF
 	fi

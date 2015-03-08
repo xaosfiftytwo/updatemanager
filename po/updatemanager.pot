@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-25 13:32+0100\n"
+"POT-Creation-Date: 2015-03-07 11:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,21 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../usr/bin/updatemanager:18
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:388
-msgid "Please enter your password"
-msgstr ""
-
-#: ../usr/bin/updatemanager:107
-msgid "Quick update silently updates your system."
-msgstr ""
-
-#: ../usr/bin/updatemanager:129
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:52
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr ""
 
-#: ../usr/bin/updatemanager:130
+#: ../usr/bin/updatemanager:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:388
+msgid "Please enter your password"
+msgstr ""
+
+#: ../usr/bin/updatemanager:114
+msgid "Quick update silently updates your system."
+msgstr ""
+
+#: ../usr/bin/updatemanager:133
 msgid ""
 "Update Manager cannot be started in a live environment\n"
 "You can use the --force argument to start UM in a live environment"

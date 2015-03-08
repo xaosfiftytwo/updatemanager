@@ -227,7 +227,7 @@ class UmGlobal(object):
         try:
             settings["solydxk"] = self.cfg.getValue(section, 'solydxk')
         except:
-            settings["solydxk"] = 'http://home.solydxk.com'
+            settings["solydxk"] = 'http://repository.solydxk.com'
             self.saveSettings(section, 'solydxk', settings["solydxk"])
 
         section = 'localfiles'
@@ -271,7 +271,7 @@ class UmGlobal(object):
             settings["dl-test"] = self.cfg.getValue(section, 'dl-test')
             settings["timeout-secs"] = int(self.cfg.getValue(section, 'timeout-secs'))
         except:
-            settings["mirrors-list"] = 'http://home.solydxk.com/mirrors.list'
+            settings["mirrors-list"] = 'http://repository.solydxk.com/mirrors.list'
             settings["dl-test"] = 'README.mirrors.html'
             settings["timeout-secs"] = 10
             self.saveSettings(section, 'mirrors-list', settings["mirrors-list"])

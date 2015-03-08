@@ -1,3 +1,10 @@
+updatemanager (2.6.1) solydxk; urgency=low
+
+  * Improved configuration handling
+  * Added -c/--conf start arguments to re-create default configuration file
+  
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sat, 07 Mar 2015 11:00:00 +0100
+
 updatemanager (2.6.0) solydxk; urgency=low
 
   * Solve crash with latest Vte version 0.38 (gir1.2-vte-2.91)

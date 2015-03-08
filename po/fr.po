@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-21 14:49+0100\n"
+"POT-Creation-Date: 2015-03-07 11:33+0100\n"
 "PO-Revision-Date: 2013-10-17 16:19+0100\n"
 "Last-Translator: Kyodev <kyodev@gmail.com>\n"
 "Language-Team: solyd-fr <admin@solydxk.com>\n"
@@ -16,6 +16,12 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: ../usr/bin/updatemanager:18
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:52
+#: ../usr/share/applications/updatemanager.desktop.in.h:1
+msgid "Update Manager"
+msgstr "Gestionnaire de mises à jour"
+
+#: ../usr/bin/updatemanager:46
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:388
 #, fuzzy
 msgid "Please enter your password"
@@ -23,17 +29,11 @@ msgstr ""
 "Veuillez entrer votre mot de passe pour lancer le gestionnaire de mises à "
 "jour"
 
-#: ../usr/bin/updatemanager:107
+#: ../usr/bin/updatemanager:114
 msgid "Quick update silently updates your system."
 msgstr ""
 
-#: ../usr/bin/updatemanager:129
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:52
-#: ../usr/share/applications/updatemanager.desktop.in.h:1
-msgid "Update Manager"
-msgstr "Gestionnaire de mises à jour"
-
-#: ../usr/bin/updatemanager:130
+#: ../usr/bin/updatemanager:133
 msgid ""
 "Update Manager cannot be started in a live environment\n"
 "You can use the --force argument to start UM in a live environment"
