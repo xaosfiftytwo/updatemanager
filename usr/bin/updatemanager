@@ -112,6 +112,8 @@ if quick:
     go = builder.get_object
     dialogQu = go("dialogQU")
     go("lblQU").set_label(_("Quick update silently updates your system."))
+    go("btnQU").set_label(_("Quick update"))
+    go("btnUM").set_label(_("Update Manager"))
     ret = dialogQu.run()
     dialogQu.hide()
     if ret == 0:
