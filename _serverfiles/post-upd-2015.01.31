@@ -151,7 +151,7 @@ function preseed {
 # Function to divert file
 function divert {
   if [ -f "$1" ]; then
-    DIVERTS=$(dpkg-divert --list | grep $1)
+    DIVERTS=$(env LANG=C dpkg-divert --list | grep $1)
     if [ "$DIVERTS" == "" ]; then
       dpkg-divert --add --rename --divert $1.divert $1
     fi
@@ -161,11 +161,11 @@ function divert {
 # Function to remove a divert
 function remove_divert {
   if [ ! -z "$1" ]; then
-    DIVERTS=$(dpkg-divert --list | grep $1 | awk '{print $3}')
+    DIVERTS=$(env LANG=C dpkg-divert --list | grep $1 | awk '{print $3}')
     for DIVERT in $DIVERTS; do
       sudo dpkg-divert --rename --remove $DIVERT
       # Sometimes it's forbidden to rename diverts
-      CHKDIVERT=$(dpkg-divert --list | grep $DIVERT | awk '{print $3}')
+      CHKDIVERT=$(env LANG=C dpkg-divert --list | grep $DIVERT | awk '{print $3}')
       if [ "$CHKDIVERT" != "" ]; then
         sudo dpkg-divert --remove $DIVERT
       fi

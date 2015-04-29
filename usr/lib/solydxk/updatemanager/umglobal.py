@@ -11,7 +11,7 @@ from execcmd import ExecCmd
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-_ = gettext.gettext
+#_ = gettext.gettext
 
 
 class UmGlobal(object):
@@ -402,8 +402,11 @@ class UmGlobal(object):
 
     def getKernelVersion(self):
         version = self.ec.run(cmd="uname -r", realTime=False)[0]
-        ind = version.rindex("-")
-        return version[0:ind]
+        try:
+            ind = version.rindex("-")
+            return version[0:ind]
+        except:
+            return version
 
     def getKernelArchitecture(self):
         return self.ec.run(cmd="uname -m", realTime=False)[0]

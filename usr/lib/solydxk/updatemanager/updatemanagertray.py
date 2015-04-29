@@ -15,7 +15,7 @@ from execcmd import ExecCmd
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-_ = gettext.gettext
+#_ = gettext.gettext
 
 # Need to initiate threads for Gtk
 GObject.threads_init()

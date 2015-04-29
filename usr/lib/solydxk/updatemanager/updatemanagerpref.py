@@ -26,7 +26,7 @@ from os import remove, system
 
 # i18n: http://docs.python.org/2/library/gettext.html
 gettext.install("updatemanager", "/usr/share/locale")
-_ = gettext.gettext
+#_ = gettext.gettext
 
 
 #class for the main window
@@ -161,7 +161,7 @@ class UpdateManagerPref(object):
 
     def fillTreeViewBlackList(self):
         self.blacklist = []
-        cmd = "dpkg --get-selections | grep hold$ | awk '{print $1}'"
+        cmd = "env LANG=C dpkg --get-selections | grep hold$ | awk '{print $1}'"
         lst = self.ec.run(cmd, False)
         for pck in lst:
             self.blacklist.append([False, pck.strip()])
@@ -171,7 +171,7 @@ class UpdateManagerPref(object):
 
     def fillTreeViewAvailable(self):
         self.available = []
-        cmd = "dpkg --get-selections | grep install$ | awk '{print $1}'"
+        cmd = "env LANG=C dpkg --get-selections | grep install$ | awk '{print $1}'"
         lst = self.ec.run(cmd, False)
         for pck in lst:
             self.available.append([False, pck.strip()])
