@@ -1,8 +1,12 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=updatemanagertray
+Name[ca]=updatemanagertray
+Name[fr]=Barre du gestionnaire
 Name[nl]=updatemanagertray
 Comment=Update Manager Tray
+Comment[ca]=Safata del Gestor d'Actualitzacions 
+Comment[fr]=Barre des tâches du gestionnaire
 Comment[nl]=Update Manager Tray
 Icon=stock_lock
 Exec=updatemanager -t

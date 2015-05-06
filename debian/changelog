@@ -1,6 +1,13 @@
-updatemanager (2.6.3) solydxk; urgency=low
+updatemanager (2.6.5) solydxk; urgency=low
+
+  * French translation
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 06 May 2015 15:30:00 +0100
+
+updatemanager (2.6.4) solydxk; urgency=low
 
   * Fix gettext bug
+  * Updated ca and nl translations
 
  -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 29 Apr 2015 18:00:00 +0100
 
