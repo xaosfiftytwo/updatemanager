@@ -2,7 +2,6 @@
 
 from gi.repository import Gtk, GObject
 import sys
-import gettext
 import threading
 import getopt
 import os
@@ -13,9 +12,10 @@ from os.path import join, abspath, dirname, basename
 from dialogs import MessageDialog
 from execcmd import ExecCmd
 
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#_ = gettext.gettext
+# i18n: http://docs.python.org/3/library/gettext.html
+import gettext
+from gettext import gettext as _
+gettext.textdomain('updatemanager')
 
 # Need to initiate threads for Gtk
 GObject.threads_init()

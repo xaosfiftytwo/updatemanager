@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 
 from execcmd import ExecCmd
-import gettext
-
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#t = gettext.translation("updatemanager", "/usr/share/locale")
-#_ = t.lgettext
 
 
 class UmApt(object):

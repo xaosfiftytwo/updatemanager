@@ -9,7 +9,6 @@
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
 from gi.repository import Gtk, GLib
 import sys
-import gettext
 import getopt
 import os
 # abspath, dirname, join, expanduser, exists, basename
@@ -23,10 +22,10 @@ from umglobal import UmGlobal
 from logger import Logger
 from os import remove, system
 
-
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#_ = gettext.gettext
+# i18n: http://docs.python.org/3/library/gettext.html
+import gettext
+from gettext import gettext as _
+gettext.textdomain('updatemanager')
 
 
 #class for the main window

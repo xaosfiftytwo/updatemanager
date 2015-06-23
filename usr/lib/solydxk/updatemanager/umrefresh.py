@@ -5,11 +5,11 @@ from execcmd import ExecCmd
 from os.path import join, abspath, dirname
 from os import remove
 from glob import glob
-import gettext
 
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#_ = gettext.gettext
+# i18n: http://docs.python.org/3/library/gettext.html
+import gettext
+from gettext import gettext as _
+gettext.textdomain('updatemanager')
 
 # Need to initiate threads for Gtk
 GObject.threads_init()

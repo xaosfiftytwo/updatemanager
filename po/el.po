@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-29 19:06+0200\n"
+"POT-Creation-Date: 2015-06-22 13:31+0200\n"
 "PO-Revision-Date: 2014-06-04 11:07+0100\n"
 "Last-Translator: Stelios Roumeliotis <stel.roum@gmail.com>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -294,85 +294,85 @@ msgstr "Τωρινή έκδοση"
 msgid "New version"
 msgstr "Νέα έκδοση"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Update Manager Preferences"
 msgstr "Επιλογές Διαχειριστή Ενημερώσεων"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Save mirrors"
 msgstr "Αποθήκευση αποθετηρίων"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 #, fuzzy
 msgid "Check mirrors speed"
 msgstr "Έλεγχος ταχύτητας αποθετηρίων"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Remove"
 msgstr "Αφαίρεση"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
 msgid "Blacklist"
 msgstr "Αποκλεισμός"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Repository mirrors"
 msgstr "Εναλλακτικά αποθετήρια"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "General"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Hide maintenance"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
 msgid "Blacklisted packages"
 msgstr "Αποκλεισμένα πακέτα"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
 msgid "Select the fastest production repository"
 msgstr "Επιλογή τού ταχύτερου αποθετηρίου production"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
 msgid "Available packages"
 msgstr "Διαθέσιμα πακέτα"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
 msgid "Global settings"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
 msgid "Check status every"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
 msgid "hours"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Current"
 msgstr "Επιλεγμένο"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Country"
 msgstr "Χώρα"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Repository"
 msgstr "Αποθετήριο"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "URL"
 msgstr "Διεύθυνση"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Speed"
 msgstr "Ταχύτητα"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Updatemanager 2.4.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-29 19:06+0200\n"
+"POT-Creation-Date: 2015-06-22 13:31+0200\n"
 "PO-Revision-Date: 2014-10-22 14:00+0100\n"
 "Last-Translator: Juan Sánchez <jsrmadrid@gmail.com>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -308,84 +308,84 @@ msgstr "Versión actual"
 msgid "New version"
 msgstr "Nueva versión"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Update Manager Preferences"
 msgstr "Preferencias del Gestor de Actualizaciones"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Save mirrors"
 msgstr "Guardar repositorios espejo"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 msgid "Check mirrors speed"
 msgstr "Chequear velocidad de repositorios espejo"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Remove"
 msgstr "Eliminar"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
 msgid "Blacklist"
 msgstr "Retener"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Repository mirrors"
 msgstr "Repositorios espejo"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "General"
 msgstr "General"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Hide maintenance"
 msgstr "Ocultar mantenimiento"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
 msgid "Blacklisted packages"
 msgstr "Paquetes ignorados"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
 msgid "Select the fastest production repository"
 msgstr "Selecionar el repositorio de producción más rápido"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
 msgid "Available packages"
 msgstr "Paquetes disponibles"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
 msgid "Global settings"
 msgstr "Opciones globales"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
 msgid "Check status every"
 msgstr "Chequear el estado cada"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
 msgid "hours"
 msgstr "horas"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Current"
 msgstr "Actual"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Country"
 msgstr "País"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Repository"
 msgstr "Repositorio"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Speed"
 msgstr "Velocidad"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr "La nueva configuración se aplicará después de reiniciar el GA."
 

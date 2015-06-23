@@ -41,7 +41,7 @@ class Config():
         except:
             pass
 
-        self.parser = configparser.SafeConfigParser()
+        self.parser = configparser.ConfigParser(strict=False)
         self.parser.read([self.filePath])
 
     def getSections(self):

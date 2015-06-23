@@ -3,15 +3,15 @@
 import re
 from config import Config
 import os
-import gettext
 from os.path import join, abspath, dirname, exists, basename
 from urllib.request import urlopen
 from datetime import date
 from execcmd import ExecCmd
 
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#_ = gettext.gettext
+# i18n: http://docs.python.org/3/library/gettext.html
+import gettext
+from gettext import gettext as _
+gettext.textdomain('updatemanager')
 
 
 class UmGlobal(object):

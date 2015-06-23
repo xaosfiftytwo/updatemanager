@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager 2.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-06 15:43+0200\n"
+"POT-Creation-Date: 2015-06-22 13:31+0200\n"
 "PO-Revision-Date: 2015-04-17 20:19+0100\n"
 "Last-Translator: Jocelyn <anechampenois@solydxk.com>\n"
 "Language-Team: solyd-fr <admin@solydxk.com>\n"
@@ -306,84 +306,84 @@ msgstr "Version actuelle"
 msgid "New version"
 msgstr "Nouvelle version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Update Manager Preferences"
 msgstr "Préférences du Gestionnaire"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Save mirrors"
 msgstr "Enregistrer"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 msgid "Check mirrors speed"
 msgstr "Vérifier la vitesse des miroirs"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Remove"
 msgstr "Retirer"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
 msgid "Blacklist"
 msgstr "Ajouter"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Repository mirrors"
 msgstr "Miroirs de dépôts"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "General"
 msgstr "Essentiels"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Hide maintenance"
 msgstr "Masquer la maintenance"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
 msgid "Blacklisted packages"
 msgstr "Paquets ignorés"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
 msgid "Select the fastest production repository"
 msgstr "Sélectionner le dépôt le plus rapide"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
 msgid "Available packages"
 msgstr "Paquets disponibles"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
 msgid "Global settings"
 msgstr "Réglages principaux"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
 msgid "Check status every"
 msgstr "Vérifier l'état toute les"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
 msgid "hours"
 msgstr "heure(s)"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Current"
 msgstr "Actuel"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Country"
 msgstr "Pays"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Repository"
 msgstr "Dépôt"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Speed"
 msgstr "Vitesse"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr "Les modifications s'appliqueront au redémarrage du Gestionnaire."
 

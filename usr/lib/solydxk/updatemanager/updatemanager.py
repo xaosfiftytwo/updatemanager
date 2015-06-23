@@ -6,7 +6,6 @@ import sys
 import os
 from os import remove, chmod, makedirs
 from shutil import move
-import gettext
 import threading
 import getopt
 # abspath, dirname, join, expanduser, exists, basename
@@ -22,9 +21,10 @@ from terminal import VirtualTerminal
 from umglobal import UmGlobal
 from simplebrowser import SimpleBrowser
 
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#_ = gettext.gettext
+# i18n: http://docs.python.org/3/library/gettext.html
+import gettext
+from gettext import gettext as _
+gettext.textdomain('updatemanager')
 
 # Need to initiate threads for Gtk
 GObject.threads_init()

@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linuxmint\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-29 19:06+0200\n"
-"PO-Revision-Date: 2015-04-29 19:11+0200\n"
+"POT-Creation-Date: 2015-06-22 13:31+0200\n"
+"PO-Revision-Date: 2015-06-22 14:33+0200\n"
 "Last-Translator: root <arjenbalfoort@solydxk.com>\n"
 "Language-Team: none\n"
 "Language: nl\n"
@@ -229,7 +229,10 @@ msgid ""
 "Once removed you will not be able to boot these kernels!\n"
 "\n"
 "%s"
-msgstr "Na verwijdering kunt u niet meer met deze kernels opstarten! \\ n% s"
+msgstr ""
+"Na verwijdering kunt u niet meer met deze kernels opstarten!\n"
+"\n"
+"% s"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:366
 #, python-format
@@ -307,84 +310,84 @@ msgstr "Huidige versie"
 msgid "New version"
 msgstr "Nieuwe versie"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Update Manager Preferences"
 msgstr "Update Manager Voorkeuren"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Save mirrors"
 msgstr "Bewaar mirrors"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 msgid "Check mirrors speed"
 msgstr "Controleer mirrors snelheid"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
 msgid "Blacklist"
 msgstr "Blacklist"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Repository mirrors"
 msgstr "Pakketbron mirrors"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "General"
 msgstr "Algemeen"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Hide maintenance"
 msgstr "Verberg onderhoud"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
 msgid "Blacklisted packages"
 msgstr "Genegeerde pakketten"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
 msgid "Select the fastest production repository"
 msgstr "Selecteer de snelste productie pakketbron"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
 msgid "Available packages"
 msgstr "Beschikbare pakketten"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
 msgid "Global settings"
 msgstr "Globale instellingen"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
 msgid "Check status every"
 msgstr "Controleer status iedere"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
 msgid "hours"
 msgstr "uren"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Current"
 msgstr "Huidige"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Country"
 msgstr "Land"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Repository"
 msgstr "Repository"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Speed"
 msgstr "Snelheid"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr "Herstart UM om de nieuwe instellingen te gebruiken."
 

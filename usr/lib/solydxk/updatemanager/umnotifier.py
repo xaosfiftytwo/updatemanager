@@ -4,7 +4,6 @@
 # Documentation: http://pyinotify.sourceforge.net/
 
 import pyinotify
-import gettext
 from os.path import abspath, dirname, join
 from gi.repository import GObject, GdkPixbuf
 
@@ -12,9 +11,10 @@ from gi.repository import GObject, GdkPixbuf
 # or else EventHandler will not get called from ThreadedNotifier
 GObject.threads_init()
 
-# i18n: http://docs.python.org/2/library/gettext.html
-gettext.install("updatemanager", "/usr/share/locale")
-#_ = gettext.gettext
+# i18n: http://docs.python.org/3/library/gettext.html
+import gettext
+from gettext import gettext as _
+gettext.textdomain('updatemanager')
 
 
 class EventHandler(pyinotify.ProcessEvent):

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UpdateManager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-29 20:25+0200\n"
+"POT-Creation-Date: 2015-06-22 13:31+0200\n"
 "PO-Revision-Date: 2015-04-29 20:07+0100\n"
 "Last-Translator: Eduard Selma <selma@tinet.cat>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -308,84 +308,84 @@ msgstr "Versió actual "
 msgid "New version"
 msgstr "Versió nova "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Update Manager Preferences"
 msgstr "Preferències del Gestor d'Actualitzacions "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Save mirrors"
 msgstr "Desa les rèpliques "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 msgid "Check mirrors speed"
 msgstr "Prova la velocitat de les rèpliques "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Remove"
 msgstr "Elimina "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
 msgid "Blacklist"
 msgstr "Llista negra "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Repository mirrors"
 msgstr "Rèpliques de dipòsit "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "General"
 msgstr "General "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Hide maintenance"
 msgstr "Amaga el manteniment "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
 msgid "Blacklisted packages"
 msgstr "Paquets a la llista negra "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
 msgid "Select the fastest production repository"
 msgstr "Trieu el dipòsit de producció més ràpid"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
 msgid "Available packages"
 msgstr "Paquets disponibles "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
 msgid "Global settings"
 msgstr "Paràmetres generals "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
 msgid "Check status every"
 msgstr "Comprova l'estat cada "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
 msgid "hours"
 msgstr "hores "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Current"
 msgstr "Actual "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Country"
 msgstr "País "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Repository"
 msgstr "Dipòsit "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "URL"
 msgstr "URL "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:270
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "Speed"
 msgstr "Velocitat "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:384
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr "Els nous paràmetres s'activaran en tornar a engegar. "
 
