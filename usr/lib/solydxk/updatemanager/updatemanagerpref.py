@@ -8,8 +8,7 @@
 # sudo apt-get install python3-gi
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
 from gi.repository import Gtk, GLib
-import sys
-import getopt
+import argparse
 import os
 # abspath, dirname, join, expanduser, exists, basename
 from os.path import join, abspath, dirname, basename
@@ -37,19 +36,16 @@ class UpdateManagerPref(object):
         self.umglobal = UmGlobal()
 
         # Handle arguments
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], 'r', ['reload'])
-        except getopt.GetoptError:
-            sys.exit(2)
+        parser = argparse.ArgumentParser(description='SolydXK Update Manager Preferences')
+        parser.add_argument('-r','--reload', action="store_true", help='')
+        args, extra = parser.parse_known_args()
 
-        for opt, arg in opts:
-            print((">> opt = {} / arg = {}".format(opt, arg)))
-            if opt in ('-r', '--reload'):
-                pids = self.umglobal.getScriptPids("updatemanagerpref.py")
-                if len(pids) > 1:
-                    print(("updatemanagerpref.py already running - kill pid {}".format(pids[0])))
-                    os.system("kill {}".format(pids[0]))
-
+        print(("args = {}".format(args)))
+        if args.reload:
+            pids = self.umglobal.getScriptPids("updatemanagerpref.py")
+            if len(pids) > 1:
+                print(("updatemanagerpref.py already running - kill pid {}".format(pids[0])))
+                os.system("kill {}".format(pids[0]))
 
         # Initiate logging
         self.logFile = join('/var/log', self.umglobal.settings['log'])

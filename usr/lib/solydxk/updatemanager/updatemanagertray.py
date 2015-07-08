@@ -1,9 +1,8 @@
 #! /usr/bin/env python3
 
 from gi.repository import Gtk, GObject
-import sys
 import threading
-import getopt
+import argparse
 import os
 from umglobal import UmGlobal
 from umnotifier import UmNotifier
@@ -32,18 +31,16 @@ class UpdateManagerTray(object):
         self.ec = ExecCmd()
 
         # Handle arguments
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], 'r', ['reload'])
-        except getopt.GetoptError:
-            sys.exit(2)
+        parser = argparse.ArgumentParser(description='SolydXK Update Manager Tray')
+        parser.add_argument('-r','--reload', action="store_true", help='')
+        args, extra = parser.parse_known_args()
 
-        for opt, arg in opts:
-            print((">> opt = {} / arg = {}".format(opt, arg)))
-            if opt in ('-r', '--reload'):
-                pids = self.umglobal.getScriptPids("updatemanagertray.py")
-                if len(pids) > 1:
-                    print(("updatemanagertray.py already running - kill pid {}".format(pids[0])))
-                    os.system("kill {}".format(pids[0]))
+        print((">> args = {}".format(args)))
+        if args.reload:
+            pids = self.umglobal.getScriptPids("updatemanagertray.py")
+            if len(pids) > 1:
+                print(("updatemanagertray.py already running - kill pid {}".format(pids[0])))
+                os.system("kill {}".format(pids[0]))
 
         # Build status icon menu
         self.refreshText = _("Refresh")

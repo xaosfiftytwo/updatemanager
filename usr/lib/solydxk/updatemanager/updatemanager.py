@@ -1,25 +1,34 @@
 #! /usr/bin/env python3
 
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
-from gi.repository import Gtk, Gdk, GObject
-import sys
-import os
-from os import remove, chmod, makedirs
-from shutil import move
-import threading
-import getopt
-# abspath, dirname, join, expanduser, exists, basename
-from os.path import join, abspath, dirname, exists, basename
+import argparse
+from dialogs import CustomQuestionDialog
+from dialogs import MessageDialog
+from dialogs import QuestionDialog
 from execcmd import ExecCmd
-from treeview import TreeViewHandler
-from dialogs import MessageDialog, QuestionDialog, CustomQuestionDialog
-from umapt import UmApt
-from logger import Logger
-from urllib.request import urlopen
+from gi.repository import GObject
+from gi.repository import Gdk
+from gi.repository import Gtk
 from glob import glob
-from terminal import VirtualTerminal
-from umglobal import UmGlobal
+from logger import Logger
+import os
+from os import chmod
+from os import makedirs
+from os import remove
+from os.path import abspath
+from os.path import basename
+from os.path import dirname
+from os.path import exists
+from os.path import join
+from shutil import move
 from simplebrowser import SimpleBrowser
+import sys
+from terminal import VirtualTerminal
+import threading
+from treeview import TreeViewHandler
+from umapt import UmApt
+from umglobal import UmGlobal
+from urllib.request import urlopen
 
 # i18n: http://docs.python.org/3/library/gettext.html
 import gettext
@@ -58,22 +67,21 @@ class UpdateManager(object):
         self.window = None
 
         # Handle arguments
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], 'qr', ['quick', 'reload'])
-        except getopt.GetoptError:
-            sys.exit(1)
+        parser = argparse.ArgumentParser(description='SolydXK Update Manager')
+        parser.add_argument('-q','--quick', action="store_true", help='Quick upgrade')
+        parser.add_argument('-r','--reload', action="store_true", help='')
+        args, extra = parser.parse_known_args()
 
         self.quickUpdate = False
         #print((">> opts = {} / args = {}".format(opts, args)))
-        for opt, arg in opts:
-            #print((">> opt = {} / arg = {}".format(opt, arg)))
-            if opt in ('-q', '--quick'):
-                self.quickUpdate = True
-            if opt in ('-r', '--reload'):
-                pids = self.umglobal.getScriptPids("updatemanager.py")
-                if len(pids) > 1:
-                    print(("updatemanager.py already running - kill pid {}".format(pids[0])))
-                    os.system("kill {}".format(pids[0]))
+        #print((">> opt = {} / arg = {}".format(opt, arg)))
+        if args.quick:
+            self.quickUpdate = True
+        if args.reload:
+            pids = self.umglobal.getScriptPids("updatemanager.py")
+            if len(pids) > 1:
+                print(("updatemanager.py already running - kill pid {}".format(pids[0])))
+                os.system("kill {}".format(pids[0]))
 
         # Set some global translations
         self.aptErrorText = _("Apt error")

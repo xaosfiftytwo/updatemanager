@@ -1,8 +1,14 @@
+updatemanager (2.6.8) solydxk; urgency=low
+
+  * Replaced deprecated getopt with argparse
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 08 Jul 2015 09:30:00 +0100
+
 updatemanager (2.6.7) solydxk; urgency=low
 
   * Improved localization handling
 
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 22 June 2015 12:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 22 Jun 2015 12:00:00 +0100
 
 updatemanager (2.6.5) solydxk; urgency=low
 

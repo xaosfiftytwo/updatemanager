@@ -5,7 +5,7 @@ import sys
 sys.path.append('/usr/lib/solydxk/updatemanager')
 import pwd
 import gettext
-import getopt
+import argparse
 from gi.repository import Gtk, Gdk
 from os.path import join, abspath, dirname, exists
 from umglobal import UmGlobal
@@ -34,7 +34,7 @@ def clearUpHistory():
                 f.write(resetLine)
 
 def isRunningLive():
-    liveDirs = ['/live', '/lib/live', '/rofs']
+    liveDirs = ['/live', '/lib/live/mount', '/rofs']
     for ld in liveDirs:
         if os.path.exists(ld):
             return True
@@ -48,60 +48,35 @@ if os.geteuid() > 0:
     if os.path.exists('/usr/bin/kdesudo'):
         launcher = "kdesudo -n -i 'update-manager' -d --comment \"<b>%s</b>\"" % msg
 
-# Help
-def usage():
-    # Show usage
-    hlp = """updatemanager [options]
-
-Options:
-  -c (--conf): Re-create configuration file
-  -p (--pref): Show the preference window
-  -q (--quick): Quick upgrade
-  -t (--tray): Load the tray icon only
-  -f (--force): Force start in a live environment
-  -u (--clear-upd): Clear Update Pack history
-  -h (--help): Show this help"""
-    print(hlp)
-
 # Handle arguments
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'chpqtfru', ['conf', 'help', 'pref', 'quick', 'tray', 'force', 'reload', 'clear-upd'])
-except getopt.GetoptError:
-    usage()
-    sys.exit(1)
+parser = argparse.ArgumentParser(description='SolydXK Update Manager')
+parser.add_argument('-c','--conf', action="store_true", help='Re-create configuration file')
+parser.add_argument('-p','--pref', action="store_true", help='Show the preference window')
+parser.add_argument('-q','--quick', action="store_true", help='Quick upgrade')
+parser.add_argument('-t','--tray', action="store_true", help='Load the tray icon only')
+parser.add_argument('-f','--force', action="store_true", help='Force start in a live environment')
+parser.add_argument('-u','--clear-upd', action="store_true", help='Clear Update Pack history')
+parser.add_argument('-r','--reload', action="store_true", help='')
 
-pref = False
-tray = False
-force = False
-quick = False
+args = parser.parse_args()
+
 arguments = []
-for opt, arg in opts:
-    if opt in ('-c', '--conf'):
-        conf = "/usr/lib/solydxk/updatemanager/files/updatemanager.conf"
-        if exists(conf):
-            cmd = "rm -f {}".format(conf)
-            if launcher != "":
-                cmd = "{0} '{1}'".format(launcher, cmd)
-            print(cmd)
-            os.system(cmd)
-    elif opt in ('-p', '--pref'):
-        pref = True
-    elif opt in ('-q', '--quick'):
-        quick = True
-    elif opt in ('-t', '--tray'):
-        tray = True
-    elif opt in ('-f', '--force'):
-        force = True
-    elif opt in ('-h', '--help'):
-        usage()
-        sys.exit(3)
-    elif opt in ('-r', '--reload'):
-        arguments.append("-r")
-    elif opt in ('-u', '--clear-up'):
-        clearUpHistory()
+if args.conf:
+    conf = "/usr/lib/solydxk/updatemanager/files/updatemanager.conf"
+    if exists(conf):
+        cmd = "rm -f {}".format(conf)
+        if launcher != "":
+            cmd = "{0} '{1}'".format(launcher, cmd)
+        print(cmd)
+        os.system(cmd)
+
+if args.reload:
+    arguments.append("-r")
+if args.clear_upd:
+    clearUpHistory()
 
 umglobal = UmGlobal()
-if quick:
+if args.quick:
     # Only one dialog allowed
     pids = umglobal.getScriptPids("/usr/bin/updatemanager -q")
     if len(pids) > 1:
@@ -135,8 +110,8 @@ arguments.append("&")
 msg = _("Update Manager cannot be started in a live environment\n"
         "You can use the --force argument to start UM in a live environment")
 
-if pref:
-    if isRunningLive() and not force:
+if args.pref:
+    if isRunningLive() and not args.force:
         MessageDialog(title, msg, Gtk.MessageType.WARNING)
     else:
         if umglobal.isSrciptRunning("updatemanagerpref.py"):
@@ -148,15 +123,15 @@ if pref:
             print(cmd)
             os.system(cmd)
 else:
-    if not isRunningLive() and not force:
+    if not isRunningLive() and not args.force:
         if umglobal.isSrciptRunning("updatemanagertray.py"):
             print(("updatemanagertray.py already running - exiting"))
         else:
             cmd = "python3 {0}/updatemanagertray.py {1}".format(scriptDir, " ".join(arguments))
             print(cmd)
             os.system(cmd)
-    if not tray:
-        if isRunningLive() and not force:
+    if not args.tray:
+        if isRunningLive() and not args.force:
             MessageDialog(title, msg, Gtk.MessageType.WARNING)
         else:
             if umglobal.isSrciptRunning("updatemanager.py"):
