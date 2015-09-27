@@ -1,3 +1,9 @@
+updatemanager (2.6.9) solydxk; urgency=low
+
+  * Improved text strings in maintenance section
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 27 Sep 2015 12:00:00 +0100
+
 updatemanager (2.6.8) solydxk; urgency=low
 
   * Replaced deprecated getopt with argparse

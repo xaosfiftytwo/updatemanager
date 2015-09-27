@@ -88,7 +88,7 @@ class UpdateManagerPref(object):
         self.lblGeneral.set_label(_("General"))
         go("lblHideMaintenance").set_label(_("Hide maintenance"))
         go("lblBlacklist").set_label(_("Blacklisted packages"))
-        go("lblMirrorsText").set_label(_("Select the fastest production repository"))
+        go("lblMirrorsText").set_label(_("Select the fastest repository"))
         go("lblBlacklistText").set_label(_("Blacklisted packages"))
         go("lblAvailableText").set_label(_("Available packages"))
         go("lblGlobalSettings").set_label(_("Global settings"))

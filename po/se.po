@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-08 09:24+0200\n"
+"POT-Creation-Date: 2015-09-27 11:57+0200\n"
 "PO-Revision-Date: 2014-08-23 11:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,46 +137,35 @@ msgid "Select all"
 msgstr "Markera alla"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:162
-msgid "Not needed"
-msgstr "Behövs inte"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:163
-msgid "Clean cache"
-msgstr "Rensa cache"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:164
-msgid "Downgrade"
-msgstr "Nedgradera"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:165
-msgid "Not available"
-msgstr "Ej tillgänglig"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:166
-msgid "Old kernels"
-msgstr "Gamla kärnor:            "
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:167
-msgid "Remove not needed packages."
-msgstr "Tag bort packet som inte behövs."
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:168
-msgid "Clean up the apt cache."
+#, fuzzy
+msgid "Clean up the apt cache"
 msgstr "Rensar apt cache."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:169
-msgid "Only lower version is available."
-msgstr "Bara en tidigare version finns tillgänglig."
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:163
+#, fuzzy
+msgid "Remove unneeded packages"
+msgstr "Tag bort packet som inte behövs."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:170
-msgid "Packages not in the repositories."
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:164
+#, fuzzy
+msgid ""
+"Remove packages not available\n"
+"in the repositories"
 msgstr "Paketen finns inte i repositories."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:171
-msgid "Remove old kernels."
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:165
+#, fuzzy
+msgid "Remove old kernels"
 msgstr "Ta bort gamla kärnor."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:172
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:166
+#, fuzzy
+msgid ""
+"Downgrade packages with\n"
+"only lower versions available"
+msgstr "Bara en tidigare version finns tillgänglig."
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:167
 msgid ""
 "Make sure you create\n"
 "a system image before you\n"
@@ -186,19 +175,19 @@ msgstr ""
 "en backup av systemet innan du\n"
 "fortsätter (te.x med Clonezilla)."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:220
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:215
 msgid "Gathering information..."
 msgstr "Samlar information..."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:229
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:224
 msgid "Version"
 msgstr "Version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:287
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:282
 msgid "Continue installation?"
 msgstr "Fortsätta med installationen?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:356
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:351
 #, python-format
 msgid ""
 "You might need to run this several times.\n"
@@ -209,7 +198,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:362
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:357
 #, python-format
 msgid ""
 "Removing not available packages may break your system!\n"
@@ -221,7 +210,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:368
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:363
 #, python-format
 msgid ""
 "Once removed you will not be able to boot these kernels!\n"
@@ -232,7 +221,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:374
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:369
 #, python-format
 msgid ""
 "Downgrading packages may break your system!\n"
@@ -243,24 +232,24 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:409
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:679
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:404
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:674
 msgid "Package"
 msgstr "Paket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:409
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:404
 msgid "Installed"
 msgstr "Installerade"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:409
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:404
 msgid "Available"
 msgstr "Tillgängligt"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:415
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:410
 msgid "Hit the Execute button to clean the cache."
 msgstr "Klicka på Kör-knappen för att rensa cache."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:469
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:464
 #, python-format
 msgid ""
 "\"%s\"\n"
@@ -269,7 +258,7 @@ msgstr ""
 "\"%s\"\n"
 "matchar inga resultat."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:487
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:482
 msgid ""
 "Do you want to completely clean the apt cache?\n"
 "\n"
@@ -279,15 +268,15 @@ msgstr ""
 "\n"
 "Om nej, så kommer bara otillgängliga paket bli borttagna."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:493
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:488
 msgid "Apt cache has been cleaned."
 msgstr "Apt cache har rensats."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:522
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:517
 msgid "Execute maintenance changes?"
 msgstr "Kör underhållsändringar?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:634
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:629
 #, python-format
 msgid ""
 "Another program is locking the apt cache\n"
@@ -300,11 +289,11 @@ msgstr ""
 "Var vänlig stäng programet innan du kör igen:\n"
 "*%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:679
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:674
 msgid "Current version"
 msgstr "Nuvarande version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:679
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:674
 msgid "New version"
 msgstr "Ny version"
 
@@ -346,7 +335,8 @@ msgid "Blacklisted packages"
 msgstr "Svartlistade paket"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
-msgid "Select the fastest production repository"
+#, fuzzy
+msgid "Select the fastest repository"
 msgstr "Välj det snabbaste produktions repository"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
@@ -424,6 +414,21 @@ msgstr "Uppdateringsverktyget"
 #, fuzzy
 msgid "Update Manager Tray"
 msgstr "Uppdateringsverktyget"
+
+#~ msgid "Not needed"
+#~ msgstr "Behövs inte"
+
+#~ msgid "Clean cache"
+#~ msgstr "Rensa cache"
+
+#~ msgid "Downgrade"
+#~ msgstr "Nedgradera"
+
+#~ msgid "Not available"
+#~ msgstr "Ej tillgänglig"
+
+#~ msgid "Old kernels"
+#~ msgstr "Gamla kärnor:            "
 
 #~ msgid "blacklisted"
 #~ msgstr "svartlistad"

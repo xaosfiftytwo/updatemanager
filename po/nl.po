@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linuxmint\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-08 09:24+0200\n"
+"POT-Creation-Date: 2015-09-27 11:57+0200\n"
 "PO-Revision-Date: 2015-06-22 14:33+0200\n"
 "Last-Translator: root <arjenbalfoort@solydxk.com>\n"
 "Language-Team: none\n"
@@ -135,50 +135,39 @@ msgid "Select all"
 msgstr "Alles selecteren"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:162
-msgid "Not needed"
-msgstr "Niet nodig"
+#, fuzzy
+msgid "Clean up the apt cache"
+msgstr "De apt cache opschonen."
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:163
-msgid "Clean cache"
-msgstr "Cache opschonen"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:164
-msgid "Downgrade"
-msgstr "Downgrade"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:165
-msgid "Not available"
-msgstr "Niet beschikbaar"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:166
-msgid "Old kernels"
-msgstr "Oude kernels"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:167
-msgid "Remove not needed packages."
+#, fuzzy
+msgid "Remove unneeded packages"
 msgstr ""
 "Verwijder pakketten die niet\n"
 "langer nodig zijn."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:168
-msgid "Clean up the apt cache."
-msgstr "De apt cache opschonen."
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:169
-msgid "Only lower version is available."
-msgstr "Slechts een lagere versie beschikbaar."
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:170
-msgid "Packages not in the repositories."
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:164
+#, fuzzy
+msgid ""
+"Remove packages not available\n"
+"in the repositories"
 msgstr ""
 "Pakketten die niet in de\n"
 "repository voorkomen."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:171
-msgid "Remove old kernels."
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:165
+#, fuzzy
+msgid "Remove old kernels"
 msgstr "Verwijder oude kernels"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:172
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:166
+#, fuzzy
+msgid ""
+"Downgrade packages with\n"
+"only lower versions available"
+msgstr "Slechts een lagere versie beschikbaar."
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:167
 msgid ""
 "Make sure you create\n"
 "a system image before you\n"
@@ -188,19 +177,19 @@ msgstr ""
 "uw systeem gemaakt hebt voordat\n"
 "u verder gaat (bijv. Clonezilla)."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:220
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:215
 msgid "Gathering information..."
 msgstr "Gegevens worden verzameld..."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:229
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:224
 msgid "Version"
 msgstr "Versie"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:287
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:282
 msgid "Continue installation?"
 msgstr "Doorgaan met de installatie?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:356
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:351
 #, python-format
 msgid ""
 "You might need to run this several times.\n"
@@ -211,7 +200,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:362
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:357
 #, python-format
 msgid ""
 "Removing not available packages may break your system!\n"
@@ -223,7 +212,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:368
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:363
 #, python-format
 msgid ""
 "Once removed you will not be able to boot these kernels!\n"
@@ -234,7 +223,7 @@ msgstr ""
 "\n"
 "% s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:374
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:369
 #, python-format
 msgid ""
 "Downgrading packages may break your system!\n"
@@ -245,24 +234,24 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:409
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:679
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:404
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:674
 msgid "Package"
 msgstr "Pakket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:409
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:404
 msgid "Installed"
 msgstr "Geïnstalleerd"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:409
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:404
 msgid "Available"
 msgstr "Beschikbaar"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:415
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:410
 msgid "Hit the Execute button to clean the cache."
 msgstr "Klik op de Uitvoeren knop om de cache op te schonen."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:469
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:464
 #, python-format
 msgid ""
 "\"%s\"\n"
@@ -271,7 +260,7 @@ msgstr ""
 "\"%s\"\n"
 "leverde geen resultaten op."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:487
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:482
 msgid ""
 "Do you want to completely clean the apt cache?\n"
 "\n"
@@ -281,15 +270,15 @@ msgstr ""
 "\n"
 "Nee: alleen niet meer beschikbare installatiepakketten worden verwijderd."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:493
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:488
 msgid "Apt cache has been cleaned."
 msgstr "Apt cache is schoongemaakt."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:522
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:517
 msgid "Execute maintenance changes?"
 msgstr "Onderhoud uitvoeren?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:634
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:629
 #, python-format
 msgid ""
 "Another program is locking the apt cache\n"
@@ -302,11 +291,11 @@ msgstr ""
 "Sluit het programma voordat u ververst:\n"
 "* %s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:679
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:674
 msgid "Current version"
 msgstr "Huidige versie"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:679
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:674
 msgid "New version"
 msgstr "Nieuwe versie"
 
@@ -348,7 +337,8 @@ msgid "Blacklisted packages"
 msgstr "Genegeerde pakketten"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
-msgid "Select the fastest production repository"
+#, fuzzy
+msgid "Select the fastest repository"
 msgstr "Selecteer de snelste productie pakketbron"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
@@ -422,6 +412,21 @@ msgstr "updatemanagertray"
 #: ../etc/xdg/autostart/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Update Manager Tray"
+
+#~ msgid "Not needed"
+#~ msgstr "Niet nodig"
+
+#~ msgid "Clean cache"
+#~ msgstr "Cache opschonen"
+
+#~ msgid "Downgrade"
+#~ msgstr "Downgrade"
+
+#~ msgid "Not available"
+#~ msgstr "Niet beschikbaar"
+
+#~ msgid "Old kernels"
+#~ msgstr "Oude kernels"
 
 #~ msgid "blacklisted"
 #~ msgstr "genegeerd"
