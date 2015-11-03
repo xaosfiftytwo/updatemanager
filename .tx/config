@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+minimum_perc = 80
+
+[updatemanager.updatemanagerpot]
+source_file = po/updatemanager.pot
+file_filter = po/<lang>.po
+source_lang = en
+type = PO

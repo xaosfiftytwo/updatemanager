@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Update Manager
 Name[ca]=Gestor d'actualitzacions
-Name[de]=Aktualisierungs- Manager
+Name[de]=Update Manager
 Name[el]=Διαχειριστής ενημερώσεων
 Name[es]=Gestor de Actualizaciones
 Name[fr]=Gestionnaire de mises à jour
@@ -15,10 +15,12 @@ Name[tr]=Güncelleştirme Yöneticisi
 Comment=Show and install available updates
 Comment[ca]=Mostra i instal·la actualitzacions disponibles 
 Comment[de]=Zeige und installiere verfügbare Aktualisierungen
+Comment[es]=Mostrar e instalar las actualizaciones disponibles
 Comment[fr]=Voir et installer les mises à jour disponibles
 Comment[it]=Visualizza e installa aggiornamenti disponibili
 Comment[nl]=Beschikbare updates weergeven en installeren
 Comment[pl]=Pokaż i zainstaluj dostępne aktualizacje
+Comment[ru]=Показать и установить доступные обновления
 Comment[tr]=Mevcut güncelleştirmeleri göster ve kur
 Exec=updatemanager
 Icon=update-manager

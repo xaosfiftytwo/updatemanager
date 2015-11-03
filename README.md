@@ -1,6 +1,8 @@
 SolydXK Update Manager
 ======================
 
+Please, help translating: https://www.transifex.com/solydxk/updatemanager/dashboard/
+
 Update Manager (UM) for SolydXK.
 This is a total rework of the previous UM where Apt is the update mechanism instead of Synaptic.
 Choosing Apt will prevent any discrepancies between Terminal upgrades and UM upgrades.

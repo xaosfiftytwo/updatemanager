@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# Translators:
+# Eduard Selma <selma@tinet.cat>, 2015
 msgid ""
 msgstr ""
-"Project-Id-Version: UpdateManager\n"
+"Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-27 11:57+0200\n"
-"PO-Revision-Date: 2015-04-29 20:07+0100\n"
+"POT-Creation-Date: 2015-11-03 16:56+0100\n"
+"PO-Revision-Date: 2015-10-23 12:12+0000\n"
 "Last-Translator: Eduard Selma <selma@tinet.cat>\n"
-"Language-Team: SolydXK <admin@solydxk.com>\n"
+"Language-Team: Catalan (http://www.transifex.com/solydxk/updatemanager/"
+"language/ca/)\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../usr/bin/updatemanager:18 ../usr/bin/updatemanager:91
@@ -139,33 +139,32 @@ msgid "Select all"
 msgstr "Selecciona tots "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:162
-#, fuzzy
 msgid "Clean up the apt cache"
-msgstr "Neteja l'APT-caché. "
+msgstr "Neteja l'APT-Caché "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:163
-#, fuzzy
 msgid "Remove unneeded packages"
-msgstr "Elimina els paquets innecessaris."
+msgstr "Elimina programari innecessari "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:164
-#, fuzzy
 msgid ""
 "Remove packages not available\n"
 "in the repositories"
-msgstr "Els paquets no són als dipòsits."
+msgstr ""
+"Elimina els paquets no disponibles\n"
+"als dipòsits. "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:165
-#, fuzzy
 msgid "Remove old kernels"
-msgstr "Elimina kernels antics. "
+msgstr "Elimina els kernels antics "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:166
-#, fuzzy
 msgid ""
 "Downgrade packages with\n"
 "only lower versions available"
-msgstr "Només es disposa d'una versió anterior. "
+msgstr ""
+"Desactualitza paquets amb\n"
+"només versions anteriors disponibles "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:167
 msgid ""
@@ -335,9 +334,8 @@ msgid "Blacklisted packages"
 msgstr "Paquets a la llista negra "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
-#, fuzzy
 msgid "Select the fastest repository"
-msgstr "Trieu el dipòsit de producció més ràpid"
+msgstr "Seleccioneu el dipòsit més ràpid "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Available packages"
@@ -410,47 +408,3 @@ msgstr "updatemanagertray"
 #: ../etc/xdg/autostart/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Safata del Gestor d'Actualitzacions "
-
-#~ msgid "Not needed"
-#~ msgstr "No necessari "
-
-#~ msgid "Clean cache"
-#~ msgstr "Neteja la memòria cau "
-
-#~ msgid "Downgrade"
-#~ msgstr "Desactualitza "
-
-#~ msgid "Not available"
-#~ msgstr "No disponible "
-
-#~ msgid "Old kernels"
-#~ msgstr "Kernels antics "
-
-#~ msgid "blacklisted"
-#~ msgstr "A la llista negra"
-
-#~ msgid "Refresh finished"
-#~ msgstr "S'ha acabat l'actualització"
-
-#~ msgid ""
-#~ "You are pointing to the testing repositories.\n"
-#~ "\n"
-#~ "Only production repositories do have mirrors.\n"
-#~ "Please change to production manually."
-#~ msgstr ""
-#~ "Esteu apuntant als miralls de prova.\n"
-#~ "\n"
-#~ "Només tenen miralls els dipòsits de producció.\n"
-#~ "Si us plau, canvieu a producció manualment."
-
-#~ msgid "Continue emergency installation?"
-#~ msgstr "Continuo la instal·lació d'emergència?"
-
-#~ msgid "Wait for user input for"
-#~ msgstr "Espera l'entrada d'usuari per"
-
-#~ msgid "seconds (0 = disable automatic answering)"
-#~ msgstr "segons (0 = desactiva resposta automàtica)"
-
-#~ msgid "No changes were made."
-#~ msgstr "No s'han fet canvis."

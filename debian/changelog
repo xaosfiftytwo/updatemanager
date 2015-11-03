@@ -1,3 +1,9 @@
+updatemanager (2.7.0) solydxk; urgency=low
+
+  * Updated translations
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Tue, 03 Nov 2015 17:00:00 +0100
+
 updatemanager (2.6.9) solydxk; urgency=low
 
   * Improved text strings in maintenance section
