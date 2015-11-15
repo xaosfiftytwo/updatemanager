@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.18.3 -->
 <interface>
-  <requires lib="gtk+" version="3.4"/>
+  <requires lib="gtk+" version="3.6"/>
   <object class="GtkImage" id="imgAddBlacklist">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -28,6 +28,9 @@
           <object class="GtkBox" id="box1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">3</property>
+            <property name="margin_right">3</property>
+            <property name="margin_bottom">3</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkLabel" id="lblGlobalSettings">
@@ -64,6 +67,8 @@
                   <object class="GtkEntry" id="txtCheckStatus">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="margin_left">3</property>
+                    <property name="margin_right">3</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -193,6 +198,9 @@
           <object class="GtkBox" id="boxMirrors">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">3</property>
+            <property name="margin_right">3</property>
+            <property name="margin_bottom">3</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkBox" id="box3">
@@ -231,6 +239,10 @@
                     <property name="can_default">True</property>
                     <property name="has_default">True</property>
                     <property name="receives_default">True</property>
+                    <property name="margin_left">3</property>
+                    <property name="margin_right">3</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">3</property>
                     <signal name="clicked" handler="on_btnCheckMirrorsSpeed_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -247,7 +259,9 @@
                     <property name="can_default">True</property>
                     <property name="has_default">True</property>
                     <property name="receives_default">True</property>
-                    <property name="margin_left">10</property>
+                    <property name="margin_right">3</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">3</property>
                     <signal name="clicked" handler="on_btnSaveMirrors_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -304,6 +318,9 @@
           <object class="GtkGrid" id="gridBlacklist">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_left">3</property>
+            <property name="margin_right">3</property>
+            <property name="margin_bottom">3</property>
             <child>
               <object class="GtkScrolledWindow" id="swBlacklist">
                 <property name="visible">True</property>
@@ -378,6 +395,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="margin_left">3</property>
+                    <property name="margin_right">3</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">3</property>
                     <property name="image">imgAddBlacklist</property>
                     <property name="always_show_image">True</property>
                     <signal name="clicked" handler="on_btnAddBlacklist_clicked" swapped="no"/>
@@ -395,7 +416,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="margin_top">10</property>
+                    <property name="margin_left">3</property>
+                    <property name="margin_right">3</property>
+                    <property name="margin_top">3</property>
+                    <property name="margin_bottom">3</property>
                     <property name="image">imgRemoveBlacklist</property>
                     <property name="image_position">right</property>
                     <property name="always_show_image">True</property>

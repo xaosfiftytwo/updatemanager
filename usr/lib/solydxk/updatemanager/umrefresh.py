@@ -75,8 +75,8 @@ class UmRefresh(object):
         print("Done refreshing")
 
     def checkForUpdates(self):
-        #cmd = "apt-show-versions -u"
-        cmd = "aptitude search '~U'"
+        # Get updateable packages which are not held back"
+        cmd = "aptitude search '~U' | grep -v ^ih"
 
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
