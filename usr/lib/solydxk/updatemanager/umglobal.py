@@ -100,7 +100,7 @@ class UmGlobal(object):
         return isNew
 
     def isPackageInstalled(self, package, version):
-        cmd = "env LANG=C bash -c 'apt-cache policy %s | grep \"Installed:\"'" % package
+        cmd = "env LANG=C apt-cache policy %s | grep Installed:" % package
         lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
         if lst[1] == version:
             return True

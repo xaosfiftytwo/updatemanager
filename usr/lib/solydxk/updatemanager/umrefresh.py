@@ -76,12 +76,18 @@ class UmRefresh(object):
 
     def checkForUpdates(self):
         # Get updateable packages which are not held back"
-        cmd = "aptitude search '~U' | grep -v ^ih"
+        cmd = "env LANG=C aptitude search '~U' | awk '{print $2}'"
+        updateables = self.ec.run(cmd=cmd, realTime=False)
 
-        # Get the output of the command in a list
-        lst = self.ec.run(cmd=cmd, realTime=False)
-
-        if lst:
-            return True
+        if updateables:
+            # Get packages that were kept back by the user
+            cmd = "env LANG=C dpkg --get-selections | grep hold$ | awk '{print $1}'"
+            keptbacks = self.ec.run(cmd=cmd, realTime=False)
+            if keptbacks:
+                for upd in updateables:
+                    if upd not in keptbacks:
+                        return True
+            else:
+                return True
         else:
             return False

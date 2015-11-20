@@ -35,7 +35,7 @@ class UpdateManagerTray(object):
         parser.add_argument('-r','--reload', action="store_true", help='')
         args, extra = parser.parse_known_args()
 
-        print((">> args = {}".format(args)))
+        #print((">> args = {}".format(args)))
         if args.reload:
             pids = self.umglobal.getScriptPids("updatemanagertray.py")
             if len(pids) > 1:

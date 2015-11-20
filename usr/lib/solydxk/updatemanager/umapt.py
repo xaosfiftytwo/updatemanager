@@ -29,7 +29,7 @@ class UmApt(object):
         self.packagesInfo = []
 
         # Use env LANG=C to ensure the output of apt-show-versions is always en_US
-        cmd = "env LANG=C bash -c 'apt-show-versions'"
+        cmd = "env LANG=C apt-show-versions"
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
 
@@ -71,14 +71,13 @@ class UmApt(object):
 
         # Create approriate command
         # Use env LANG=C to ensure the output of dist-upgrade is always en_US
-        cmd = "env LANG=C bash -c 'apt-get dist-upgrade --assume-no'"
-        #cmd = "env LANG=C bash -c 'apt-get upgrade --assume-no'"
+        cmd = "env LANG=C apt-get dist-upgrade --assume-no"
         if "apt-get" in customAptGetCommand:
             customAptGetCommand = customAptGetCommand.replace("--force-yes", "")
             customAptGetCommand = customAptGetCommand.replace("--assume-yes", "")
             customAptGetCommand = customAptGetCommand.replace("--yes", "")
             customAptGetCommand = customAptGetCommand.replace("-y", "")
-            cmd = "env LANG=C bash -c '%s --assume-no'" % customAptGetCommand
+            cmd = "env LANG=C %s --assume-no" % customAptGetCommand
 
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
@@ -125,18 +124,25 @@ class UmApt(object):
                         packageList.append(info)
                         break
 
-    def fillNotAvailablePackages(self):
+    def fillNotAvailablePackages(self, include_kept_back=False):
         self.notavailablePackages = []
         # Use env LANG=C to ensure the output of apt-show-versions is always en_US
-        cmd = "env LANG=C bash -c 'apt-show-versions' | grep 'available'"
+        # aptitude search '~o' --disable-columns -F "%p %v %V"
+        cmd = "env LANG=C apt-show-versions | grep available"
         # Get the output of the command in a list
-        lst = self.ec.run(cmd=cmd, realTime=False)
+        notavailables = self.ec.run(cmd=cmd, realTime=False)
+
+        # Get packages that were kept back by the user
+        keptbacks = []
+        if not include_kept_back:
+            cmd = "env LANG=C dpkg --get-selections | grep hold$ | awk '{print $1}'"
+            keptbacks = self.ec.run(cmd=cmd, realTime=False)
 
         # Loop through each line and fill the package lists
-        for line in lst:
+        for line in notavailables:
             items = line.split(" ")
             pck = items[0].split(":")[0]
-            if pck != "updatemanager":
+            if pck != "updatemanager" and pck not in keptbacks:
                 if self.kernelArchitecture == "x86_64" and "i386" in items[0]:
                     pck = items[0].split("/")[0]
                 ver = items[1]
@@ -146,7 +152,7 @@ class UmApt(object):
     def fillDowngradablePackages(self):
         self.downgradablePackages = []
         # Use env LANG=C to ensure the output of apt-show-versions is always en_US
-        cmd = "env LANG=C bash -c 'apt-show-versions' | grep 'newer'"
+        cmd = "env LANG=C apt-show-versions | grep newer"
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
 
@@ -165,7 +171,7 @@ class UmApt(object):
     def fillKernelPackages(self):
         self.kernelPackages = []
         # Use env LANG=C to ensure the output of apt-show-versions is always en_US
-        cmd = "env LANG=C bash -c 'apt-show-versions | grep ^linux-'"
+        cmd = "env LANG=C apt-show-versions | grep ^linux-"
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
 
@@ -181,7 +187,7 @@ class UmApt(object):
     def fillOrphanedPackages(self):
         self.orphanedPackages = []
         # Use env LANG=C to ensure the output of apt-show-versions is always en_US
-        cmd = "env LANG=C bash -c 'deborphan'"
+        cmd = "env LANG=C deborphan"
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)
 
@@ -201,7 +207,7 @@ class UmApt(object):
 
     # Get the package version number
     def getDowngradablePackageVersion(self, package):
-        cmd = "env LANG=C bash -c 'apt-cache show %s | grep \"^Version:\" | cut -d\" \" -f 2'" % package
+        cmd = "env LANG=C apt-cache show %s | grep ^Version: | cut -d' ' -f 2" % package
         lst = self.ec.run(cmd, realTime=False)
         if len(lst) > 1:
             return lst[1]
@@ -209,9 +215,9 @@ class UmApt(object):
             return lst[0]
 
     def getPackageVersion(self, package, candidate=False):
-        cmd = "env LANG=C bash -c 'apt-cache policy %s | grep \"Installed:\"'" % package
+        cmd = "env LANG=C apt-cache policy %s | grep Installed:" % package
         if candidate:
-            cmd = "env LANG=C bash -c 'apt-cache policy %s | grep \"Candidate:\"'" % package
+            cmd = "env LANG=C apt-cache policy %s | grep Candidate:" % package
         lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
         return lst[-1]
 

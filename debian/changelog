@@ -1,3 +1,15 @@
+updatemanager (2.7.3) solydxk; urgency=low
+
+  * Better handling of kept back packages
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 16 Nov 2015 09:00:00 +0100
+
+updatemanager (2.7.2) solydxk; urgency=low
+
+  * Malformed updatemanager.glade
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Sun, 15 Nov 2015 19:00:00 +0100
+
 updatemanager (2.7.1) solydxk; urgency=low
 
   * Do not show updates available for held back packages

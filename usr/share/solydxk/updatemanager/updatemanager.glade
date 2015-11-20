@@ -13,9 +13,6 @@
       <object class="GtkBox" id="boxMain">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="margin_left">3</property>
-        <property name="margin_right">3</property>
-        <property name="resize_mode">immediate</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkToolbar" id="tlbMain">
@@ -308,6 +305,7 @@
                     <property name="width_request">200</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_right">3</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkLabel" id="lblSepMaintenance">
@@ -458,9 +456,6 @@ continue (e.g. Clonezilla).</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="valign">baseline</property>
-                        <property name="margin_left">3</property>
-                        <property name="margin_right">3</property>
                         <signal name="clicked" handler="on_btnMaintenanceExecute_clicked" swapped="no"/>
                       </object>
                       <packing>

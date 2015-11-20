@@ -25,7 +25,7 @@ class EventHandler(pyinotify.ProcessEvent):
         self.umrefresh = umrefresh
 
     def process_IN_CREATE(self, event):
-        print((">>> process_IN_CREATE: %s" % event.pathname))
+        #print((">>> process_IN_CREATE: %s" % event.pathname))
         if not self.executing:
             if event.pathname == self.umglobal.umfiles['umrefresh']:
                 print(("Creating: %s" % event.pathname))
@@ -40,7 +40,7 @@ class EventHandler(pyinotify.ProcessEvent):
                     GObject.idle_add(self.changeIcon, "icon-exec", _("Installing updates..."))
 
     def process_IN_DELETE(self, event):
-        print((">>> process_IN_DELETE: %s" % event.pathname))
+        #print((">>> process_IN_DELETE: %s" % event.pathname))
         if event.pathname == self.umglobal.umfiles['umupd'] or \
            event.pathname == self.umglobal.umfiles['umrefresh']:
             print(("Deleting: %s" % event.pathname))

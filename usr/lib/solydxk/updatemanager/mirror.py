@@ -44,8 +44,8 @@ class MirrorGetSpeed(threading.Thread):
                         dlSpeed = dlSpeed.split('.')[0]
                     dlSpeed = int(dlSpeed) / 1000
 
-                    self.queue.put([mirror, "%d Kb/s" % dlSpeed])
-                    print(("Server {0} - {1} Kb/s ({2})".format(mirror, dlSpeed, self.getHumanReadableHttpCode(httpCode))))
+                    self.queue.put([mirror, "%d kb/s" % dlSpeed])
+                    print(("Server {0} - {1} kb/s ({2})".format(mirror, dlSpeed, self.getHumanReadableHttpCode(httpCode))))
 
             except Exception as detail:
                 # This is a best-effort attempt, fail graciously
