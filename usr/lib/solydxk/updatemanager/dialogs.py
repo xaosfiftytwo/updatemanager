@@ -1,116 +1,86 @@
 #! /usr/bin/env python3
 
+# Make sure the right Gtk version is loaded
+import gi
+gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, GObject, GdkPixbuf
+from os.path import exists
+
+
+DIALOG_TYPES = {
+    Gtk.MessageType.INFO: 'MessageDialog',
+    Gtk.MessageType.ERROR: 'ErrorDialog',
+    Gtk.MessageType.WARNING: 'WarningDialog',
+    Gtk.MessageType.QUESTION: 'QuestionDialog',
+}
 
 
 # Show message dialog
 # Usage:
-# MessageDialog(_("My Title"), "Your (error) message here", Gtk.MessageType.ERROR).show()
-# Message types:
-# Gtk.MessageType.INFO
-# Gtk.MessageType.WARNING
-# Gtk.MessageType.ERROR
-# ThreadedMessageDialog can be called from a working thread
-class ThreadedMessageDialog(Gtk.MessageDialog):
-    def __init__(self, title, message, style=Gtk.MessageType.INFO, parent=None):
-        if isinstance(message, tuple):
-            message, text = message
-        else:
-            text = None
-
-        Gtk.MessageDialog.__init__(self, parent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, style, Gtk.ButtonsType.OK, message)
-
-        if text:
-            self.format_secondary_text(text)
-        self.set_default_response(Gtk.ResponseType.OK)
+# MessageDialog(_("My Title"), "Your message here")
+# Use safe=False when calling from a thread
+class Dialog(Gtk.MessageDialog):
+    def __init__(self, style, buttons,
+                 title, text, text2=None, parent=None, safe=True, icon=None):
+        parent = parent or next((w for w in Gtk.Window.list_toplevels() if w.get_title()), None)
+        Gtk.MessageDialog.__init__(self, parent,
+                                   Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                   style, buttons, text)
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.set_title(title)
         if parent is not None:
             self.set_icon(parent.get_icon())
-
-        self.connect('response', self._handle_clicked)
+        elif icon is not None:
+            if exists(icon):
+                self.set_icon_from_file(icon)
+            else:
+                self.set_icon_name(icon)
+        self.set_title(title)
+        self.set_markup(text)
+        self.desc = text[:30] + ' ...' if len(text) > 30 else text
+        self.dialog_type = DIALOG_TYPES[style]
+        if text2: self.format_secondary_markup(text2)
+        self.safe = safe
+        if not safe:
+            self.connect('response', self._handle_clicked)
 
     def _handle_clicked(self, *args):
         self.destroy()
 
-    def run(self):
-        GObject.timeout_add(0, self._do_show_dialog)
+    def show(self):
+        if self.safe:
+            return self._do_show_dialog()
+        else:
+            return GObject.timeout_add(0, self._do_show_dialog)
 
     def _do_show_dialog(self):
-        self.show_all()
-        return False
+        """ Show the dialog.
+            Returns True if user response was confirmatory.
+        """
+        #print(('Showing {0.dialog_type} ({0.desc})'.format(self)))
+        try: return self.run() in (Gtk.ResponseType.YES, Gtk.ResponseType.APPLY,
+                                   Gtk.ResponseType.OK, Gtk.ResponseType.ACCEPT)
+        finally:
+            if self.safe:
+                self.destroy()
+            else:
+                return False
 
 
-# Show unthreaded message dialog
-# Usage:
-# MessageDialog(_("My Title"), "Your (error) message here", Gtk.MessageType.ERROR).show()
-# Message types:
-# Gtk.MessageType.INFO
-# Gtk.MessageType.WARNING
-# Gtk.MessageType.ERROR
-# MessageDialog can NOT be called from a working thread, only from main (UI) thread
-class MessageDialog(Gtk.MessageDialog):
-    def __init__(self, title, message, style=Gtk.MessageType.INFO, parent=None):
-        if isinstance(message, tuple):
-            message, text = message
-        else:
-            text = None
-
-        Gtk.MessageDialog.__init__(self, parent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, style, Gtk.ButtonsType.OK, message)
-
-        if text:
-            self.format_secondary_text(text)
-        self.set_default_response(Gtk.ResponseType.OK)
-        self.set_position(Gtk.WindowPosition.CENTER)
-        self.set_title(title)
-        if parent is not None:
-            self.set_icon(parent.get_icon())
-
-        self.connect('response', self._handle_clicked)
-
-        self.run()
-
-    def _handle_clicked(self, *args):
-        self.destroy()
+def MessageDialog(*args):
+    return Dialog(Gtk.MessageType.INFO, Gtk.ButtonsType.OK, *args).show()
 
 
-# Create question dialog
-# Usage:
-# dialog = QuestionDialog(_("My Title"), _("Put your question here?"))
-#    if (dialog.show()):
-# QuestionDialog can NOT be called from a working thread, only from main (UI) thread
-class QuestionDialog(Gtk.MessageDialog):
-    def __init__(self, title, question, parent=None):
-        if isinstance(question, tuple):
-            question, text = question
-        else:
-            text = None
+def QuestionDialog(*args):
+    return Dialog(Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, *args).show()
 
-        self.question = question
-        self.response = None
 
-        Gtk.MessageDialog.__init__(self, parent, Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, question)
+def WarningDialog(*args):
+    return Dialog(Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, *args).show()
 
-        if text:
-            self.format_secondary_text(text)
-        self.set_title(title)
-        self.set_position(Gtk.WindowPosition.CENTER)
-        if parent is not None:
-            self.set_icon(parent.get_icon())
 
-        self.connect('response', self.__class__.do_response)
-
-    def do_response(self, id):
-        self.response = id
-
-    #''' Show me on screen '''
-    def run(self):
-        Gtk.MessageDialog.run(self)
-        self.destroy()
-        if self.response == Gtk.ResponseType.YES:
-            return True
-        else:
-            return False
+def ErrorDialog(*args):
+    return Dialog(Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, *args).show()
 
 
 # Create a custom question dialog
@@ -237,3 +207,48 @@ class SelectDirectoryDialog(object):
             directory = dialog.get_filename()
         dialog.destroy()
         return directory
+
+
+class InputDialog(Gtk.MessageDialog):
+    def __init__(self, title, text, text2=None, parent=None, default_value='', is_password=False):
+        parent = parent or next((w for w in Gtk.Window.list_toplevels() if w.get_title()), None)
+
+        Gtk.MessageDialog.__init__(self, parent,
+                                   Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                   Gtk.MessageType.QUESTION, Gtk.ButtonsType.OK, text)
+
+        self.set_position(Gtk.WIN_POS_CENTER)
+        if parent is not None:
+            self.set_icon(parent.get_icon())
+        self.set_title(title)
+        self.set_markup(text)
+        if text2: self.format_secondary_markup(text2)
+
+        # Add entry field
+        entry = Gtk.Entry()
+        if is_password:
+            entry.set_visibility(False)
+        entry.set_text(default_value)
+        entry.connect("activate",
+                      lambda ent, dlg, resp: dlg.response(resp),
+                      self, Gtk.ResponseType.OK)
+        self.vbox.pack_end(entry, True, True, 0)
+        self.vbox.show_all()
+        self.entry = entry
+
+        self.set_default_response(Gtk.ResponseType.OK)
+
+    def set_value(self, text):
+        self.entry.set_text(text)
+
+    def show(self):
+        try:
+            result = self.run()
+            if result == Gtk.ResponseType.OK:
+                return self.entry.get_text().decode('utf8')
+            else:
+                return ''
+        except:
+            return ''
+        finally:
+            self.destroy()

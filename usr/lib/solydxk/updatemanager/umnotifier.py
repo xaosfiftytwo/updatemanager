@@ -4,8 +4,8 @@
 # Documentation: http://pyinotify.sourceforge.net/
 
 import pyinotify
-from os.path import abspath, dirname, join
-from gi.repository import GObject, GdkPixbuf
+from os.path import join
+from gi.repository import GObject
 
 # Need to initiate threads for Gtk,
 # or else EventHandler will not get called from ThreadedNotifier
@@ -18,9 +18,9 @@ gettext.textdomain('updatemanager')
 
 
 class EventHandler(pyinotify.ProcessEvent):
-    def __init__(self, statusIcon, umglobal, umrefresh):
+    def __init__(self, umglobal, umrefresh, indicator):
         self.executing = False
-        self.statusIcon = statusIcon
+        self.indicator = indicator
         self.umglobal = umglobal
         self.umrefresh = umrefresh
 
@@ -32,12 +32,12 @@ class EventHandler(pyinotify.ProcessEvent):
                 self.executing = True
                 # You cannot handle GUI changes in a thread
                 # Use idle_add to let the calling thread handle GUI stuff when there's time left
-                GObject.idle_add(self.changeIcon, "icon-exec", _("Refreshing update list..."))
+                GObject.idle_add(self.changeIcon, "icon-execute", _("Refreshing update list..."))
             if not self.executing:
                 if event.pathname == self.umglobal.umfiles['umupd']:
                     print(("Creating: %s" % event.pathname))
                     self.executing = True
-                    GObject.idle_add(self.changeIcon, "icon-exec", _("Installing updates..."))
+                    GObject.idle_add(self.changeIcon, "icon-execute", _("Installing updates..."))
 
     def process_IN_DELETE(self, event):
         #print((">>> process_IN_DELETE: %s" % event.pathname))
@@ -50,14 +50,25 @@ class EventHandler(pyinotify.ProcessEvent):
     def process_IN_MODIFY(self, event):
         if '/sources.list' in event.pathname:
             print(("Modifying: %s" % event.pathname))
-            GObject.idle_add(self.changeIcon, "icon-warning", _("Sources changed: start UM to refresh"))
+            self.umglobal.warningText = _("Sources changed: start UM to refresh")
+            GObject.idle_add(self.changeIcon, "icon-warning", self.umglobal.warningText)
 
-    def changeIcon(self, iconName=None, text=None):
-        if iconName is not None:
-            pb = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings[iconName])
-            self.statusIcon.set_from_pixbuf(pb)
-        if text is not None:
-            self.statusIcon.set_tooltip_text(text)
+    def changeIcon(self, iconName, tooltip):
+        if self.umglobal.isKf5:
+            # Use this for KDE5
+            print(("> icon: {}, tooltip: {}".format(iconName, tooltip)))
+            # tooltop is not showing
+            self.indicator.set_icon_full(self.umglobal.settings[iconName], tooltip)
+            # Attention icon is not doing anything
+            #self.indicator.set_attention_icon_full(self.umglobal.settings[iconName], tooltip)
+            # This isn't working either: Plasma 5 is not being refreshed, 4 not showing anything at all
+            #self.indicator.set_title("<strong>{}</strong><br>{}".format(self.umglobal.title, tooltip))
+        else:
+            # Use this for KDE4
+            iconPath = join(self.umglobal.iconsDir, self.umglobal.settings[iconName])
+            print(("> icon: {}, tooltip: {}".format(iconPath, tooltip)))
+            self.indicator.set_from_file(iconPath)
+            self.indicator.set_tooltip_text(tooltip)
 
     def refresh(self):
         self.umrefresh.refresh()
@@ -65,24 +76,22 @@ class EventHandler(pyinotify.ProcessEvent):
 
 class UmNotifier(object):
 
-    def __init__(self, statusIcon, umglobal, umrefresh):
-        self.statusIcon = statusIcon
+    def __init__(self, umglobal, umrefresh, indicator):
+        self.indicator = indicator
         self.umglobal = umglobal
         self.umrefresh = umrefresh
-        self.scriptDir = abspath(dirname(__file__))
-        self.filesDir = join(self.scriptDir, "files")
 
         self.wm = pyinotify.WatchManager()  # Watch Manager
-        self.notifier = pyinotify.ThreadedNotifier(self.wm, EventHandler(self.statusIcon, self.umglobal, self.umrefresh))
+        self.notifier = pyinotify.ThreadedNotifier(self.wm, EventHandler(self.umglobal, self.umrefresh, self.indicator))
         self.notifier.start()
 
         # rec = recursion - if set to True, sub directories are included
         src = '/etc/apt/sources.list'
         self.srcWatch = self.wm.add_watch(src, pyinotify.IN_MODIFY, rec=False)
         self.srcdWatch = self.wm.add_watch("%s.d/" % src, pyinotify.IN_MODIFY, rec=False)
-        self.umWatch = self.wm.add_watch(self.filesDir, pyinotify.IN_CREATE | pyinotify.IN_DELETE, rec=False)
+        self.umWatch = self.wm.add_watch(self.umglobal.filesDir, pyinotify.IN_CREATE | pyinotify.IN_DELETE, rec=False)
         #self.lockWatch = self.wm.add_watch('/var/lib/dpkg/lock', pyinotify.IN_CLOSE_NOWRITE, rec=False)
-        print("Added file watches on %s, %s.d/, %s" % (src, src, self.filesDir))
+        print("Added file watches on %s, %s.d/, %s" % (src, src, self.umglobal.filesDir))
 
     def quit(self):
         #print("Quit UmNotifier")

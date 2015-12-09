@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
-from gi.repository import GdkPixbuf, GObject
+from gi.repository import GObject
 from execcmd import ExecCmd
-from os.path import join, abspath, dirname
+from os.path import join
 from os import remove
 from glob import glob
 
@@ -17,34 +17,39 @@ GObject.threads_init()
 
 class UmRefresh(object):
 
-    def __init__(self, statusIcon, umglobal):
-        self.scriptDir = abspath(dirname(__file__))
+    def __init__(self, umglobal, indicator):
         self.ec = ExecCmd()
-        self.statusIcon = statusIcon
+        self.indicator = indicator
         self.umglobal = umglobal
-        #self.apt = UmApt(self.umglobal)
-        self.pbExec = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-exec"])
-        self.pbApply = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-apply"])
-        self.pbInfo = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-info"])
-        self.pbDisconnected = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-disconnected"])
-        self.pbError = GdkPixbuf.Pixbuf.new_from_file(self.umglobal.settings["icon-error"])
         self.counter = 0
         self.quit = False
 
+    def changeIcon(self, iconName, tooltip):
+        if self.umglobal.isKf5:
+            # Use this for KDE5
+            print(("> icon: {}, tooltip: {}".format(iconName, tooltip)))
+            # tooltop is not showing
+            self.indicator.set_icon_full(self.umglobal.settings[iconName], tooltip)
+            # Attention icon is not doing anything
+            #self.indicator.set_attention_icon_full(self.umglobal.settings[iconName], tooltip)
+            # This isn't working either: Plasma 5 is not being refreshed, 4 not showing anything at all
+            #self.indicator.set_title("<strong>{}</strong><br>{}".format(self.umglobal.title, tooltip))
+        else:
+            # Use this for KDE4
+            iconPath = join(self.umglobal.iconsDir, self.umglobal.settings[iconName])
+            print(("> icon: {}, tooltip: {}".format(iconPath, tooltip)))
+            self.indicator.set_from_file(iconPath)
+            self.indicator.set_tooltip_text(tooltip)
+
     def refresh(self):
-        uptodateText = _("Your system is up to date")
-        updavText = _("There are updates available")
-        noConText = _("No internet connection")
-        errText = _("Unable to retrieve sources information")
-        self.counter += 1
-        print(("UmRefresh refresh count #: %d" % self.counter))
-
-        self.statusIcon.set_from_pixbuf(self.pbExec)
-        self.statusIcon.set_tooltip_text(_("Refreshing..."))
-
-        if not self.umglobal.isSrciptRunning("updatemanager.py"):
-            for fle in glob(join(self.scriptDir, "files/.um*")):
+        if not self.umglobal.isProcessRunning("updatemanager.py"):
+            for fle in glob(join(self.umglobal.filesDir, ".um*")):
                 remove(fle)
+
+        self.counter += 1
+        print(("> UmRefresh refresh count #: %d" % self.counter))
+
+        self.changeIcon("icon-execute", _("Refreshing..."))
 
         self.umglobal.getLocalInfo()
         if self.umglobal.repos:
@@ -54,23 +59,26 @@ class UmRefresh(object):
                 # Check update status
                 if self.checkForUpdates():
                     if self.umglobal.newUpd:
-                        self.statusIcon.set_from_pixbuf(self.pbInfo)
-                        self.statusIcon.set_tooltip_text(_("New update: %s" % self.umglobal.serverUpdVersion))
+                        self.umglobal.updatesText = _("New update: %s" % self.umglobal.serverUpdVersion)
+                        print((self.umglobal.updatesText))
+                        self.changeIcon("icon-updates", self.umglobal.updatesText)
                     else:
-                        self.statusIcon.set_from_pixbuf(self.pbInfo)
-                        self.statusIcon.set_tooltip_text(updavText)
+                        self.umglobal.updatesText = _("There are updates available")
+                        print((self.umglobal.updatesText))
+                        self.changeIcon("icon-updates", self.umglobal.updatesText)
                 else:
-                    self.statusIcon.set_from_pixbuf(self.pbApply)
-                    self.statusIcon.set_tooltip_text(uptodateText)
+                    print((self.umglobal.connectedText))
+                    self.changeIcon("icon-connected", self.umglobal.connectedText)
             else:
-                self.statusIcon.set_from_pixbuf(self.pbDisconnected)
-                self.statusIcon.set_tooltip_text(noConText)
+                print((self.umglobal.disconnectedText))
+                self.indicator.set_icon_full("icon-disconnected", self.umglobal.disconnectedText)
                 # Check every 60 seconds if there is a connection
                 GObject.timeout_add_seconds(60, self.refresh)
                 return True
         else:
-            self.statusIcon.set_from_pixbuf(self.pbError)
-            self.statusIcon.set_tooltip_text(errText)
+            self.umglobal.errorText = _("Unable to retrieve sources information")
+            print((self.umglobal.errorText))
+            self.changeIcon("icon-error", self.umglobal.errorText)
 
         print("Done refreshing")
 

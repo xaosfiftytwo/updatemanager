@@ -1,5 +1,9 @@
 #! /usr/bin/env python3
 
+# Make sure the right Gtk version is loaded
+import gi
+gi.require_version('Gtk', '3.0')
+
 import os
 import pwd
 import logging
@@ -72,17 +76,17 @@ class Logger():
                 myLogger.error(message)
                 self.rtobjectWrite(message)
                 if showErrorDialog:
-                    MessageDialog('Error', message, Gtk.MessageType.ERROR, self.parent).show()
+                    MessageDialog('Error', message, Gtk.MessageType.ERROR, None, self.parent)
             elif logLevel == 'critical':
                 myLogger.critical(message)
                 self.rtobjectWrite(message)
                 if showErrorDialog:
-                    MessageDialog('Critical', message, Gtk.MessageType.ERROR, self.parent).show()
+                    MessageDialog('Critical', message, Gtk.MessageType.ERROR, None, self.parent)
             elif logLevel == 'exception':
                 myLogger.exception(message)
                 self.rtobjectWrite(message)
                 if showErrorDialog:
-                    MessageDialog('Exception', message, Gtk.MessageType.ERROR, self.parent).show()
+                    MessageDialog('Exception', message, Gtk.MessageType.ERROR, None, self.parent)
 
     # Return messge to given object
     def rtobjectWrite(self, message):

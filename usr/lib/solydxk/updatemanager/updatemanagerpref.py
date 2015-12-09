@@ -6,12 +6,18 @@
 # http://docs.python.org/2/library/spwd.html#module-spwd
 
 # sudo apt-get install python3-gi
+
+# Make sure the right Gtk version is loaded
+import gi
+gi.require_version('Gtk', '3.0')
+
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
 from gi.repository import Gtk, GLib
 import argparse
 import os
+from shutil import copy
 # abspath, dirname, join, expanduser, exists, basename
-from os.path import join, abspath, dirname, basename
+from os.path import join, basename, exists
 from execcmd import ExecCmd
 from treeview import TreeViewHandler
 from dialogs import MessageDialog
@@ -42,7 +48,7 @@ class UpdateManagerPref(object):
 
         print(("args = {}".format(args)))
         if args.reload:
-            pids = self.umglobal.getScriptPids("updatemanagerpref.py")
+            pids = self.umglobal.getProcessPids("updatemanagerpref.py")
             if len(pids) > 1:
                 print(("updatemanagerpref.py already running - kill pid {}".format(pids[0])))
                 os.system("kill {}".format(pids[0]))
@@ -52,15 +58,13 @@ class UpdateManagerPref(object):
         self.log = Logger(self.logFile)
 
         # Load window and widgets
-        self.scriptDir = abspath(dirname(__file__))
-        self.filesDir = join(self.scriptDir, "files")
         self.builder = Gtk.Builder()
-        self.builder.add_from_file(join(self.scriptDir, '../../../share/solydxk/updatemanager/updatemanagerpref.glade'))
+        self.builder.add_from_file(join(self.umglobal.shareDir, 'updatemanagerpref.glade'))
 
         # Preferences window objects
         go = self.builder.get_object
         self.window = go("windowPref")
-        self.window.set_icon_from_file(self.umglobal.settings["icon-base"])
+        #self.window.set_icon_from_file(join(self.umglobal.iconsDir, self.umglobal.settings["icon-connected"]))
         self.nbPref = go('nbPref')
         self.btnSaveMirrors = go('btnSaveMirrors')
         self.btnCheckMirrorsSpeed = go("btnCheckMirrorsSpeed")
@@ -74,6 +78,7 @@ class UpdateManagerPref(object):
         self.txtCheckStatus = go("txtCheckStatus")
         self.btnSaveGeneral = go("btnSaveGeneral")
         self.chkHideMaintenance = go("chkHideMaintenance")
+        self.chkAutostart = go("chkAutostart")
 
         # Only allow numbers
         self.filterText(self.txtCheckStatus)
@@ -153,6 +158,7 @@ class UpdateManagerPref(object):
         for tab in self.umglobal.settings["hide-tabs"]:
             if tab == "maintenance":
                 self.chkHideMaintenance.set_active(True)
+        self.chkAutostart.set_active(self.umglobal.settings["autostart"])
 
     def fillTreeViewBlackList(self):
         self.blacklist = []
@@ -278,12 +284,9 @@ class UpdateManagerPref(object):
 
         for repo in self.umglobal.repos:
             if url in repo:
-                #print((">>> add %s" % url))
                 blnRet = True
                 for excl in self.excludeMirrors:
-                    #print((">>> excl=%s - repo=%s" % (excl, repo)))
                     if excl in repo:
-                        #print(">>> skip")
                         blnRet = False
                         break
                 break
@@ -356,14 +359,9 @@ class UpdateManagerPref(object):
     # ===============================================
 
     def saveGeneralSettings(self):
-        #print("> saveGeneralSettings")
-
         hrs = self.umglobal.strToNumber(self.txtCheckStatus.get_text(), True)
-        #print(hrs)
         if self.umglobal.settings["hrs-check-status"] != hrs:
-            #print("> save hrs-check-status 1")
             self.umglobal.saveSettings('misc', 'hrs-check-status', hrs)
-            #print("> save hrs-check-status 2")
 
         lst = []
         for tab in self.umglobal.settings["hide-tabs"]:
@@ -376,17 +374,24 @@ class UpdateManagerPref(object):
         else:
             self.umglobal.saveSettings('misc', 'hide-tabs', "")
 
+        # Automatically start updatemanager on boot
+        autostart = self.chkAutostart.get_active()
+        self.umglobal.settings["autostart"] = autostart
+        if autostart:
+            if exists(self.umglobal.autostartSourceFile) and \
+               exists(self.umglobal.autostartDir):
+                copy(self.umglobal.autostartSourceFile, self.umglobal.autostartDir)
+        elif exists(self.umglobal.autostartDestFile):
+            remove(self.umglobal.autostartDestFile)
+
         msg = _("The new settings will take effect after UM restart.")
-        self.showInfo(self.lblGeneral.get_label(), msg, self.window)
+        MessageDialog(self.lblGeneral.get_label(), msg)
 
     def filterText(self, widget):
         def filter(entry, *args):
             text = entry.get_text().strip().lower()
             entry.set_text(''.join([i for i in text if i in '0123456789']))
         widget.connect('changed', filter)
-
-    def showInfo(self, title, message, parent):
-        MessageDialog(title, message, parent=parent)
 
     # Close the gui
     def on_windowPref_destroy(self, widget):

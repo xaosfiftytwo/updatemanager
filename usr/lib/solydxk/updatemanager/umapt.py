@@ -28,7 +28,7 @@ class UmApt(object):
         # Reset variables
         self.packagesInfo = []
 
-        # Use env LANG=C to ensure the output of apt-show-versions is always en_US
+        # Use env LANG=C to ensure the output of apt-show-versions is always in_US
         cmd = "env LANG=C apt-show-versions"
         # Get the output of the command in a list
         lst = self.ec.run(cmd=cmd, realTime=False)

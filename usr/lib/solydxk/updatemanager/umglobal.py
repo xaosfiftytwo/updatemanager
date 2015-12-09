@@ -20,8 +20,21 @@ class UmGlobal(object):
         # Get the settings
         self.scriptDir = abspath(dirname(__file__))
         self.filesDir = join(self.scriptDir, "files")
+        self.shareDir = self.scriptDir.replace('lib', 'share')
+        self.iconsDir = join(self.shareDir, 'icons')
         self.ec = ExecCmd()
         self.cfg = Config(join(self.filesDir, 'updatemanager.conf'))
+        self.title = _("Update Manager")
+        self.status = None
+        self.isKf5 = self.isProcessRunning("kf5")
+
+        # Autostart
+        self.autostartDir = '/etc/xdg/autostart'
+        self.autostartFile = 'updatemanagertray.desktop'
+        self.autostartSourceFile = join(self.filesDir, self.autostartFile)
+        self.autostartDestFile = join(self.autostartDir, self.autostartFile)
+
+        # Get the settings
         self.settings = self.getSettings()
 
         self.umfiles = {}
@@ -30,11 +43,18 @@ class UmGlobal(object):
         self.umfiles['ummaintenance'] = join(self.filesDir, ".ummaintenance")
         self.umfiles['uminstallum'] = join(self.filesDir, ".uminstallum")
 
+        # Status texts
+        self.connectedText = _("Your system is up to date")
+        self.disconnectedText = _("No internet connection")
+        self.errorText = _("Error")
+        self.executeText = _("Executing command")
+        self.updatesText = _("There are updates available")
+        self.warningText = _("Warning")
+
         # Variables
         self.localUpdVersion = None
         self.serverUpdVersion = None
         self.newUpd = False
-
         self.hasInternet = False
         self.repos = []
 
@@ -50,7 +70,6 @@ class UmGlobal(object):
     def getServerInfo(self):
         if self.umfilesUrl is not None:
             url = "%s/%s" % (self.umfilesUrl, self.settings['repo-info'])
-            #print((">>> url = %s" % url))
             try:
                 cont = urlopen(url, timeout=self.settings["timeout-secs"])
                 self.hasInternet = True
@@ -60,9 +79,6 @@ class UmGlobal(object):
                     elements = line.split("=")
                     parameter = elements[0].strip()
                     value = elements[1].strip()
-                    #print((">>> line = %s" % line))
-                    #print((">>> parameter = %s" % parameter))
-                    #print((">>> value = %s" % value))
                     if len(value) > 0:
                         # Write the parameter, and the value if no hist file exist: assume clean install
                         self.writeNonExistingHist(parameter)
@@ -99,12 +115,18 @@ class UmGlobal(object):
                 isNew = True
         return isNew
 
-    def isPackageInstalled(self, package, version):
-        cmd = "env LANG=C apt-cache policy %s | grep Installed:" % package
-        lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
-        if lst[1] == version:
-            return True
-        else:
+    def isPackageInstalled(self, package, version=None):
+        try:
+            cmd = "env LANG=C apt-cache policy %s | grep Installed:" % package
+            lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
+            if version is not None:
+                if lst[1] == version:
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        except:
             return False
 
     def getLocalInfo(self):
@@ -163,7 +185,6 @@ class UmGlobal(object):
             upHistFile = join(self.filesDir, self.settings['hist'])
             with open(upHistFile, 'a') as f:
                 line = "{0}={1}\n".format(parameter, newVersion)
-                print(("> Save history: {}".format(line)))
                 f.write(line)
 
     def getMirrorData(self, excludeMirrors=[], getDeadMirrors=False):
@@ -208,7 +229,6 @@ class UmGlobal(object):
                                 blnAdd = False
                                 break
                     if blnAdd:
-                        #print((">>> append data"))
                         mirrorData.append(data)
         return mirrorData
 
@@ -264,7 +284,6 @@ class UmGlobal(object):
             self.saveSettings(section, 'pre-upd', settings["pre-upd"])
             self.saveSettings(section, 'post-upd', settings["post-upd"])
 
-
         section = 'mirror'
         try:
             settings["mirrors-list"] = self.cfg.getValue(section, 'mirrors-list')
@@ -280,30 +299,24 @@ class UmGlobal(object):
 
         section = 'icons'
         try:
-            settings["icon-apply"] = self.cfg.getValue(section, 'icon-apply')
+            settings["icon-connected"] = self.cfg.getValue(section, 'icon-connected')
             settings["icon-disconnected"] = self.cfg.getValue(section, 'icon-disconnected')
             settings["icon-error"] = self.cfg.getValue(section, 'icon-error')
-            settings["icon-exec"] = self.cfg.getValue(section, 'icon-exec')
-            settings["icon-info"] = self.cfg.getValue(section, 'icon-info')
-            settings["icon-unknown"] = self.cfg.getValue(section, 'icon-unknown')
-            settings["icon-base"] = self.cfg.getValue(section, 'icon-base')
+            settings["icon-execute"] = self.cfg.getValue(section, 'icon-execute')
+            settings["icon-updates"] = self.cfg.getValue(section, 'icon-updates')
             settings["icon-warning"] = self.cfg.getValue(section, 'icon-warning')
         except:
-            settings["icon-apply"] = '/usr/share/solydxk/updatemanager/icons/base-apply.png'
-            settings["icon-disconnected"] = '/usr/share/solydxk/updatemanager/icons/base-disconnected.png'
-            settings["icon-error"] = '/usr/share/solydxk/updatemanager/icons/base-error.png'
-            settings["icon-exec"] = '/usr/share/solydxk/updatemanager/icons/base-exec.png'
-            settings["icon-info"] = '/usr/share/solydxk/updatemanager/icons/base-info.png'
-            settings["icon-unknown"] = '/usr/share/solydxk/updatemanager/icons/base-unknown.png'
-            settings["icon-base"] = '/usr/share/solydxk/updatemanager/icons/base.png'
-            settings["icon-warning"] = '/usr/share/solydxk/updatemanager/icons/base-warning.png'
-            self.saveSettings(section, 'icon-apply', settings["icon-apply"])
+            settings["icon-connected"] = 'connected.svg'
+            settings["icon-disconnected"] = 'disconnected.svg'
+            settings["icon-error"] = 'error.svg'
+            settings["icon-execute"] = 'execute.svg'
+            settings["icon-updates"] = 'updates.svg'
+            settings["icon-warning"] = 'warning.svg'
+            self.saveSettings(section, 'icon-connected', settings["icon-connected"])
             self.saveSettings(section, 'icon-disconnected', settings["icon-disconnected"])
             self.saveSettings(section, 'icon-error', settings["icon-error"])
-            self.saveSettings(section, 'icon-exec', settings["icon-exec"])
-            self.saveSettings(section, 'icon-info', settings["icon-info"])
-            self.saveSettings(section, 'icon-unknown', settings["icon-unknown"])
-            self.saveSettings(section, 'icon-base', settings["icon-base"])
+            self.saveSettings(section, 'icon-execute', settings["icon-execute"])
+            self.saveSettings(section, 'icon-updates', settings["icon-updates"])
             self.saveSettings(section, 'icon-warning', settings["icon-warning"])
 
         section = 'misc'
@@ -318,6 +331,9 @@ class UmGlobal(object):
             settings["hide-tabs"] = self.cfg.getValue(section, 'hide-tabs').split(",")
             settings["um-dependencies"] = self.cfg.getValue(section, 'um-dependencies').split(",")
             settings["apt-get-string"] = self.cfg.getValue(section, 'apt-get-string')
+            settings["autostart"] = True
+            if not exists(self.autostartDestFile):
+                settings["autostart"] = False
         except:
             settings["allow-terminal-user-input"] = True
             settings["hrs-check-status"] = 1
@@ -326,6 +342,9 @@ class UmGlobal(object):
             settings["hide-tabs"] = ["maintenance"]
             settings["um-dependencies"] = ["gksu", "apt-show-versions", "deborphan", "apt", "curl", "python3-gi", "python-vte", "gir1.2-vte-2.90", "gir1.2-webkit-3.0", "python3", "gir1.2-gtk-3.0", "python3-pyinotify"]
             settings["apt-get-string"] = 'DEBIAN_FRONTEND=gnome apt-get --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes'
+            settings["autostart"] = True
+            if not exists(self.autostartDestFile):
+                settings["autostart"] = False
             self.saveSettings(section, 'allow-terminal-user-input', str(settings["allow-terminal-user-input"]).lower())
             self.saveSettings(section, 'hrs-check-status', settings["hrs-check-status"])
             self.saveSettings(section, 'umfilesdir', settings["umfilesdir"])
@@ -366,27 +385,22 @@ class UmGlobal(object):
             nr = 0
         return nr
 
-    def getScriptPids(self, script, returnExistingPid=False):
-        pids = []
-        try:
-            procs = self.ec.run(cmd="ps -ef | grep '{}'".format(script), realTime=False)
-            for pline in procs:
-                matchObj = re.search("([0-9]+).*:\d\d\s.*python", pline)
-                if matchObj:
-                    pids.append(int(matchObj.group(1)))
-            return pids
-        except:
-            return pids
+    def getProcessPids(self, processName, fuzzy=True):
+        if fuzzy:
+            pids = self.ec.run(cmd="ps -ef | grep -v sudo | grep -v grep | grep '%s' | awk '{print $2}'" % processName, realTime=False)
+        else:
+            pids = self.ec.run(cmd="pidof {}".format(processName, realTime=False))
+        return pids
 
-    def isSrciptRunning(self, scriptName):
-        pids = self.getScriptPids(scriptName)
+    def isProcessRunning(self, processName, fuzzy=True, excludeSelf=True):
+        pids = self.getProcessPids(processName, fuzzy)
         if len(pids) > 0:
             return True
         return False
 
     def killScriptProcess(self, scriptName):
         msg = _('Please enter your password')
-        pids = self.getScriptPids(scriptName)
+        pids = self.getProcessPids(scriptName)
         for pid in pids:
             print(("Kill %s process with pid: %d" % (scriptName, pid)))
             cmd = "gksudo --message \"<b>%s</b>\" kill %d" % (msg, pid)

@@ -1,8 +1,12 @@
 #! /usr/bin/env python3
 
-#      Reference documentation: https://developer.gnome.org/vte/0.28/VteTerminal.html
+# Reference documentation: https://developer.gnome.org/vte/0.28/VteTerminal.html
 
-# Imports
+# Make sure the right Gtk and Vte version is loaded
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Vte', '2.90')
+
 import os
 from gi.repository import Vte, Gdk, GObject, Gtk, GLib
 
@@ -57,7 +61,7 @@ class VirtualTerminal(Vte.Terminal):
         if not userInputAllowed:
             self.set_can_focus(False)
 
-        self.connect_after('eof', self.on_command_done)
+        #self.connect_after('eof', self.on_command_done)
         self.connect_after('child-exited', self.on_command_done)
         self.connect('event', self.on_event)
         self.connect_after("popup-menu", self.on_popup_menu)

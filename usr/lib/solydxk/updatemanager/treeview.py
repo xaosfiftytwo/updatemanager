@@ -1,5 +1,9 @@
 #! /usr/bin/env python3
 
+# Make sure the right Gtk version is loaded
+import gi
+gi.require_version('Gtk', '3.0')
+
 import os
 from gi.repository import Gtk, GObject, GdkPixbuf
 
@@ -217,14 +221,15 @@ class TreeViewHandler(GObject.GObject):
 
         # Scroll to selected cursor
         selection = self.treeview.get_selection()
-        tm, treeIter = selection.get_selected()
-        if treeIter:
-            path = tm.get_path(treeIter)
-            self.treeview.scroll_to_cell(path)
-            msg = "Scrolled to selected row: %(row)d" % { "row": setCursor }
-            #print(msg)
-            if self.log:
-                self.log.write(msg, 'self.treeview.fillTreeview', 'debug')
+        if selection is not None:
+            tm, treeIter = selection.get_selected()
+            if treeIter:
+                path = tm.get_path(treeIter)
+                self.treeview.scroll_to_cell(path)
+                msg = "Scrolled to selected row: %(row)d" % { "row": setCursor }
+                #print(msg)
+                if self.log:
+                    self.log.write(msg, 'self.treeview.fillTreeview', 'debug')
 
     def tvchk_on_toggle(self, cell, path, liststore, colNr, *ignore):
         if path is not None:

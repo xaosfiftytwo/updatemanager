@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+import gi
+gi.require_version('WebKit', '3.0')
 from gi.repository import WebKit
 import webbrowser
 import re
