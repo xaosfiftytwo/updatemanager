@@ -4,13 +4,14 @@
 #
 # Translators:
 # Ariel Méndez <arielmendz@gmail.com>, 2015
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-10-26 15:42+0000\n"
-"Last-Translator: Ariel Méndez <arielmendz@gmail.com>\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 09:33+0000\n"
+"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/solydxk/updatemanager/"
 "language/es/)\n"
 "Language: es\n"
@@ -368,7 +369,7 @@ msgstr "Sin conexión a Internet"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
@@ -384,15 +385,16 @@ msgid "Please enter your password"
 msgstr "Por favor, introduzca su contraseña"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Error APT"
+msgstr "Error inesperado"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"Updatemanager ha fallado con el siguiente error inesperado. Por favor, envíe "
+"un informe del error."
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -407,7 +409,6 @@ msgid "Quit"
 msgstr "Salir"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Actualización rápida"
 
@@ -430,6 +431,3 @@ msgstr "updatemanagertray"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Bandeja del Gestor de Actualizaciones"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "La actualización rápida actualiza su sistema silenciosamente."

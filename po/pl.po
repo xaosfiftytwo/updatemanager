@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 # Wojciech Kolasinski <kolasinski@retsat1.com.pl>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-12-06 18:38+0000\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 18:19+0000\n"
 "Last-Translator: Wojciech Kolasinski <kolasinski@retsat1.com.pl>\n"
 "Language-Team: Polish (http://www.transifex.com/solydxk/updatemanager/"
 "language/pl/)\n"
@@ -370,15 +371,15 @@ msgstr "Brak sieci"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Błąd"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
-msgstr ""
+msgstr "Wykonywanie polecenia"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:52
 msgid "Warning"
-msgstr ""
+msgstr "Ostrzeżenie"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:402
 #: ../usr/lib/solydxk/updatemanager/main.py:83
@@ -386,15 +387,16 @@ msgid "Please enter your password"
 msgstr "Wprowadź hasło"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Błąd apt"
+msgstr "Niespodziewany błąd"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"Menedżer aktualizacji zakończył działanie z powodu nieoczekiwanego błędu. "
+"Wyślij raport o błędzie."
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -409,13 +411,12 @@ msgid "Quit"
 msgstr "Wyjdź"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Szybka aktualizacja"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:90
 msgid "Legend"
-msgstr ""
+msgstr "Legenda"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:171
 msgid "Cannot quit: upgrade in progress"
@@ -432,6 +433,3 @@ msgstr "updatemanagertray"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Taca Menadżera Aktualizacji"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "Szybka aktualizacja aktualizuje system w tle."

@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 # ilu lu, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-12-07 00:16+0000\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 17:47+0000\n"
 "Last-Translator: ilu lu\n"
 "Language-Team: German (http://www.transifex.com/solydxk/updatemanager/"
 "language/de/)\n"
@@ -366,15 +367,15 @@ msgstr "Keine Internetverbindung"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
-msgstr ""
+msgstr "Befehl wird ausgeführt"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:52
 msgid "Warning"
-msgstr ""
+msgstr "Warnung"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:402
 #: ../usr/lib/solydxk/updatemanager/main.py:83
@@ -382,15 +383,16 @@ msgid "Please enter your password"
 msgstr "Bitte das Passwort eingeben"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Apt Fehler"
+msgstr "Unerwarteter Fehler"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"Updatemanager ist mit dem folgenden unerwarteten Fehler gescheitert. Bitte "
+"einen Fehler-Bericht erstellen!"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -405,13 +407,12 @@ msgid "Quit"
 msgstr "Beenden"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Schnell-Update"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:90
 msgid "Legend"
-msgstr ""
+msgstr "Legende"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:171
 msgid "Cannot quit: upgrade in progress"
@@ -428,6 +429,3 @@ msgstr "Update Manager Anzeige"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Update Manager Anzeige"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "Schnell-Update aktualisiert das System ohne Rückmeldungen"

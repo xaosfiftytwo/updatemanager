@@ -1,4 +1,4 @@
-updatemanager (2.7.6) solydxk; urgency=low
+updatemanager (2.7.7) solydxk; urgency=low
 
   * Better handling of kept back packages
   * Using Appindicator3 to show systray icon in EEs
@@ -6,8 +6,9 @@ updatemanager (2.7.6) solydxk; urgency=low
   * Quick update to right-click menu
   * New icons
   * Added icon legend to menu
+  * Updated translations
 
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 03 Dec 2015 09:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Wed, 09 Dec 2015 12:00:00 +0100
 
 updatemanager (2.7.2) solydxk; urgency=low
 

@@ -51,10 +51,10 @@ class UpdateManagerTray(object):
         go("imgWarning").set_from_file(join(self.umglobal.iconsDir, self.umglobal.settings["icon-warning"]))
         go("lblConnected").set_label(self.umglobal.connectedText)
         go("lblDisconnected").set_label(self.umglobal.disconnectedText)
-        go("lblError").set_label(self.umglobal.errorText)
         go("lblExecute").set_label(self.umglobal.executeText)
-        go("lblUpdates").set_label(self.umglobal.updatesText)
-        go("lblWarning").set_label(self.umglobal.warningText)
+        self.lblError = go("lblError")
+        self.lblWarning = go("lblWarning")
+        self.lblUpdates = go("lblUpdates")
         self.builder.connect_signals(self)
 
         # Handle arguments
@@ -177,6 +177,9 @@ class UpdateManagerTray(object):
 
     # Show the legend window
     def open_legend(self, widget):
+        self.lblError.set_label(self.umglobal.errorText)
+        self.lblUpdates.set_label(self.umglobal.updatesText)
+        self.lblWarning.set_label(self.umglobal.warningText)
         self.legend.show_all()
 
     # Hide the legend window when mouse leaves the window

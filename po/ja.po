@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 # BALLOON a.k.a. Fu-sen., 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-11-28 03:01+0000\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 09:43+0000\n"
 "Last-Translator: BALLOON a.k.a. Fu-sen.\n"
 "Language-Team: Japanese (http://www.transifex.com/solydxk/updatemanager/"
 "language/ja/)\n"
@@ -369,15 +370,15 @@ msgstr "インターネットに接続できません"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
-msgstr ""
+msgstr "実行コマンド"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:52
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:402
 #: ../usr/lib/solydxk/updatemanager/main.py:83
@@ -385,15 +386,16 @@ msgid "Please enter your password"
 msgstr "パスワードを入力して下さい"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "APT エラー"
+msgstr "予想外のエラー"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"アップデートマネージャーは、次の予期しないエラーで失敗しました。バグレポート"
+"を提出してください！"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -408,13 +410,12 @@ msgid "Quit"
 msgstr "終了"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "クイックアップデート"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:90
 msgid "Legend"
-msgstr ""
+msgstr "凡例"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:171
 msgid "Cannot quit: upgrade in progress"
@@ -431,6 +432,3 @@ msgstr "updatemanagertray"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "アップデートマネージャートレイ"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "クリックアップデートは静かに更新を行います。"

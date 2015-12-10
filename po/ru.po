@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 # Ilinsky Mikhail <mail@milinsky.com>, 2015
 # Анатолий Валерианович <ffox909@mail.ru>, 2015
 # Ilinsky Mikhail <mail@milinsky.com>, 2015
@@ -10,9 +11,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-11-25 14:20+0000\n"
-"Last-Translator: Анатолий Валерианович <ffox909@mail.ru>\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 09:32+0000\n"
+"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Russian (http://www.transifex.com/solydxk/updatemanager/"
 "language/ru/)\n"
 "Language: ru\n"
@@ -371,7 +372,7 @@ msgstr "Нет подключения к интернету"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
@@ -387,9 +388,8 @@ msgid "Please enter your password"
 msgstr "Пожалуйста, введите пароль"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Ошибка Apt"
+msgstr "Неожиданная ошибка"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
@@ -410,7 +410,6 @@ msgid "Quit"
 msgstr "Выйти"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Быстрое обновление"
 
@@ -433,6 +432,3 @@ msgstr "updatemanagertray"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Менеджер Обновлений Лоток"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "Быстрое обновление в фоновом режиме."

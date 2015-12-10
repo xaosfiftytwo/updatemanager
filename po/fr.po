@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 # ich bin <ichbin1199@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-11-10 14:36+0000\n"
-"Last-Translator: ich bin <ichbin1199@gmail.com>\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 09:33+0000\n"
+"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: French (http://www.transifex.com/solydxk/updatemanager/"
 "language/fr/)\n"
 "Language: fr\n"
@@ -366,7 +367,7 @@ msgstr "Pas de connection internet"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
@@ -382,15 +383,16 @@ msgid "Please enter your password"
 msgstr "Veuillez entrer votre mot de passe"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Erreur d'Apt"
+msgstr "Erreur inattendue"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"Updatemanager a planté avec cette erreur inattendue. Merci de soumettre un "
+"rapport d'erreur"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -406,7 +408,6 @@ msgid "Quit"
 msgstr "Quitter"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Mise à jour rapide"
 
@@ -429,6 +430,3 @@ msgstr "Barre du gestionnaire"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Barre des tâches du gestionnaire"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "La mise à jour rapide est silencieuse (pas de fenêtre)."

@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-10-22 05:34+0000\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 09:27+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/solydxk/updatemanager/"
 "language/nl/)\n"
@@ -372,15 +372,15 @@ msgstr "Geen internetverbinding"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
-msgstr ""
+msgstr "Commando uitvoeren"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:52
 msgid "Warning"
-msgstr ""
+msgstr "Waarschuwing"
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:402
 #: ../usr/lib/solydxk/updatemanager/main.py:83
@@ -388,15 +388,16 @@ msgid "Please enter your password"
 msgstr "Voer uw wachtwoord in"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Apt error"
+msgstr "Onverwachte fout"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"Updatemanager is mislukt met de volgende onverwachte fout. Gelieve een bug "
+"verslag in te dienen!"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -411,13 +412,12 @@ msgid "Quit"
 msgstr "Afsluiten"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Snelle update"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:90
 msgid "Legend"
-msgstr ""
+msgstr "Legenda"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:171
 msgid "Cannot quit: upgrade in progress"
@@ -434,6 +434,3 @@ msgstr "updatemanagertray"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Update Manager Tray"
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "Snelle update update uw systeem in de achtergrond."

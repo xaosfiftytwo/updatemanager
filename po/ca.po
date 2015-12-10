@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2015
 # Eduard Selma <selma@tinet.cat>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 10:07+0100\n"
-"PO-Revision-Date: 2015-10-23 12:12+0000\n"
-"Last-Translator: Eduard Selma <selma@tinet.cat>\n"
+"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"PO-Revision-Date: 2015-12-09 09:26+0000\n"
+"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/solydxk/updatemanager/"
 "language/ca/)\n"
 "Language: ca\n"
@@ -369,7 +370,7 @@ msgstr "Sense connexió a internet "
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "Error"
-msgstr ""
+msgstr "Error "
 
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Executing command"
@@ -385,15 +386,16 @@ msgid "Please enter your password"
 msgstr "Entreu la vostra contrasenya"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:71
-#, fuzzy
 msgid "Unexpected error"
-msgstr "Error d'APT "
+msgstr "Error inesperat "
 
 #: ../usr/lib/solydxk/updatemanager/main.py:72
 msgid ""
 "Updatemanager has failed with the following unexpected error. Please submit "
 "a bug report!"
 msgstr ""
+"Updatemanager ha fallat amb el següent error inesperat. Si us plau, envieu "
+"un informe d'error!"
 
 #: ../usr/lib/solydxk/updatemanager/main.py:120
 msgid ""
@@ -408,7 +410,6 @@ msgid "Quit"
 msgstr "Surt "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
-#, fuzzy
 msgid "Quick Update"
 msgstr "Actualització ràpida"
 
@@ -431,6 +432,3 @@ msgstr "updatemanagertray"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Safata del Gestor d'Actualitzacions "
-
-#~ msgid "Quick update silently updates your system."
-#~ msgstr "Actualització ràpida restaura el sistema silenciosament."
