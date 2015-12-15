@@ -52,6 +52,9 @@ class EventHandler(pyinotify.ProcessEvent):
             print(("Modifying: %s" % event.pathname))
             self.umglobal.warningText = _("Sources changed: start UM to refresh")
             GObject.idle_add(self.changeIcon, "icon-warning", self.umglobal.warningText)
+        elif 'pkgcache.bin' in event.pathname:
+            print(("Modifying: %s" % event.pathname))
+            GObject.idle_add(self.refresh)
 
     def changeIcon(self, iconName, tooltip):
         if self.umglobal.isKf5:
@@ -87,11 +90,13 @@ class UmNotifier(object):
 
         # rec = recursion - if set to True, sub directories are included
         src = '/etc/apt/sources.list'
+        apt = '/var/cache/apt/pkgcache.bin'
         self.srcWatch = self.wm.add_watch(src, pyinotify.IN_MODIFY, rec=False)
         self.srcdWatch = self.wm.add_watch("%s.d/" % src, pyinotify.IN_MODIFY, rec=False)
         self.umWatch = self.wm.add_watch(self.umglobal.filesDir, pyinotify.IN_CREATE | pyinotify.IN_DELETE, rec=False)
+        self.aptWatch = self.wm.add_watch(apt, pyinotify.IN_MODIFY, rec=False)
         #self.lockWatch = self.wm.add_watch('/var/lib/dpkg/lock', pyinotify.IN_CLOSE_NOWRITE, rec=False)
-        print("Added file watches on %s, %s.d/, %s" % (src, src, self.umglobal.filesDir))
+        print("Added file watches on %s, %s.d/, %s, %s" % (src, src, self.umglobal.filesDir, apt))
 
     def quit(self):
         #print("Quit UmNotifier")
@@ -99,6 +104,7 @@ class UmNotifier(object):
             self.wm.rm_watch(list(self.srcWatch.values()))
             self.wm.rm_watch(list(self.srcdWatch.values()))
             self.wm.rm_watch(list(self.umWatch.values()))
+            self.wm.rm_watch(list(self.aptWatch.values()))
             #self.wm.rm_watch(list(self.lockWatch.values()))
             self.notifier.stop()
         except Exception as details:

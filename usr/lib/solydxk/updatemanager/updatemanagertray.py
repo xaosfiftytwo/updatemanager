@@ -70,7 +70,6 @@ class UpdateManagerTray(object):
                 os.system("kill {}".format(pids[0]))
 
         # Build status icon menu
-        self.refreshText = _("Refresh")
         self.quitText = _("Quit")
         menu = Gtk.Menu()
         menuUm = Gtk.MenuItem(self.umglobal.title)
@@ -90,9 +89,6 @@ class UpdateManagerTray(object):
         menuLegend = Gtk.MenuItem(_("Legend"))
         menuLegend.connect('activate', self.open_legend)
         menu.append(menuLegend)
-        menuRefresh = Gtk.MenuItem(self.refreshText)
-        menuRefresh.connect('activate', self.manualRefresh)
-        menu.append(menuRefresh)
         menuQuit = Gtk.MenuItem(self.quitText)
         menuQuit.connect('activate', self.quit_tray)
         menu.append(menuQuit)
@@ -123,19 +119,11 @@ class UpdateManagerTray(object):
         # Initiate first check
         self.refresh()
 
-        # Loop the refresh function
-        # For some reason you cannot start a threaded class from init
-        self.timeout = int(self.umglobal.settings["hrs-check-status"] * 60 * 60)
-        GObject.timeout_add_seconds(self.timeout, self.refresh)
-
     def refresh(self, widget=None):
         if not self.umglobal.isProcessRunning("updatemanager.py"):
             self.umrefresh.refresh()
         # Return True or timeout_add_seconds will only run once
         return True
-
-    def manualRefresh(self, widget=None):
-        self.umrefresh.refresh()
 
     def popup_menu(self, widget, button, time, data):
         data.show_all()

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"POT-Creation-Date: 2015-12-15 10:56+0100\n"
 "PO-Revision-Date: 2015-12-09 09:33+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: French (http://www.transifex.com/solydxk/updatemanager/"
@@ -71,7 +71,6 @@ msgid "Install"
 msgstr "Installer les mises à jour"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:141
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:73
 msgid "Refresh"
 msgstr "Actualiser"
 
@@ -84,7 +83,7 @@ msgid "Information"
 msgstr "Informations"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:144
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:86
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -259,84 +258,76 @@ msgstr "Version actuelle"
 msgid "New version"
 msgstr "Nouvelle version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:82
 msgid "Update Manager Preferences"
 msgstr "Préférences du Gestionnaire"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:83
 msgid "Save mirrors"
 msgstr "Enregistrer"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:84
 msgid "Check mirrors speed"
 msgstr "Vérifier la vitesse des miroirs"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:85
 msgid "Remove"
 msgstr "Retirer"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Blacklist"
 msgstr "Ajouter"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Repository mirrors"
 msgstr "Miroirs de dépôts"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 msgid "General"
 msgstr "Essentiels"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Hide maintenance"
 msgstr "Masquer la maintenance"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "Blacklisted packages"
 msgstr "Paquets ignorés"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Select the fastest repository"
 msgstr "Sélectionnez le dépôt le plus rapide"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Available packages"
 msgstr "Paquets disponibles"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
 msgid "Global settings"
 msgstr "Réglages principaux"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
-msgid "Check status every"
-msgstr "Vérifier l'état toute les"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
-msgid "hours"
-msgstr "heure(s)"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Current"
 msgstr "Actuel"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Country"
 msgstr "Pays"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Repository"
 msgstr "Dépôt"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Speed"
 msgstr "Vitesse"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:387
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:375
 msgid "The new settings will take effect after UM restart."
 msgstr "Les modifications s'appliqueront au redémarrage du Gestionnaire."
 
@@ -403,19 +394,19 @@ msgstr ""
 "'live'\n"
 "Utilisez l'argument '--force' dans un terminal pour passer outre."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:74
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:73
 msgid "Quit"
 msgstr "Quitter"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:81
 msgid "Quick Update"
 msgstr "Mise à jour rapide"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:89
 msgid "Legend"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:171
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:159
 msgid "Cannot quit: upgrade in progress"
 msgstr "Impossible de quitter: mise à jour en cours"
 
@@ -430,3 +421,9 @@ msgstr "Barre du gestionnaire"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Barre des tâches du gestionnaire"
+
+#~ msgid "Check status every"
+#~ msgstr "Vérifier l'état toute les"
+
+#~ msgid "hours"
+#~ msgstr "heure(s)"

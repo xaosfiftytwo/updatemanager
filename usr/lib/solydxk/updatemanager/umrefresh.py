@@ -83,7 +83,7 @@ class UmRefresh(object):
         print("Done refreshing")
 
     def checkForUpdates(self):
-        # Get updateable packages which are not held back"
+        # Get updateable packages which are not held back
         cmd = "env LANG=C aptitude search '~U' | awk '{print $2}'"
         updateables = self.ec.run(cmd=cmd, realTime=False)
 

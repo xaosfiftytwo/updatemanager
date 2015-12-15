@@ -402,8 +402,8 @@ class UmGlobal(object):
         msg = _('Please enter your password')
         pids = self.getProcessPids(scriptName)
         for pid in pids:
-            print(("Kill %s process with pid: %d" % (scriptName, pid)))
-            cmd = "gksudo --message \"<b>%s</b>\" kill %d" % (msg, pid)
+            print(("Kill %s process with pid: %s" % (scriptName, pid)))
+            cmd = "gksudo --message \"<b>%s</b>\" kill %s" % (msg, pid)
             self.ec.run(cmd, False)
 
     def reloadWindow(self, scriptPath, runAsUser):
@@ -445,3 +445,11 @@ class UmGlobal(object):
 
     def getLoginName(self):
         return self.ec.run(cmd="logname", realTime=False, returnAsList=False)
+
+    # Only allow numbers in entry field
+    # umglobal.onlyNumbers(self.txtField)
+    def onlyNumbers(widget):
+        def filter(entry, *args):
+            text = entry.get_text().strip().lower()
+            entry.set_text(''.join([i for i in text if i in '0123456789']))
+        widget.connect('changed', filter)

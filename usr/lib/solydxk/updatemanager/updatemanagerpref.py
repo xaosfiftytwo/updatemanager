@@ -64,7 +64,6 @@ class UpdateManagerPref(object):
         # Preferences window objects
         go = self.builder.get_object
         self.window = go("windowPref")
-        #self.window.set_icon_from_file(join(self.umglobal.iconsDir, self.umglobal.settings["icon-connected"]))
         self.nbPref = go('nbPref')
         self.btnSaveMirrors = go('btnSaveMirrors')
         self.btnCheckMirrorsSpeed = go("btnCheckMirrorsSpeed")
@@ -75,13 +74,9 @@ class UpdateManagerPref(object):
         self.tvBlacklist = go("tvBlacklist")
         self.tvAvailable = go("tvAvailable")
         self.lblGeneral = go("lblGeneral")
-        self.txtCheckStatus = go("txtCheckStatus")
         self.btnSaveGeneral = go("btnSaveGeneral")
         self.chkHideMaintenance = go("chkHideMaintenance")
         self.chkAutostart = go("chkAutostart")
-
-        # Only allow numbers
-        self.filterText(self.txtCheckStatus)
 
         # GUI translations
         self.window.set_title(_("Update Manager Preferences"))
@@ -97,8 +92,6 @@ class UpdateManagerPref(object):
         go("lblBlacklistText").set_label(_("Blacklisted packages"))
         go("lblAvailableText").set_label(_("Available packages"))
         go("lblGlobalSettings").set_label(_("Global settings"))
-        go("lblCheckStatus").set_label(_("Check status every"))
-        go("lblCheckStatusHour").set_label(_("hours"))
 
         # Initiate the treeview handler and connect the custom toggle event with on_tvMirrors_toggle
         self.tvMirrorsHandler = TreeViewHandler(self.tvMirrors)
@@ -154,7 +147,6 @@ class UpdateManagerPref(object):
     # ===============================================
 
     def fillGeneralSettings(self):
-        self.txtCheckStatus.set_text(str(self.umglobal.settings["hrs-check-status"]))
         for tab in self.umglobal.settings["hide-tabs"]:
             if tab == "maintenance":
                 self.chkHideMaintenance.set_active(True)
@@ -359,10 +351,6 @@ class UpdateManagerPref(object):
     # ===============================================
 
     def saveGeneralSettings(self):
-        hrs = self.umglobal.strToNumber(self.txtCheckStatus.get_text(), True)
-        if self.umglobal.settings["hrs-check-status"] != hrs:
-            self.umglobal.saveSettings('misc', 'hrs-check-status', hrs)
-
         lst = []
         for tab in self.umglobal.settings["hide-tabs"]:
             if tab != "maintenance":
@@ -386,12 +374,6 @@ class UpdateManagerPref(object):
 
         msg = _("The new settings will take effect after UM restart.")
         MessageDialog(self.lblGeneral.get_label(), msg)
-
-    def filterText(self, widget):
-        def filter(entry, *args):
-            text = entry.get_text().strip().lower()
-            entry.set_text(''.join([i for i in text if i in '0123456789']))
-        widget.connect('changed', filter)
 
     # Close the gui
     def on_windowPref_destroy(self, widget):

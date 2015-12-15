@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-09 22:38+0100\n"
+"POT-Creation-Date: 2015-12-15 10:56+0100\n"
 "PO-Revision-Date: 2015-10-22 05:34+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Northern Sami (http://www.transifex.com/solydxk/updatemanager/"
@@ -69,7 +69,6 @@ msgid "Install"
 msgstr "Installera"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:141
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:73
 msgid "Refresh"
 msgstr "Leta uppdateringar"
 
@@ -82,7 +81,7 @@ msgid "Information"
 msgstr "Information"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:144
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:86
 msgid "Preferences"
 msgstr "Inställningar"
 
@@ -258,84 +257,76 @@ msgstr "Nuvarande version"
 msgid "New version"
 msgstr "Ny version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:82
 msgid "Update Manager Preferences"
 msgstr "Inställningar för uppdateringsverktyget"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:83
 msgid "Save mirrors"
 msgstr "Spara spegel-servrar"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:84
 msgid "Check mirrors speed"
 msgstr "Testa spegel-servrarnas hastighet"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:85
 msgid "Remove"
 msgstr "Ta bort"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
 msgid "Blacklist"
 msgstr "Svartlista"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Repository mirrors"
 msgstr "Repository spegel-servrar"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:88
 msgid "General"
 msgstr "Allmänt"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:89
 msgid "Hide maintenance"
 msgstr "Dölj underhåll"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:95
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:97
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:92
 msgid "Blacklisted packages"
 msgstr "Svartlistade paket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:96
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:91
 msgid "Select the fastest repository"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:98
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
 msgid "Available packages"
 msgstr "Tillgängliga paket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:99
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
 msgid "Global settings"
 msgstr "Globala inställningar"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:100
-msgid "Check status every"
-msgstr "Kolla status varje"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:101
-msgid "hours"
-msgstr "timmar"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Current"
 msgstr "Aktuell"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Country"
 msgstr "Land"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Repository"
 msgstr "Repository"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:271
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:263
 msgid "Speed"
 msgstr "Hastighet"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:387
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:375
 msgid "The new settings will take effect after UM restart."
 msgstr ""
 "De nya inställningarna träder i kraft efter en omstart av "
@@ -401,19 +392,19 @@ msgstr ""
 "Uppdateringsverktyget kan inte startas i en live-miljö\n"
 "Du kan använda --force för att starta verktyget i en live-miljö"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:74
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:73
 msgid "Quit"
 msgstr "Avsluta"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:82
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:81
 msgid "Quick Update"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:90
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:89
 msgid "Legend"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:171
+#: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:159
 msgid "Cannot quit: upgrade in progress"
 msgstr "Kan inte avsluta: uppdatering pågår"
 
@@ -428,3 +419,9 @@ msgstr ""
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr ""
+
+#~ msgid "Check status every"
+#~ msgstr "Kolla status varje"
+
+#~ msgid "hours"
+#~ msgstr "timmar"

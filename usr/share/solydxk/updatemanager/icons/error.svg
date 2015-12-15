@@ -30,7 +30,7 @@
      id="namedview50"
      showgrid="false"
      inkscape:zoom="10.727273"
-     inkscape:cx="-3.6991519"
+     inkscape:cx="-14.433395"
      inkscape:cy="19.186432"
      inkscape:window-x="-4"
      inkscape:window-y="-3"
@@ -59,17 +59,7 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="g3968">
-    <path
-       transform="matrix(5.628242,0,0,5.628242,179.30132,-174.27629)"
-       d="m -24.88983,35.228813 a 2.7033896,2.7033896 0 1 1 -5.406779,0 2.7033896,2.7033896 0 1 1 5.406779,0 z"
-       sodipodi:ry="2.7033896"
-       sodipodi:rx="2.7033896"
-       sodipodi:cy="35.228813"
-       sodipodi:cx="-27.59322"
-       id="path2990"
-       style="fill:#e6e6e6;fill-opacity:1;stroke:#666666;stroke-width:0.63418341;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       sodipodi:type="arc" />
+     id="g2985">
     <rect
        y="0"
        x="0"
@@ -78,9 +68,19 @@
        id="rect3085"
        style="fill:#ffffff;fill-opacity:0;stroke:none" />
     <path
+       transform="matrix(7.283607,0,0,7.283607,224.97817,-232.59283)"
+       d="m -24.88983,35.228813 a 2.7033896,2.7033896 0 1 1 -5.406779,0 2.7033896,2.7033896 0 1 1 5.406779,0 z"
+       sodipodi:ry="2.7033896"
+       sodipodi:rx="2.7033896"
+       sodipodi:cy="35.228813"
+       sodipodi:cx="-27.59322"
+       id="path2990"
+       style="fill:#ededed;fill-opacity:1;stroke:#666666;stroke-width:0.63418341;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       sodipodi:type="arc" />
+    <path
        inkscape:connector-curvature="0"
        style="fill:#ff0000;fill-opacity:1;stroke:none"
        id="path9380"
-       d="M 28.507805,16.487063 24,20.994825 19.492195,16.487063 16.486999,19.492238 20.994804,24 16.486999,28.507763 19.492195,31.512938 24,27.005175 28.507805,31.512938 31.513001,28.507763 27.005196,24 31.513001,19.492238 28.507805,16.487063 z" />
+       d="m 30.896352,12.506189 -6.89635,6.896286 -6.896352,-6.896286 -4.597557,4.597525 6.896352,6.896285 -6.896352,6.896288 4.597557,4.597524 6.896352,-6.896287 6.89635,6.896287 4.597558,-4.597524 -6.896352,-6.896288 6.896352,-6.896285 -4.597558,-4.597525 z" />
   </g>
 </svg>
