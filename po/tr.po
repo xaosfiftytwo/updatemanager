@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 10:56+0100\n"
+"POT-Creation-Date: 2015-12-17 10:26+0100\n"
 "PO-Revision-Date: 2013-12-26 22:06+0200\n"
 "Last-Translator: Taylan Tatlı <taylantatli90@gmail.com>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -29,7 +29,7 @@ msgid "New update: %s"
 msgstr "Hiçbir güncelleştirme seçilmedi"
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:66
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:52
 #, fuzzy
 msgid "There are updates available"
 msgstr "Güncelleştirmeler mevcut"
@@ -154,12 +154,12 @@ msgstr ""
 msgid "Version"
 msgstr "Eski sürüm"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:269
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:266
 #, fuzzy
 msgid "Continue installation?"
 msgstr "Kurulum gerekmiyor"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:339
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:336
 #, python-format
 msgid ""
 "You might need to run this several times.\n"
@@ -167,7 +167,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:345
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:342
 #, python-format
 msgid ""
 "Removing not available packages may break your system!\n"
@@ -175,7 +175,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:351
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:348
 #, python-format
 msgid ""
 "Once removed you will not be able to boot these kernels!\n"
@@ -183,7 +183,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:357
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:354
 #, python-format
 msgid ""
 "Downgrading packages may break your system!\n"
@@ -191,48 +191,48 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:392
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:665
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
 msgid "Package"
 msgstr "Paket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:392
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
 #, fuzzy
 msgid "Installed"
 msgstr "Güncelleştirmeleri Kur"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:392
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
 #, fuzzy
 msgid "Available"
 msgstr "Güncelleştirmeler mevcut"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:398
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:395
 msgid "Hit the Execute button to clean the cache."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:452
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:449
 #, python-format
 msgid ""
 "\"%s\"\n"
 " did not return any results."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:470
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:467
 msgid ""
 "Do you want to completely clean the apt cache?\n"
 "\n"
 "When No, only unavailable installation packages are removed."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:476
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:473
 msgid "Apt cache has been cleaned."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:505
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:502
 msgid "Execute maintenance changes?"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:620
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:618
 #, python-format
 msgid ""
 "Another program is locking the apt cache\n"
@@ -241,12 +241,12 @@ msgid ""
 "* %s"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:665
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
 #, fuzzy
 msgid "Current version"
 msgstr "Yeni sürüm"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:665
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
 msgid "New version"
 msgstr "Yeni sürüm"
 
@@ -269,8 +269,9 @@ msgid "Remove"
 msgstr ""
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:86
+#, fuzzy
 msgid "Blacklist"
-msgstr ""
+msgstr "Yoksayılan paketler"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:87
 msgid "Repository mirrors"
@@ -296,8 +297,9 @@ msgid "Select the fastest repository"
 msgstr "En hızlı production deposunu seç"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:93
+#, fuzzy
 msgid "Available packages"
-msgstr ""
+msgstr "Yoksayılan paketler"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:94
 msgid "Global settings"
@@ -327,46 +329,47 @@ msgstr "Hız"
 msgid "The new settings will take effect after UM restart."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:35
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:32
+#, fuzzy
 msgid "Refreshing update list..."
-msgstr ""
+msgstr "Tazele"
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:40
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:37
 #, fuzzy
 msgid "Installing updates..."
 msgstr "Güncelleştirmeler yükleniyor"
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:53
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:51
 msgid "Sources changed: start UM to refresh"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:27
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Güncelleştirme Yöneticisi"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Your system is up to date"
 msgstr "Sisteminiz güncel"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 #, fuzzy
 msgid "No internet connection"
 msgstr "İlk bağlantı test ediliyor"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Error"
 msgstr "Hata"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
 msgid "Executing command"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:52
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:53
 msgid "Warning"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:402
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:409
 #: ../usr/lib/solydxk/updatemanager/main.py:83
 #, fuzzy
 msgid "Please enter your password"
@@ -418,6 +421,48 @@ msgstr "Güncelleştirme Yöneticisi"
 msgid "Update Manager Tray"
 msgstr "Güncelleştirme Yöneticisi"
 
+#: en/notfound.html+html.body.h1:13
+msgid "Update information not found"
+msgstr ""
+
+#: en/notfound.html+html.body.p:14
+msgid "We could not retrieve the current update information from our server."
+msgstr ""
+
+#: en/notfound.html+html.body.p:15
+#, fuzzy
+msgid "Please, check your internet connection."
+msgstr "İlk bağlantı test ediliyor"
+
+#: en/notfound.html+html.body.p:16
+msgid ""
+"If this problem persists, please visit our forum: <a href=\"http://forums."
+"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+msgstr ""
+
+#: en/updates.html+html.body.h1:13
+#, fuzzy
+msgid "Updates available"
+msgstr "Güncelleştirmeler mevcut"
+
+#: en/updates.html+html.body.p:14
+msgid ""
+"There are updates available. If you experience any problems, please visit "
+"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
+"forums.solydxk.com</a>."
+msgstr ""
+
+#: en/uptodate.html+html.body.h1:13
+msgid "Up to date"
+msgstr ""
+
+#: en/uptodate.html+html.body.p:14
+msgid ""
+"Your system is up to date. If you experience any problems, please visit our "
+"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>."
+msgstr ""
+
 #~ msgid "hours"
 #~ msgstr "saat"
 
@@ -428,10 +473,6 @@ msgstr "Güncelleştirme Yöneticisi"
 #, fuzzy
 #~ msgid "Downgrade"
 #~ msgstr "Yükselt"
-
-#, fuzzy
-#~ msgid "Not available"
-#~ msgstr "Güncelleştirmeler mevcut"
 
 #~ msgid "Refresh finished"
 #~ msgstr "Tazeleme tamamlandı"

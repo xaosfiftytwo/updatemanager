@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 10:56+0100\n"
-"PO-Revision-Date: 2015-12-09 09:27+0000\n"
+"POT-Creation-Date: 2015-12-17 10:26+0100\n"
+"PO-Revision-Date: 2015-12-17 09:13+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/solydxk/updatemanager/"
 "language/nl/)\n"
@@ -30,7 +30,7 @@ msgid "New update: %s"
 msgstr "Nieuwe update: %s"
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:66
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:52
 msgid "There are updates available"
 msgstr "Updates beschikbaar"
 
@@ -149,11 +149,11 @@ msgstr "Gegevens worden verzameld..."
 msgid "Version"
 msgstr "Versie"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:269
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:266
 msgid "Continue installation?"
 msgstr "Doorgaan met de installatie?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:339
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:336
 #, python-format
 msgid ""
 "You might need to run this several times.\n"
@@ -164,7 +164,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:345
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:342
 #, python-format
 msgid ""
 "Removing not available packages may break your system!\n"
@@ -176,7 +176,7 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:351
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:348
 #, python-format
 msgid ""
 "Once removed you will not be able to boot these kernels!\n"
@@ -187,7 +187,7 @@ msgstr ""
 "\n"
 "% s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:357
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:354
 #, python-format
 msgid ""
 "Downgrading packages may break your system!\n"
@@ -198,24 +198,24 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:392
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:665
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
 msgid "Package"
 msgstr "Pakket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:392
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
 msgid "Installed"
 msgstr "Geïnstalleerd"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:392
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
 msgid "Available"
 msgstr "Beschikbaar"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:398
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:395
 msgid "Hit the Execute button to clean the cache."
 msgstr "Klik op de Uitvoeren knop om de cache op te schonen."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:452
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:449
 #, python-format
 msgid ""
 "\"%s\"\n"
@@ -224,7 +224,7 @@ msgstr ""
 "\"%s\"\n"
 "leverde geen resultaten op."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:470
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:467
 msgid ""
 "Do you want to completely clean the apt cache?\n"
 "\n"
@@ -234,15 +234,15 @@ msgstr ""
 "\n"
 "Nee: alleen niet meer beschikbare installatiepakketten worden verwijderd."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:476
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:473
 msgid "Apt cache has been cleaned."
 msgstr "Apt cache is schoongemaakt."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:505
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:502
 msgid "Execute maintenance changes?"
 msgstr "Onderhoud uitvoeren?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:620
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:618
 #, python-format
 msgid ""
 "Another program is locking the apt cache\n"
@@ -255,11 +255,11 @@ msgstr ""
 "Sluit het programma voordat u ververst:\n"
 "* %s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:665
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
 msgid "Current version"
 msgstr "Huidige versie"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:665
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
 msgid "New version"
 msgstr "Nieuwe versie"
 
@@ -336,44 +336,44 @@ msgstr "Snelheid"
 msgid "The new settings will take effect after UM restart."
 msgstr "Herstart UM om de nieuwe instellingen te gebruiken."
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:35
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:32
 msgid "Refreshing update list..."
 msgstr "Update lijst verversen..."
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:40
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:37
 msgid "Installing updates..."
 msgstr "Updates installeren..."
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:53
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:51
 msgid "Sources changed: start UM to refresh"
 msgstr "Sources gewijzigd: start UM om te verversen"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:27
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Update Manager"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Your system is up to date"
 msgstr "Uw systeem is up to date"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "No internet connection"
 msgstr "Geen internetverbinding"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Error"
 msgstr "Fout"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
 msgid "Executing command"
 msgstr "Commando uitvoeren"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:52
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:53
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:402
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:409
 #: ../usr/lib/solydxk/updatemanager/main.py:83
 msgid "Please enter your password"
 msgstr "Voer uw wachtwoord in"
@@ -426,8 +426,50 @@ msgstr "updatemanagertray"
 msgid "Update Manager Tray"
 msgstr "Update Manager Tray"
 
-#~ msgid "Check status every"
-#~ msgstr "Controleer status iedere"
+#: en/notfound.html+html.body.h1:13
+msgid "Update information not found"
+msgstr "Update informatie niet gevonden"
 
-#~ msgid "hours"
-#~ msgstr "uren"
+#: en/notfound.html+html.body.p:14
+msgid "We could not retrieve the current update information from our server."
+msgstr "We konden de huidige update informatie niet van de server halen."
+
+#: en/notfound.html+html.body.p:15
+msgid "Please, check your internet connection."
+msgstr "Controleer a.u.b. uw internet connectie."
+
+#: en/notfound.html+html.body.p:16
+msgid ""
+"If this problem persists, please visit our forum: <a href=\"http://forums."
+"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+msgstr ""
+"Als het probleem aanhoudt, bezoek dan onze forum: <a href=\"http://forums."
+"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+
+#: en/updates.html+html.body.h1:13
+msgid "Updates available"
+msgstr "Updates beschikbaar"
+
+#: en/updates.html+html.body.p:14
+msgid ""
+"There are updates available. If you experience any problems, please visit "
+"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
+"forums.solydxk.com</a>."
+msgstr ""
+"Er zijn updates beschikbaar. Mocht u problemen ondervinden, bezoek dan ons "
+"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>."
+
+#: en/uptodate.html+html.body.h1:13
+msgid "Up to date"
+msgstr "Up to date"
+
+#: en/uptodate.html+html.body.p:14
+msgid ""
+"Your system is up to date. If you experience any problems, please visit our "
+"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>."
+msgstr ""
+"Uw systeem is up to date. Mocht u problemen ondervinden, bezoek dan ons "
+"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>."

@@ -22,6 +22,7 @@ class UmGlobal(object):
         self.filesDir = join(self.scriptDir, "files")
         self.shareDir = self.scriptDir.replace('lib', 'share')
         self.iconsDir = join(self.shareDir, 'icons')
+        self.htmlDir = join(self.shareDir, "html")
         self.ec = ExecCmd()
         self.cfg = Config(join(self.filesDir, 'updatemanager.conf'))
         self.title = _("Update Manager")
@@ -254,13 +255,19 @@ class UmGlobal(object):
         try:
             settings["log"] = self.cfg.getValue(section, 'log')
             settings["not-found"] = self.cfg.getValue(section, 'not-found')
+            settings["up-to-date"] = self.cfg.getValue(section, 'up-to-date')
+            settings["updates"] = self.cfg.getValue(section, 'updates')
             settings["hist"] = self.cfg.getValue(section, 'hist')
         except:
             settings["log"] = 'updatemanager.log'
             settings["not-found"] = 'notfound.html'
+            settings["up-to-date"] = 'uptodate.html'
+            settings["updates"] = 'updates.html'
             settings["hist"] = 'updatemanager.hist'
             self.saveSettings(section, 'log', settings["log"])
             self.saveSettings(section, 'not-found', settings["not-found"])
+            self.saveSettings(section, 'up-to-date', settings["up-to-date"])
+            self.saveSettings(section, 'updates', settings["updates"])
             self.saveSettings(section, 'hist', settings["hist"])
 
         section = 'serverfiles'
@@ -448,7 +455,7 @@ class UmGlobal(object):
 
     # Only allow numbers in entry field
     # umglobal.onlyNumbers(self.txtField)
-    def onlyNumbers(widget):
+    def onlyNumbers(self, widget):
         def filter(entry, *args):
             text = entry.get_text().strip().lower()
             entry.set_text(''.join([i for i in text if i in '0123456789']))

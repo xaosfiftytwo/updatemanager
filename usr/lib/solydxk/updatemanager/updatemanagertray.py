@@ -114,7 +114,7 @@ class UpdateManagerTray(object):
             self.indicator.connect('popup-menu', self.popup_menu, menu)
 
         self.umrefresh = UmRefresh(self.umglobal, self.indicator)
-        self.notifier = UmNotifier(self.umglobal, self.umrefresh, self.indicator)
+        self.notifier = UmNotifier(self.umrefresh)
 
         # Initiate first check
         self.refresh()

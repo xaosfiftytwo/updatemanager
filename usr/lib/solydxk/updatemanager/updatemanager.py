@@ -13,7 +13,7 @@ from glob import glob
 from logger import Logger
 import os
 from os import chmod, makedirs, remove
-from os.path import basename, exists, join
+from os.path import basename, exists, join, isdir
 from shutil import move
 from simplebrowser import SimpleBrowser
 import sys
@@ -227,9 +227,6 @@ class UpdateManager(object):
                 for line in f.readlines():
                     self.log.write(line, "UM.init", "debug")
             self.log.write("==============================================", "UM.init", "debug")
-
-        # Load the initial information page
-        self.loadInfo()
 
         # Refresh apt cache
         self.refresh()
@@ -586,6 +583,7 @@ class UpdateManager(object):
                     self.btnRefresh.set_sensitive(True)
                     self.btnPackages.set_sensitive(True)
                     self.btnMaintenance.set_sensitive(True)
+                    self.btnInfo.set_sensitive(True)
                     self.loadInfo()
 
                 if self.umglobal.newUpd:
@@ -623,7 +621,6 @@ class UpdateManager(object):
             MessageDialog(self.btnRefresh.get_label(), msg)
             self.log.write("%s is locking the apt cache" % prog, "UM.refresh", "warning")
         else:
-            self.btnInfo.set_sensitive(True)
             self.btnPreferences.set_sensitive(True)
             self.btnOutput.set_sensitive(True)
             self.btnRefresh.set_sensitive(False)
@@ -750,10 +747,15 @@ class UpdateManager(object):
                     pass
 
     def loadInfo(self):
-        url = join("file://%s" % self.umglobal.scriptDir, self.umglobal.settings['not-found'])
+        languageDir = self.get_language_dir()
+        url = join("file://%s" % languageDir, self.umglobal.settings['up-to-date'])
         self.btnInfo.set_icon_name("help-about")
-        if self.umglobal.umfilesUrl is not None:
+        if self.umglobal.newUpd:
             url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['upd-info'])
+        elif self.upgradables:
+            url = join("file://%s" % languageDir, self.umglobal.settings['updates'])
+        elif self.umglobal.serverUpdVersion is None:
+            url = join("file://%s" % languageDir, self.umglobal.settings['not-found'])
 
         self.log.write("Load info url: %s" % url, "UM.loadInfo", "debug")
 
@@ -762,6 +764,27 @@ class UpdateManager(object):
             children[0].openUrl(url)
         else:
             self.swInfo.add(SimpleBrowser(url))
+
+    def get_language_dir(self):
+        # First test if full locale directory exists, e.g. html/pt_BR,
+        # otherwise perhaps at least the language is there, e.g. html/pt
+        # and if that doesn't work, try html/pt_PT
+        lang = self.get_current_language()
+        path = join(self.umglobal.htmlDir, lang)
+        if not isdir(path):
+            base_lang = lang.split('_')[0].lower()
+            path = join(self.umglobal.htmlDir, base_lang)
+            if not isdir(path):
+                path = join(self.umglobal.htmlDir, "{}_{}".format(base_lang, base_lang.upper()))
+                if not isdir(path):
+                    path = join(self.umglobal.htmlDir, 'en')
+        return path
+
+    def get_current_language(self):
+        lang = os.environ.get('LANG', 'US').split('.')[0]
+        if lang == '':
+            lang = 'en'
+        return lang
 
     def pushMessage(self, message):
         if message is not None:
