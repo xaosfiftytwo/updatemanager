@@ -1,0 +1,103 @@
+html, body
+{
+	margin: 0;
+	padding: 0;
+	background-color: #E6E6E6;
+	font-family: sans-serif;
+	color: #585858;
+	overflow-y: hidden;
+}
+
+td
+{
+	vertical-align: top;
+	padding-right: 10px;
+}
+
+a
+{
+	color: #0F538F;
+}
+
+#background
+{
+	position: fixed !important;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	
+	/* border: 1px solid #808080; */
+	background-image: url('background.svg');
+	background-repeat: no-repeat;
+	background-position: bottom right;
+	background-size: Auto 75%;
+}
+
+.title
+{
+    color: #585858;
+	position: absolute;
+	top: 25px;
+	left: 25px;
+	font-size: 26px;
+	font-weight: bold;
+	padding: 0;
+	margin: 0;
+}
+
+.app_title
+{
+	padding-top: 15px;
+    color: #585858;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.app_homepage
+{
+	font-style: italic;
+	vertical-align: bottom;
+}
+
+.screenshot {
+  width: 250px;
+  height: Auto;
+  -o-object-fit: contain;
+}
+
+.main
+{
+	position: absolute;
+	top: 70px;
+	left: 50px;
+	width: 65%;
+	font-size: 14px;
+}
+
+.content ul
+{
+	margin-top: 0px;
+	padding-left: 1.6em;
+	list-style-image: url("bullet-point.png");
+}
+
+.content li
+{
+	padding: 0.4em;
+}
+
+.warning
+{
+	color: red;
+	font-size: 18px;
+	padding: 20px;
+}
+
+.alert
+{
+	color: #0F538F;
+	font-size: 18px;
+	padding: 20px;
+}

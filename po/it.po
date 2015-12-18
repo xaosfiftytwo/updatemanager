@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-17 10:26+0100\n"
-"PO-Revision-Date: 2015-12-17 08:37+0000\n"
+"POT-Creation-Date: 2015-12-18 13:45+0100\n"
+"PO-Revision-Date: 2015-12-18 11:09+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Italian (http://www.transifex.com/solydxk/updatemanager/"
 "language/it/)\n"
@@ -89,30 +89,30 @@ msgid "Preferences"
 msgstr "Preferenze"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:145
-msgid "Packages"
-msgstr "Pacchetti"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:147
 msgid "Maintenance"
 msgstr "Manutenzione"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:148
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:146
+msgid "Packages"
+msgstr "Pacchetti"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:149
 msgid "Execute"
 msgstr "Esegui"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:149
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:150
 msgid "Select all"
 msgstr "Seleziona tutti"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:150
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:151
 msgid "Clean up the apt cache"
 msgstr "Pulisci la cache di apt"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:151
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:152
 msgid "Remove unneeded packages"
 msgstr "Rimuovi pacchetti non necessari"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:152
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:153
 msgid ""
 "Remove packages not available\n"
 "in the repositories"
@@ -120,11 +120,11 @@ msgstr ""
 "Rimuovi pacchetti non disponibili\n"
 "nel repositories"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:153
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:154
 msgid "Remove old kernels"
 msgstr "Rimuovi precedenti kernel"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:154
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:155
 msgid ""
 "Downgrade packages with\n"
 "only lower versions available"
@@ -132,7 +132,7 @@ msgstr ""
 "Installa versioni precedenti dei pacchetti\n"
 "con versione precedente disponibile"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:155
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:156
 msgid ""
 "Make sure you create\n"
 "a system image before you\n"
@@ -142,81 +142,54 @@ msgstr ""
 "un'immagine di sistema prima di\n"
 "continuare (es: Clonezilla)"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:203
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:204
 msgid "Gathering information..."
 msgstr "Recupero informazioni..."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:212
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:213
 msgid "Version"
 msgstr "Vecchia versione"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:266
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:267
 msgid "Continue installation?"
 msgstr "Continuare con l'installazione?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:336
-#, python-format
-msgid ""
-"You might need to run this several times.\n"
-"\n"
-"%s"
-msgstr ""
-"Potrebbe essere necessario eseguire questa operazione alcune volte\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:337
+msgid "You might need to run this several times."
+msgstr "Potrebbe essere necessario eseguire questa operazione alcune volte."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:342
-#, python-format
-msgid ""
-"Removing not available packages may break your system!\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:343
+msgid "Removing not available packages may break your system!"
 msgstr ""
-"La rimozione di pacchetti non disponibili potrebbe compromettere il "
-"sistema!\n"
-"\n"
-"%s"
+"La rimozione di pacchetti non disponibili potrebbe compromettere il sistema!"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:348
-#, python-format
-msgid ""
-"Once removed you will not be able to boot these kernels!\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:349
+msgid "Once removed you will not be able to boot these kernels!"
+msgstr "Una volta rimossi non potrai avviare questi kernel!"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:355
+msgid "Downgrading packages may break your system!"
 msgstr ""
-"Una volta rimossi non potrai avviare questi kernel!\n"
-"\n"
-"%s"
+"Portare pacchetti a versioni precedenti potrebbe compromettere il sistema!"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:354
-#, python-format
-msgid ""
-"Downgrading packages may break your system!\n"
-"\n"
-"%s"
-msgstr ""
-"Portare pacchetti a versioni precedenti potrebbe compromettere il sistema!\n"
-"\n"
-"%s"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:390
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:682
 msgid "Package"
 msgstr "Pacchetto"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:390
 msgid "Installed"
 msgstr "Installato"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:390
 msgid "Available"
 msgstr "Aggiornamenti disponibili"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:395
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:396
 msgid "Hit the Execute button to clean the cache."
 msgstr "Seleziona Esegui per pulire la cache."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:449
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:450
 #, python-format
 msgid ""
 "\"%s\"\n"
@@ -225,7 +198,7 @@ msgstr ""
 "\"%s\"\n"
 "non ha prodotto alcun risultato."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:467
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:468
 msgid ""
 "Do you want to completely clean the apt cache?\n"
 "\n"
@@ -235,15 +208,15 @@ msgstr ""
 "\n"
 "Selezionando No, verranno rimossi solo i pacchetti non disponibili."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:473
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:474
 msgid "Apt cache has been cleaned."
 msgstr "Pulizia della cache di apt completata"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:502
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:503
 msgid "Execute maintenance changes?"
 msgstr "Eseguire i cambiamenti di manutenzione?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:618
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:625
 #, python-format
 msgid ""
 "Another program is locking the apt cache\n"
@@ -257,11 +230,11 @@ msgstr ""
 "aggiornare:\n"
 "* %s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:682
 msgid "Current version"
 msgstr "Versione attuale"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:682
 msgid "New version"
 msgstr "Nuova versione"
 
@@ -379,7 +352,7 @@ msgstr "Comando in esecuzione"
 msgid "Warning"
 msgstr "Avviso"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:409
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:413
 #: ../usr/lib/solydxk/updatemanager/main.py:83
 msgid "Please enter your password"
 msgstr "Per favore, digitare la password per avviare il gestore aggiornamenti"
@@ -433,46 +406,52 @@ msgstr "Gestore aggiornamenti"
 msgid "Update Manager Tray"
 msgstr "Gestore aggiornamenti"
 
-#: en/notfound.html+html.body.h1:13
+#: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
-msgstr ""
+msgstr "Informazioni per l'aggiornamento non trovate"
 
-#: en/notfound.html+html.body.p:14
+#: en/notfound.html+html.body.div.div.p:11
 msgid "We could not retrieve the current update information from our server."
 msgstr ""
+"Non è stato possibile richiamare le informazioni sull'ultimo aggiornamento "
+"dal nostro server"
 
-#: en/notfound.html+html.body.p:15
-#, fuzzy
-#| msgid "No internet connection"
+#: en/notfound.html+html.body.div.div.p:12
 msgid "Please, check your internet connection."
-msgstr "Nessuna connessione internet"
+msgstr "Per favore verifica la tua connessione internet"
 
-#: en/notfound.html+html.body.p:16
+#: en/notfound.html+html.body.div.div.p:13
 msgid ""
 "If this problem persists, please visit our forum: <a href=\"http://forums."
 "solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 msgstr ""
+"Se il problema persiste, visita nostro forum: <a href=\"http://forums."
+"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 
-#: en/updates.html+html.body.h1:13
-#, fuzzy
-#| msgid "There are updates available"
+#: en/updates.html+html.body.h1:8
 msgid "Updates available"
 msgstr "Aggiornamenti disponibili"
 
-#: en/updates.html+html.body.p:14
+#: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
 "our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
 "forums.solydxk.com</a>."
 msgstr ""
+"Ci sono aggiornamenti disponibili. In caso di problemi visita il nostro "
+"orum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>."
 
-#: en/uptodate.html+html.body.h1:13
+#: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
-msgstr ""
+msgstr "Aggiornato"
 
-#: en/uptodate.html+html.body.p:14
+#: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
 "forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
 "solydxk.com</a>."
 msgstr ""
+"Il tuo sistema è aggiornato. In caso di problemi visita il nostro forum: <a "
+"href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums.solydxk."
+"com</a>."

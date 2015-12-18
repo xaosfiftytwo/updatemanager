@@ -71,9 +71,9 @@ class UmRefresh(object):
                     self.changeIcon("icon-connected", self.umglobal.connectedText)
             else:
                 print((self.umglobal.disconnectedText))
-                self.indicator.set_icon_full("icon-disconnected", self.umglobal.disconnectedText)
-                # Check every 60 seconds if there is a connection
-                GObject.timeout_add_seconds(60, self.refresh)
+                self.changeIcon("icon-disconnected", self.umglobal.disconnectedText)
+                # Check every 30 seconds if there is a connection
+                GObject.timeout_add_seconds(30, self.refresh)
                 return True
         else:
             self.umglobal.errorText = _("Unable to retrieve sources information")

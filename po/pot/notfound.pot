@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-17 10:26+0200\n"
+"POT-Creation-Date: 2015-12-18 13:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,19 +12,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Translate Toolkit 1.12.0\n"
 
-#: en/notfound.html+html.body.h1:13
+#: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
 msgstr ""
 
-#: en/notfound.html+html.body.p:14
+#: en/notfound.html+html.body.div.div.p:11
 msgid "We could not retrieve the current update information from our server."
 msgstr ""
 
-#: en/notfound.html+html.body.p:15
+#: en/notfound.html+html.body.div.div.p:12
 msgid "Please, check your internet connection."
 msgstr ""
 
-#: en/notfound.html+html.body.p:16
+#: en/notfound.html+html.body.div.div.p:13
 msgid ""
 "If this problem persists, please visit our forum: <a href=\""
 "http://forums.solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."

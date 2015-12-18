@@ -142,9 +142,10 @@ class UpdateManager(object):
         self.btnOutput.set_label(_("Output"))
         self.btnInfo.set_label(_("Information"))
         self.btnPreferences.set_label(_("Preferences"))
+        self.btnMaintenance.set_label(_("Maintenance"))
         self.btnPackages.set_label(_("Packages"))
         self.uptodateText = self.umglobal.connectedText
-        self.lblMaintenance.set_label(_("Maintenance"))
+        self.lblMaintenance.set_label(self.btnMaintenance.get_label())
         self.btnMaintenanceExecute.set_label(_("Execute"))
         self.chkMaintenanceSelectAll.set_label(_("Select all"))
         self.radCleanCache.set_label(_("Clean up the apt cache"))
@@ -333,25 +334,25 @@ class UpdateManager(object):
 
     def on_radUnneeded_toggled(self, widget):
         if widget.get_active():
-            message = _("You might need to run this several times.\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            message = "%s\n\n%s" % (_("You might need to run this several times."), self.lblMaintenanceHelp.get_label().replace("\n", " "))
             WarningDialog(self.btnMaintenance.get_label(), message)
             self.fillTreeViewMaintenance()
 
     def on_radNotavailable_toggled(self, widget):
         if widget.get_active():
-            message = _("Removing not available packages may break your system!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            message = "%s\n\n%s" % (_("Removing not available packages may break your system!"), self.lblMaintenanceHelp.get_label().replace("\n", " "))
             WarningDialog(self.btnMaintenance.get_label(), message)
             self.fillTreeViewMaintenance()
 
     def on_radOldKernel_toggled(self, widget):
         if widget.get_active():
-            message = _("Once removed you will not be able to boot these kernels!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            message = "%s\n\n%s" % (_("Once removed you will not be able to boot these kernels!"), self.lblMaintenanceHelp.get_label().replace("\n", " "))
             WarningDialog(self.btnMaintenance.get_label(), message)
             self.fillTreeViewMaintenance()
 
     def on_radDowngradable_toggled(self, widget):
         if widget.get_active():
-            message = _("Downgrading packages may break your system!\n\n%s" % self.lblMaintenanceHelp.get_label().replace("\n", " "))
+            message = "%s\n\n%s" % (_("Downgrading packages may break your system!"), self.lblMaintenanceHelp.get_label().replace("\n", " "))
             WarningDialog(self.btnMaintenance.get_label(), message)
             self.fillTreeViewMaintenance()
 
@@ -613,6 +614,12 @@ class UpdateManager(object):
         return ' '.join(lst)
 
     def refresh(self):
+        # Refresh server info
+        print((self.umglobal.hasInternet))
+        self.umglobal.getServerInfo()
+        print((self.umglobal.hasInternet))
+
+        # Check of programs locking apt
         prog = self.apt.getAptCacheLockedProgram(self.umglobal.settings["apt-packages"])
         if prog is not None:
             msg = _("Another program is locking the apt cache\n\n"
@@ -620,7 +627,8 @@ class UpdateManager(object):
                     "* %s" % prog)
             MessageDialog(self.btnRefresh.get_label(), msg)
             self.log.write("%s is locking the apt cache" % prog, "UM.refresh", "warning")
-        else:
+        elif self.umglobal.hasInternet:
+            # Update the apt cache
             self.btnPreferences.set_sensitive(True)
             self.btnOutput.set_sensitive(True)
             self.btnRefresh.set_sensitive(False)
@@ -635,6 +643,18 @@ class UpdateManager(object):
             self.terminal.executeCommand(cmd, nid)
             self.apt.initAptShowVersions()
             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.refresh", "debug")
+        else:
+            # No internet connection
+            print(("> No internet connection"))
+            self.btnInstall.set_sensitive(True)
+            self.btnRefresh.set_sensitive(True)
+            self.btnPackages.set_sensitive(True)
+            self.btnMaintenance.set_sensitive(True)
+            self.btnInfo.set_sensitive(True)
+            self.btnOutput.set_sensitive(True)
+            self.btnPreferences.set_sensitive(True)
+            self.loadInfo()
+            self.showInfo()
 
     def postUpdate(self):
         # Check for changed version information

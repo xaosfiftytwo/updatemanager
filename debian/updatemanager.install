@@ -1,4 +1,5 @@
 usr
 po/mo/*  usr/share/locale/
+po/link          usr/share/solydxk/updatemanager/html/
 po/en            usr/share/solydxk/updatemanager/html/
 po/translated/*  usr/share/solydxk/updatemanager/html/

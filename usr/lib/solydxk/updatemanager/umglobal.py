@@ -69,6 +69,10 @@ class UmGlobal(object):
         self.getServerInfo()
 
     def getServerInfo(self):
+        self.newUpd = False
+        self.serverUpdVersion = None
+        self.hasInternet = False
+
         if self.umfilesUrl is not None:
             url = "%s/%s" % (self.umfilesUrl, self.settings['repo-info'])
             try:

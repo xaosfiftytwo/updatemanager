@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-17 10:26+0100\n"
+"POT-Creation-Date: 2015-12-18 13:45+0100\n"
 "PO-Revision-Date: 2015-10-22 05:34+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Northern Sami (http://www.transifex.com/solydxk/updatemanager/"
@@ -86,46 +86,46 @@ msgid "Preferences"
 msgstr "Inställningar"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:145
-msgid "Packages"
-msgstr "Paket"
-
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:147
 msgid "Maintenance"
 msgstr "Underhåll"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:148
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:146
+msgid "Packages"
+msgstr "Paket"
+
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:149
 msgid "Execute"
 msgstr "Kör"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:149
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:150
 msgid "Select all"
 msgstr "Markera alla"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:150
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:151
 msgid "Clean up the apt cache"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:151
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:152
 msgid "Remove unneeded packages"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:152
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:153
 msgid ""
 "Remove packages not available\n"
 "in the repositories"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:153
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:154
 msgid "Remove old kernels"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:154
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:155
 msgid ""
 "Downgrade packages with\n"
 "only lower versions available"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:155
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:156
 msgid ""
 "Make sure you create\n"
 "a system image before you\n"
@@ -135,81 +135,69 @@ msgstr ""
 "en backup av systemet innan du\n"
 "fortsätter (te.x med Clonezilla)."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:203
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:204
 msgid "Gathering information..."
 msgstr "Samlar information..."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:212
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:213
 msgid "Version"
 msgstr "Version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:266
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:267
 msgid "Continue installation?"
 msgstr "Fortsätta med installationen?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:336
-#, python-format
-msgid ""
-"You might need to run this several times.\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:337
+#, fuzzy
+msgid "You might need to run this several times."
 msgstr ""
 "Du kan behöva köra det här flera gånger.\n"
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:342
-#, python-format
-msgid ""
-"Removing not available packages may break your system!\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:343
+#, fuzzy
+msgid "Removing not available packages may break your system!"
 msgstr ""
 "Genom att ta bort paket som inte är tillgängliga kan du göra ditt system "
 "obrukbart!\n"
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:348
-#, python-format
-msgid ""
-"Once removed you will not be able to boot these kernels!\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:349
+#, fuzzy
+msgid "Once removed you will not be able to boot these kernels!"
 msgstr ""
 "Efter borttagning kommer du inte kunna använda dessa kärnor!\n"
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:354
-#, python-format
-msgid ""
-"Downgrading packages may break your system!\n"
-"\n"
-"%s"
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:355
+#, fuzzy
+msgid "Downgrading packages may break your system!"
 msgstr ""
 "Nedgradering av paket kan göra ditt system obrukbart!\n"
 "\n"
 "%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:390
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:682
 msgid "Package"
 msgstr "Paket"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:390
 msgid "Installed"
 msgstr "Installerade"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:389
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:390
 msgid "Available"
 msgstr "Tillgängligt"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:395
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:396
 msgid "Hit the Execute button to clean the cache."
 msgstr "Klicka på Kör-knappen för att rensa cache."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:449
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:450
 #, python-format
 msgid ""
 "\"%s\"\n"
@@ -218,7 +206,7 @@ msgstr ""
 "\"%s\"\n"
 "matchar inga resultat."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:467
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:468
 msgid ""
 "Do you want to completely clean the apt cache?\n"
 "\n"
@@ -228,15 +216,15 @@ msgstr ""
 "\n"
 "Om nej, så kommer bara otillgängliga paket bli borttagna."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:473
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:474
 msgid "Apt cache has been cleaned."
 msgstr "Apt cache har rensats."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:502
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:503
 msgid "Execute maintenance changes?"
 msgstr "Kör underhållsändringar?"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:618
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:625
 #, python-format
 msgid ""
 "Another program is locking the apt cache\n"
@@ -249,11 +237,11 @@ msgstr ""
 "Var vänlig stäng programet innan du kör igen:\n"
 "*%s"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:682
 msgid "Current version"
 msgstr "Nuvarande version"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanager.py:662
+#: ../usr/lib/solydxk/updatemanager/updatemanager.py:682
 msgid "New version"
 msgstr "Ny version"
 
@@ -370,7 +358,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:409
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:413
 #: ../usr/lib/solydxk/updatemanager/main.py:83
 msgid "Please enter your password"
 msgstr "Ange ditt lösenord."
@@ -423,43 +411,43 @@ msgstr "Uppdateringsverktyget"
 msgid "Update Manager Tray"
 msgstr "Uppdateringsverktyget"
 
-#: en/notfound.html+html.body.h1:13
+#: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
 msgstr ""
 
-#: en/notfound.html+html.body.p:14
+#: en/notfound.html+html.body.div.div.p:11
 msgid "We could not retrieve the current update information from our server."
 msgstr ""
 
-#: en/notfound.html+html.body.p:15
+#: en/notfound.html+html.body.div.div.p:12
 #, fuzzy
 msgid "Please, check your internet connection."
 msgstr "Ingen internetanslutning tillgänglig"
 
-#: en/notfound.html+html.body.p:16
+#: en/notfound.html+html.body.div.div.p:13
 msgid ""
 "If this problem persists, please visit our forum: <a href=\"http://forums."
 "solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 msgstr ""
 
-#: en/updates.html+html.body.h1:13
+#: en/updates.html+html.body.h1:8
 #, fuzzy
 #| msgid "There are updates available"
 msgid "Updates available"
 msgstr "Följande uppdateringar finns tillgängliga:"
 
-#: en/updates.html+html.body.p:14
+#: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
 "our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
 "forums.solydxk.com</a>."
 msgstr ""
 
-#: en/uptodate.html+html.body.h1:13
+#: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
 msgstr ""
 
-#: en/uptodate.html+html.body.p:14
+#: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
 "forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
