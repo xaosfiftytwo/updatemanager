@@ -13,7 +13,7 @@ updatemanager (2.8.2) solydxk; urgency=low
   * Added up-to-date info page
   * Make local html files translatable
   * Change some translatable strings that were not translated
-  * Pimp the local info pages
+  * Pimp the local info pages and server update page
 
  -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Fri, 18 Dec 2015 12:00:00 +0100
 
