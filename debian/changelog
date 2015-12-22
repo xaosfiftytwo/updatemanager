@@ -1,8 +1,8 @@
-updatemanager (2.8.2) solydxk; urgency=low
+updatemanager (2.8.4) solydxk; urgency=low
 
   * Better handling of kept back packages
   * Using Appindicator3 to show systray icon in EEs
-  * Removed left-click functionality
+  * Removed left-click functionality to equal Appindicator3
   * Quick update to right-click menu
   * New icons
   * Added icon legend to menu
@@ -14,8 +14,9 @@ updatemanager (2.8.2) solydxk; urgency=low
   * Make local html files translatable
   * Change some translatable strings that were not translated
   * Pimp the local info pages and server update page
+  * Make sure only single lines can be added to treeview
 
- -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Fri, 18 Dec 2015 12:00:00 +0100
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 19 Dec 2015 16:00:00 +0100
 
 updatemanager (2.7.2) solydxk; urgency=low
 

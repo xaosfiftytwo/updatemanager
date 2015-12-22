@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-18 19:13+0100\n"
-"PO-Revision-Date: 2015-12-18 11:14+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2015-12-21 16:10+0100\n"
+"PO-Revision-Date: 2015-12-21 12:37+0000\n"
+"Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/solydxk/updatemanager/"
 "language/pt/)\n"
 "Language: pt\n"
@@ -155,7 +155,7 @@ msgstr "Continuar a instalação?"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:337
 msgid "You might need to run this several times."
-msgstr "Você poderá ter de executar várias vezes."
+msgstr "Talvez seja necessário executar este procedimento várias vezes."
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:343
 msgid "Removing not available packages may break your system!"
@@ -400,29 +400,29 @@ msgstr "Gestor de Atualização Bandeja"
 
 #: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
-msgstr ""
+msgstr "Não foram encontradas informações sobre a atualização"
 
 #: en/notfound.html+html.body.div.div.p:11
 msgid "We could not retrieve the current update information from our server."
 msgstr ""
+"Nós não pôdemos recuperar as informações de atualização atual do nosso "
+"servidor."
 
 #: en/notfound.html+html.body.div.div.p:12
-#, fuzzy
-#| msgid "No internet connection"
 msgid "Please, check your internet connection."
-msgstr "Sem ligação à internet"
+msgstr "Por favor, verifique a sua ligação à Internet."
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
 "If this problem persists, please visit our forum: <a href=\"http://forums."
 "solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 msgstr ""
+"Se o problema persistir, por favor visite o nosso fórum: <a href=\"http://"
+"forums.solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 
 #: en/updates.html+html.body.h1:8
-#, fuzzy
-#| msgid "There are updates available"
 msgid "Updates available"
-msgstr "Existem atualizações disponíveis"
+msgstr "Atualizações disponíveis"
 
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
@@ -430,10 +430,13 @@ msgid ""
 "our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
 "forums.solydxk.com</a>."
 msgstr ""
+"Existem atualizações disponíveis.  Se você tiver quaisquer problemas, por "
+"favor visite o nosso fórum: <a href=\"http://forums.solydxk.com\" target="
+"\"_blank\">http://forums.solydxk.com</a>."
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
-msgstr ""
+msgstr "Atualizado"
 
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
@@ -441,3 +444,6 @@ msgid ""
 "forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
 "solydxk.com</a>."
 msgstr ""
+"O seu sistema está atualizado. Se você tiver quaisquer problemas, por favor "
+"visite o nosso fórum: <a href=\"http://forums.solydxk.com\" target=\"_blank"
+"\">http://forums.solydxk.com</a>."
