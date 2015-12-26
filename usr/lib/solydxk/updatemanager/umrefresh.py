@@ -21,7 +21,6 @@ class UmRefresh(object):
         self.ec = ExecCmd()
         self.indicator = indicator
         self.umglobal = umglobal
-        self.counter = 0
         self.quit = False
 
     def changeIcon(self, iconName, tooltip):
@@ -42,45 +41,48 @@ class UmRefresh(object):
             self.indicator.set_tooltip_text(tooltip)
 
     def refresh(self):
-        if not self.umglobal.isProcessRunning("updatemanager.py"):
-            for fle in glob(join(self.umglobal.filesDir, ".um*")):
-                remove(fle)
+        # Don't refresh if the apt cache is being refreshed
+        if not self.isAptExecuting():
+            if not self.umglobal.isProcessRunning("updatemanager.py"):
+                for fle in glob(join(self.umglobal.filesDir, ".um*")):
+                    remove(fle)
 
-        self.counter += 1
-        print(("> UmRefresh refresh count #: %d" % self.counter))
-
-        self.changeIcon("icon-execute", _("Refreshing..."))
-
-        self.umglobal.getLocalInfo()
-        if self.umglobal.repos:
-            if self.counter > 1:
-                self.umglobal.getServerInfo()
-            if self.umglobal.hasInternet:
-                # Check update status
-                if self.checkForUpdates():
-                    if self.umglobal.newUpd:
-                        self.umglobal.updatesText = _("New update: %s" % self.umglobal.serverUpdVersion)
-                        print((self.umglobal.updatesText))
-                        self.changeIcon("icon-updates", self.umglobal.updatesText)
+            self.umglobal.getLocalInfo()
+            if self.umglobal.repos:
+                if self.umglobal.hasInternet:
+                    # Check update status
+                    if self.checkForUpdates():
+                        if self.umglobal.newUpd:
+                            self.umglobal.updatesText = _("New update: %s" % self.umglobal.serverUpdVersion)
+                            print((self.umglobal.updatesText))
+                            self.changeIcon("icon-updates", self.umglobal.updatesText)
+                        else:
+                            self.umglobal.updatesText = _("There are updates available")
+                            print((self.umglobal.updatesText))
+                            self.changeIcon("icon-updates", self.umglobal.updatesText)
                     else:
-                        self.umglobal.updatesText = _("There are updates available")
-                        print((self.umglobal.updatesText))
-                        self.changeIcon("icon-updates", self.umglobal.updatesText)
+                        print((self.umglobal.connectedText))
+                        self.changeIcon("icon-connected", self.umglobal.connectedText)
                 else:
-                    print((self.umglobal.connectedText))
-                    self.changeIcon("icon-connected", self.umglobal.connectedText)
+                    print((self.umglobal.disconnectedText))
+                    self.changeIcon("icon-disconnected", self.umglobal.disconnectedText)
+                    # Check every 30 seconds if there is a connection
+                    GObject.timeout_add_seconds(30, self.refresh)
+                    self.umglobal.getServerInfo()
+                    return True
             else:
-                print((self.umglobal.disconnectedText))
-                self.changeIcon("icon-disconnected", self.umglobal.disconnectedText)
-                # Check every 30 seconds if there is a connection
-                GObject.timeout_add_seconds(30, self.refresh)
-                return True
-        else:
-            self.umglobal.errorText = _("Unable to retrieve sources information")
-            print((self.umglobal.errorText))
-            self.changeIcon("icon-error", self.umglobal.errorText)
+                self.umglobal.errorText = _("Unable to retrieve sources information")
+                print((self.umglobal.errorText))
+                self.changeIcon("icon-error", self.umglobal.errorText)
 
-        print("Done refreshing")
+            print("Done refreshing")
+
+    def isAptExecuting(self):
+        procLst = self.ec.run("ps -U root -u root -o comm=", False)
+        for aptProc in self.umglobal.settings["apt-packages"]:
+            if aptProc in procLst:
+                return True
+        return False
 
     def checkForUpdates(self):
         # Get updateable packages which are not held back

@@ -4,7 +4,7 @@ import re
 from config import Config
 import os
 from os.path import join, abspath, dirname, exists, basename
-from urllib.request import urlopen
+from urllib.request import urlopen, URLError
 from datetime import date
 from execcmd import ExecCmd
 
@@ -27,16 +27,13 @@ class UmGlobal(object):
         self.cfg = Config(join(self.filesDir, 'updatemanager.conf'))
         self.title = _("Update Manager")
         self.status = None
-        self.isKf5 = self.isProcessRunning("kf5")
+        self.isKf5 = False
 
         # Autostart
         self.autostartDir = '/etc/xdg/autostart'
         self.autostartFile = 'updatemanagertray.desktop'
         self.autostartSourceFile = join(self.filesDir, self.autostartFile)
         self.autostartDestFile = join(self.autostartDir, self.autostartFile)
-
-        # Get the settings
-        self.settings = self.getSettings()
 
         self.umfiles = {}
         self.umfiles['umupd'] = join(self.filesDir, ".umupd")
@@ -60,12 +57,17 @@ class UmGlobal(object):
         self.repos = []
 
         # Set global variables
-        self.umfilesUrl = self.getUmFilesUrl()
         if collectData:
             self.collectData()
 
     def collectData(self):
+        # Get the settings
+        self.settings = self.getSettings()
+        # Check if KDE5 is running
+        self.isKf5 = self.isProcessRunning("kf5")
+        # Collect local information
         self.getLocalInfo()
+        # Collect server information
         self.getServerInfo()
 
     def getServerInfo(self):
@@ -73,32 +75,32 @@ class UmGlobal(object):
         self.serverUpdVersion = None
         self.hasInternet = False
 
-        if self.umfilesUrl is not None:
-            url = "%s/%s" % (self.umfilesUrl, self.settings['repo-info'])
-            try:
-                cont = urlopen(url, timeout=self.settings["timeout-secs"])
-                self.hasInternet = True
-                for line in cont.readlines():
-                    # urlopen returns bytes, need to convert to str
-                    line = line.decode('utf-8').strip()
-                    elements = line.split("=")
-                    parameter = elements[0].strip()
-                    value = elements[1].strip()
-                    if len(value) > 0:
-                        # Write the parameter, and the value if no hist file exist: assume clean install
-                        self.writeNonExistingHist(parameter)
-                        if parameter == "upd":
-                            self.serverUpdVersion = value
+        url = "%s/%s/%s" % (self.settings['solydxk'], self.settings["umfilesdir"], self.settings['repo-info'])
+        cont = None
+        try:
+            cont = urlopen(url, timeout=10)
+            self.hasInternet = True
+        except URLError:
+            pass
 
-                cont.close()
+        if self.hasInternet:
+            for line in cont.readlines():
+                # urlopen returns bytes, need to convert to str
+                line = line.decode('utf-8').strip()
+                elements = line.split("=")
+                parameter = elements[0].strip()
+                value = elements[1].strip()
+                if len(value) > 0:
+                    # Write the parameter, and the value if no hist file exist: assume clean install
+                    self.writeNonExistingHist(parameter)
+                    if parameter == "upd":
+                        self.serverUpdVersion = value
 
-                # Check for new versions
-                if self.serverUpdVersion is not None:
-                    self.newUpd = self.isNewServerVersion(self.serverUpdVersion, self.localUpdVersion)
+            cont.close()
 
-            except Exception as detail:
-                print(("There is no internet connection: %s" % detail))
-                self.hasInternet = False
+            # Check for new versions
+            if self.serverUpdVersion is not None:
+                self.newUpd = self.isNewServerVersion(self.serverUpdVersion, self.localUpdVersion)
 
     def writeNonExistingHist(self, parameter):
         upHistFile = join(self.filesDir, self.settings['hist'])
@@ -237,14 +239,6 @@ class UmGlobal(object):
                         mirrorData.append(data)
         return mirrorData
 
-    def getUmFilesUrl(self):
-        if self.localUpdVersion is None:
-            self.getLocalInfo()
-
-        xkUrl = self.settings['solydxk']
-        url = "%s/%s" % (xkUrl, self.settings["umfilesdir"])
-        return url
-
     def getSettings(self):
         settings = {}
 
@@ -299,14 +293,11 @@ class UmGlobal(object):
         try:
             settings["mirrors-list"] = self.cfg.getValue(section, 'mirrors-list')
             settings["dl-test"] = self.cfg.getValue(section, 'dl-test')
-            settings["timeout-secs"] = int(self.cfg.getValue(section, 'timeout-secs'))
         except:
             settings["mirrors-list"] = 'http://repository.solydxk.com/mirrors.list'
             settings["dl-test"] = 'README.mirrors.html'
-            settings["timeout-secs"] = 10
             self.saveSettings(section, 'mirrors-list', settings["mirrors-list"])
             self.saveSettings(section, 'dl-test', settings["dl-test"])
-            self.saveSettings(section, 'timeout-secs', settings["timeout-secs"])
 
         section = 'icons'
         try:

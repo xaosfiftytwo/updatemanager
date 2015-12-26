@@ -18,7 +18,7 @@ from dialogs import WarningDialog, ErrorDialog
 gettext.install("updatemanager", "/usr/share/locale")
 _ = gettext.gettext
 
-umglobal = UmGlobal()
+umglobal = UmGlobal(False)
 scriptDir = abspath(dirname(__file__))
 filesDir = join(scriptDir, "files")
 
