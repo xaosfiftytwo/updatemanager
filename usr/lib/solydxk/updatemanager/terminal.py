@@ -5,7 +5,7 @@
 # Make sure the right Gtk and Vte version is loaded
 import gi
 gi.require_version('Gtk', '3.0')
-gi.require_version('Vte', '2.90')
+gi.require_version('Vte', '2.91')
 
 import os
 from gi.repository import Vte, Gdk, GObject, Gtk, GLib
@@ -61,7 +61,7 @@ class VirtualTerminal(Vte.Terminal):
         if not userInputAllowed:
             self.set_can_focus(False)
 
-        #self.connect_after('eof', self.on_command_done)
+        self.connect_after('eof', self.on_command_done)
         self.connect_after('child-exited', self.on_command_done)
         self.connect('event', self.on_event)
         self.connect_after("popup-menu", self.on_popup_menu)
@@ -104,6 +104,15 @@ class VirtualTerminal(Vte.Terminal):
                     Gdk.threads_enter()
                     self.emit('line-added', self.lastLine)
                     Gdk.threads_leave()
+
+                    # Theory says: don't use Gdk.threads_enter / threads_leave:
+                    # https://wiki.gnome.org/Projects/PyGObject/Threading
+                    # Unfortunately, Gtk+ is not thread safe and crashes with:
+                    # gtk_text_attributes_ref: assertion 'values != NULL' failed
+                    #thread = threading.Thread(target=self.emit, args=('line-added', self.lastLine,))
+                    #thread.daemon = True
+                    #thread.start()
+
                     break
 
     def executeCommand(self, command_string, id_name):
@@ -146,12 +155,18 @@ class VirtualTerminal(Vte.Terminal):
                                            None)[1]
 
     def on_command_done(self, status=None, user_data=None):
-        Gdk.threads_enter()
-        self.emit('command-done', self.pid, self.nid)
-        Gdk.threads_leave()
-        '''When called this function sets the pid to None, allowing
-        the executeCommand function to exit'''
-        self.pid = None
+        if self.pid is not None:
+            Gdk.threads_enter()
+            self.emit('command-done', self.pid, self.nid)
+            Gdk.threads_leave()
+
+            #thread = threading.Thread(target=self.emit, args=('command-done', self.pid, self.nid,))
+            #thread.daemon = True
+            #thread.start()
+
+            '''When called this function sets the pid to None, allowing
+            the executeCommand function to exit'''
+            self.pid = None
 
     def on_popup_menu(self, terminal, event=None):
         # Display contextual menu on right-click

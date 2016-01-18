@@ -6,10 +6,6 @@
 import pyinotify
 from gi.repository import GObject
 
-# Need to initiate threads for Gtk,
-# or else EventHandler will not get called from ThreadedNotifier
-GObject.threads_init()
-
 # i18n: http://docs.python.org/3/library/gettext.html
 import gettext
 from gettext import gettext as _

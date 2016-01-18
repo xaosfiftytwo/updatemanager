@@ -29,7 +29,7 @@ class MirrorGetSpeed(threading.Thread):
                 httpCode = -1
                 dlSpeed = 0
                 url = "%s/%s" % (mirror, self.umglobal.settings["dl-test"])
-                cmd = "curl --connect-timeout %d -m %d -w '%%{http_code}\n%%{speed_download}\n' -o /dev/null -s http://%s" % (int(self.umglobal.settings["timeout-secs"] / 2), self.umglobal.settings["timeout-secs"], url)
+                cmd = "curl --connect-timeout 5 -m 5 -w '%%{http_code}\n%%{speed_download}\n' -o /dev/null -s http://%s" % url
 
                 lst = self.ec.run(cmd, False)
                 if lst:

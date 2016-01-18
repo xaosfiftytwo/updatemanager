@@ -29,7 +29,9 @@ import gettext
 from gettext import gettext as _
 gettext.textdomain('updatemanager')
 
-# Need to initiate threads for Gtk
+# Calling GObject.threads_init() is not needed for PyGObject 3.10.2+
+# Check with print (sys.version)
+# Debian Jessie: 3.4.2
 GObject.threads_init()
 
 
@@ -65,7 +67,7 @@ class UpdateManager(object):
         args, extra = parser.parse_known_args()
 
         self.quickUpdate = False
-        if args.quick:
+        if args.quick and not self.umglobal.newUpd:
             self.quickUpdate = True
         if args.reload:
             pids = self.umglobal.getProcessPids("updatemanager.py")
@@ -299,7 +301,6 @@ class UpdateManager(object):
 
         else:
             if not self.quickUpdate:
-                print(("> run_upgrade"))
                 MessageDialog(self.btnInstall.get_label(), self.uptodateText)
 
         return nid
@@ -534,7 +535,6 @@ class UpdateManager(object):
 
     def on_command_done(self, terminal, pid, nid):
         if nid != "init":
-            print(("> on_command_done"))
             self.log.write("Command finished (pid=%s, nid=%s)" % (pid, nid), "UM.on_command_done", "info")
             if nid == "uminstallum":
                 # Reload UM
@@ -552,14 +552,12 @@ class UpdateManager(object):
                     cmd = join(self.umglobal.scriptDir, "updatemanager.py -q")
                 self.umglobal.reloadWindow(cmd, self.user)
                 self.log.write("UM updated: reload {0} as user {1}".format(cmd, self.user), "UM.on_command_done", "debug")
-
-            if nid == "umrefresh":
+            elif nid == "umrefresh":
                 # Build installed packages info list
                 self.apt.createPackagesInfoList()
                 # Run post update when needed
                 self.postUpdate()
-
-            if nid == "ummaintenance":
+            elif nid == "ummaintenance":
                 self.enableMaintenance(True)
                 self.fillTreeViewMaintenance()
                 self.btnInstall.set_sensitive(True)
@@ -567,25 +565,26 @@ class UpdateManager(object):
                 self.btnPackages.set_sensitive(True)
                 self.btnMaintenance.set_sensitive(True)
                 self.showMaintenance()
-            else:
-                if nid == 'umupd':
-                    # Save update version in hist file
-                    self.umglobal.saveHistVersion("upd", self.umglobal.serverUpdVersion)
-                    self.log.write("Save history upd=%s" % self.umglobal.serverUpdVersion, "UM.on_btnInstall_clicked", "debug")
-                    self.deleteScripts()
+            elif nid == 'umupd':
+                # Save update version in hist file
+                self.umglobal.saveHistVersion("upd", self.umglobal.serverUpdVersion)
+                self.log.write("Save history upd=%s" % self.umglobal.serverUpdVersion, "UM.on_command_done", "debug")
+                self.deleteScripts()
 
-                # Refresh data after install or update
-                self.umglobal.collectData()
-                self.apt.createPackageLists()
-                self.fillTreeView()
+            # Refresh data after install or update
+            self.umglobal.collectData()
+            self.apt.createPackageLists()
+            self.fillTreeView()
 
-                if not self.quickUpdate:
-                    self.btnInstall.set_sensitive(True)
-                    self.btnRefresh.set_sensitive(True)
-                    self.btnPackages.set_sensitive(True)
-                    self.btnMaintenance.set_sensitive(True)
-                    self.btnInfo.set_sensitive(True)
-                    self.loadInfo()
+            # Enable the buttons and load the info page
+            self.log.write("Re-initiate window after terminal command: %s" % str(not self.quickUpdate), "UM.on_command_done", "debug")
+            if not self.quickUpdate:
+                self.btnInstall.set_sensitive(True)
+                self.btnRefresh.set_sensitive(True)
+                self.btnPackages.set_sensitive(True)
+                self.btnMaintenance.set_sensitive(True)
+                self.btnInfo.set_sensitive(True)
+                self.loadInfo()
 
                 if self.umglobal.newUpd:
                     self.showInfo()
@@ -596,12 +595,11 @@ class UpdateManager(object):
                         #MessageDialog(self.aptErrorText, aptHasErrors)
                     #el
                     if self.upgradables:
-                        if not self.quickUpdate:
-                            self.showPackages()
+                        self.showPackages()
                     else:
-                        if not self.quickUpdate:
-                            self.showInfo()
-                            MessageDialog(self.btnInfo.get_label(), self.uptodateText)
+                        self.showInfo()
+                        MessageDialog(self.btnInfo.get_label(), self.uptodateText)
+                self.log.write("Re-initiate window complete", "UM.on_command_done", "debug")
 
             # Cleanup name file(s)
             for fle in glob(join(self.umglobal.filesDir, '.um*')):
@@ -645,7 +643,6 @@ class UpdateManager(object):
             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.refresh", "debug")
         else:
             # No internet connection
-            print(("> No internet connection"))
             self.btnInstall.set_sensitive(True)
             self.btnRefresh.set_sensitive(True)
             self.btnPackages.set_sensitive(True)
@@ -754,7 +751,7 @@ class UpdateManager(object):
             flePath = join(self.umglobal.filesDir, fle)
             if not exists(flePath):
                 # Get the new scripts if they exist
-                url = join(self.umglobal.umfilesUrl, fle)
+                url = "%s/%s/%s" % (self.umglobal.settings['solydxk'], self.umglobal.settings["umfilesdir"], fle)
                 try:
                     txt = urlopen(url).read().decode('utf-8')
                     if txt != '':
@@ -770,10 +767,10 @@ class UpdateManager(object):
         languageDir = self.get_language_dir()
         url = join("file://%s" % languageDir, self.umglobal.settings['up-to-date'])
         self.btnInfo.set_icon_name("help-about")
-        if self.umglobal.newUpd:
-            url = "%s/%s" % (self.umglobal.umfilesUrl, self.umglobal.settings['upd-info'])
-        elif self.upgradables:
+        if self.upgradables:
             url = join("file://%s" % languageDir, self.umglobal.settings['updates'])
+            if self.umglobal.newUpd:
+                url = "%s/%s/%s" % (self.umglobal.settings['solydxk'], self.umglobal.settings["umfilesdir"], self.umglobal.settings['upd-info'])
         elif self.umglobal.serverUpdVersion is None:
             url = join("file://%s" % languageDir, self.umglobal.settings['not-found'])
 

@@ -24,7 +24,9 @@ import gettext
 from gettext import gettext as _
 gettext.textdomain('updatemanager')
 
-# Need to initiate threads for Gtk
+# Calling GObject.threads_init() is not needed for PyGObject 3.10.2+
+# Check with print (sys.version)
+# Debian Jessie: 3.4.2
 GObject.threads_init()
 
 

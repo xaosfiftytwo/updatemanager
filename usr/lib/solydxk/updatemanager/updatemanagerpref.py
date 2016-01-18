@@ -12,7 +12,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 # from gi.repository import Gtk, GdkPixbuf, GObject, Pango, Gdk
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GObject
 import argparse
 import os
 from shutil import copy
@@ -293,7 +293,7 @@ class UpdateManagerPref(object):
         t.daemon = True
         t.start()
         self.queue.join()
-        GLib.timeout_add(5, self.checkThread, name)
+        GObject.timeout_add(5, self.checkThread, name)
 
     def checkThread(self, name):
         if self.threads[name].is_alive():

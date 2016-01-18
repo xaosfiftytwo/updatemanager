@@ -1,3 +1,15 @@
+updatemanager (2.8.8) solydxk; urgency=low
+
+  * Updated translations
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 18 Jan 2016 18:00:00 +0100
+
+updatemanager (2.8.7) solydxk; urgency=low
+
+  * Resolve bug mirror speed test crashing
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 04 Jan 2015 08:00:00 +0100
+
 updatemanager (2.8.5) solydxk; urgency=low
 
   * Resolve bug showing updates available while apt cache is refreshing

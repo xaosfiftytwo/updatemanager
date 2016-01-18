@@ -61,6 +61,7 @@ class Logger():
     # Write message
     def write(self, message, loggerName='log', logLevel='debug', showErrorDialog=True):
         message = str(message).strip()
+        print((message))
         if message != '':
             logLevel = logLevel.lower()
             myLogger = logging.getLogger(loggerName)
@@ -91,6 +92,7 @@ class Logger():
     # Return messge to given object
     def rtobjectWrite(self, message):
         if self.rtobject is not None and self.typeString != '':
+            print((message))
             if 'label' in self.typeString.lower():
                 self.rtobject.set_text(message)
             elif 'treeview' in self.typeString.lower():
@@ -113,6 +115,7 @@ class Logger():
 
     def pushMessage(self, message):
         if message is not None:
+            print((message))
             context = self.rtobject.get_context_id('message')
             self.rtobject.push(context, message)
 

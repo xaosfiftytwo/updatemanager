@@ -1,5 +1,8 @@
 #! /usr/bin/env python3
 
+# Reference: http://webkitgtk.org/reference/webkitgtk/stable/webkitgtk-webkitwebview.html
+#            http://webkitgtk.org/reference/webkitgtk/stable/WebKitWebSettings.html
+
 import gi
 gi.require_version('WebKit', '3.0')
 from gi.repository import WebKit
@@ -15,6 +18,13 @@ class SimpleBrowser(WebKit.WebView):
         # listen for clicks of links
         self.connect("new-window-policy-decision-requested", self.on_nav_request)
         self.connect("button-press-event", lambda w, e: e.button == 3)
+
+        # Every file:// will have its own security unique domain
+        s = self.get_settings()
+        s.set_property('enable-file-access-from-file-uris', True)
+
+        # Disable right click events
+        s.set_property('enable-default-context-menu', False)
 
         if url is not None:
             matchObj = re.search("\:\/\/", url)

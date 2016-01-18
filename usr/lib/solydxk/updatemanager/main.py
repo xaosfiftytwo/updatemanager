@@ -68,9 +68,10 @@ def uncaught_excepthook(*args):
             pdb.pm()
     else:
         import traceback
-        ErrorDialog(_('Unexpected error'),
-                    "<b>{}</b>".format(_('Updatemanager has failed with the following unexpected error. Please submit a bug report!')),
-                    '<tt>' + '\n'.join(traceback.format_exception(*args)) + '</tt>', None, None, True, 'update-manager')
+        details = '\n'.join(traceback.format_exception(*args)).replace('<', '').replace('>', '')
+        title = _('Unexpected error')
+        msg = _('Updatemanager has failed with the following unexpected error. Please submit a bug report!')
+        ErrorDialog(title, "<b>%s</b>" % msg, "<tt>%s</tt>" % details, None, True, 'update-manager')
 
     sys.exit(1)
 

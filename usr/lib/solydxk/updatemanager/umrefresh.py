@@ -11,9 +11,6 @@ import gettext
 from gettext import gettext as _
 gettext.textdomain('updatemanager')
 
-# Need to initiate threads for Gtk
-GObject.threads_init()
-
 
 class UmRefresh(object):
 
@@ -26,7 +23,7 @@ class UmRefresh(object):
     def changeIcon(self, iconName, tooltip):
         if self.umglobal.isKf5:
             # Use this for KDE5
-            print(("> icon: {}, tooltip: {}".format(iconName, tooltip)))
+            #print(("> icon: {}, tooltip: {}".format(iconName, tooltip)))
             # tooltop is not showing
             self.indicator.set_icon_full(self.umglobal.settings[iconName], tooltip)
             # Attention icon is not doing anything
@@ -36,7 +33,7 @@ class UmRefresh(object):
         else:
             # Use this for KDE4
             iconPath = join(self.umglobal.iconsDir, self.umglobal.settings[iconName])
-            print(("> icon: {}, tooltip: {}".format(iconPath, tooltip)))
+            #print(("> icon: {}, tooltip: {}".format(iconPath, tooltip)))
             self.indicator.set_from_file(iconPath)
             self.indicator.set_tooltip_text(tooltip)
 
