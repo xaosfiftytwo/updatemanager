@@ -1,16 +1,12 @@
 #! /usr/bin/env python3
 
-# Make sure the right Gtk version is loaded
-import gi
-gi.require_version('Gtk', '3.0')
-
 import os
 import pwd
 import logging
 import re
+import sys
 from shutil import move
-from gi.repository import Gtk
-from dialogs import MessageDialog
+from dialogs import ErrorDialog
 from treeview import TreeViewHandler
 
 
@@ -61,7 +57,6 @@ class Logger():
     # Write message
     def write(self, message, loggerName='log', logLevel='debug', showErrorDialog=True):
         message = str(message).strip()
-        print((message))
         if message != '':
             logLevel = logLevel.lower()
             myLogger = logging.getLogger(loggerName)
@@ -77,22 +72,23 @@ class Logger():
                 myLogger.error(message)
                 self.rtobjectWrite(message)
                 if showErrorDialog:
-                    MessageDialog('Error', message, Gtk.MessageType.ERROR, None, self.parent)
+                    ErrorDialog('Error', message)
             elif logLevel == 'critical':
                 myLogger.critical(message)
                 self.rtobjectWrite(message)
                 if showErrorDialog:
-                    MessageDialog('Critical', message, Gtk.MessageType.ERROR, None, self.parent)
+                    ErrorDialog('Critical', message)
             elif logLevel == 'exception':
                 myLogger.exception(message)
                 self.rtobjectWrite(message)
                 if showErrorDialog:
-                    MessageDialog('Exception', message, Gtk.MessageType.ERROR, None, self.parent)
+                    ErrorDialog('Exception', message)
+            # Flush now
+            sys.stdout.flush()
 
     # Return messge to given object
     def rtobjectWrite(self, message):
         if self.rtobject is not None and self.typeString != '':
-            print((message))
             if 'label' in self.typeString.lower():
                 self.rtobject.set_text(message)
             elif 'treeview' in self.typeString.lower():
@@ -115,7 +111,6 @@ class Logger():
 
     def pushMessage(self, message):
         if message is not None:
-            print((message))
             context = self.rtobject.get_context_id('message')
             self.rtobject.push(context, message)
 

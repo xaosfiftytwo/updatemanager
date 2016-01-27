@@ -83,15 +83,21 @@ class UmRefresh(object):
 
     def checkForUpdates(self):
         # Get updateable packages which are not held back
-        cmd = "env LANG=C aptitude search '~U' | awk '{print $2}'"
-        updateables = self.ec.run(cmd=cmd, realTime=False)
+        #cmd = "env LANG=C aptitude search '~U'"
+        cmd = "env LANG=C apt list --upgradable"
+        output = self.ec.run(cmd=cmd, realTime=False)
 
-        if updateables:
+        upgradables = []
+        for line in output:
+            if '/' in line and 'upgradable' in line:
+                upgradables.append(line.split('/')[0])
+
+        if upgradables:
             # Get packages that were kept back by the user
             cmd = "env LANG=C dpkg --get-selections | grep hold$ | awk '{print $1}'"
             keptbacks = self.ec.run(cmd=cmd, realTime=False)
             if keptbacks:
-                for upd in updateables:
+                for upd in upgradables:
                     if upd not in keptbacks:
                         return True
             else:

@@ -4,14 +4,14 @@
 #
 # Translators:
 # Arjen Balfoort <schoelje@solydxk.com>, 2015
-# BALLOON a.k.a. Fu-sen., 2015
+# BALLOON a.k.a. Fu-sen., 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-18 20:57+0100\n"
-"PO-Revision-Date: 2016-01-18 10:26+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2016-01-26 12:34+0100\n"
+"PO-Revision-Date: 2016-01-26 02:10+0000\n"
+"Last-Translator: BALLOON a.k.a. Fu-sen.\n"
 "Language-Team: Japanese (http://www.transifex.com/solydxk/updatemanager/"
 "language/ja/)\n"
 "Language: ja\n"
@@ -394,29 +394,27 @@ msgstr "アップデートマネージャートレイ"
 
 #: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
-msgstr ""
+msgstr "更新情報は見つかりませんでした"
 
 #: en/notfound.html+html.body.div.div.p:11
 msgid "We could not retrieve the current update information from our server."
-msgstr ""
+msgstr "サーバーから現在の更新情報を取得できませんでした。"
 
 #: en/notfound.html+html.body.div.div.p:12
-#, fuzzy
-#| msgid "No internet connection"
 msgid "Please, check your internet connection."
-msgstr "インターネットに接続できません"
+msgstr "インターネット接続を確認して下さい。"
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
 "If this problem persists, please visit our forum: <a href=\"http://forums."
 "solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 msgstr ""
+"問題が解決しない場合は、フォーラムをご参照ください。 <a href=\"http://forums."
+"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>"
 
 #: en/updates.html+html.body.h1:8
-#, fuzzy
-#| msgid "There are updates available"
 msgid "Updates available"
-msgstr "利用できるアップデートが存在します"
+msgstr "利用可能なアップデート"
 
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
@@ -424,10 +422,13 @@ msgid ""
 "our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
 "forums.solydxk.com</a>."
 msgstr ""
+"利用可能なアップデートがあります。問題が発生した場合は、フォーラムをご参照下"
+"さい。 <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>"
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
-msgstr ""
+msgstr "最新状態"
 
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
@@ -435,6 +436,6 @@ msgid ""
 "forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
 "solydxk.com</a>."
 msgstr ""
-
-#~ msgid "Refreshing..."
-#~ msgstr "更新中..."
+"ご利用のシステムは最新の状態です。問題が発生した場合はフォーラムをご参照くだ"
+"さい。 <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>"
