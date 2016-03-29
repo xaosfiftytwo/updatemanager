@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-26 12:34+0100\n"
+"POT-Creation-Date: 2016-03-29 14:43+0200\n"
 "PO-Revision-Date: 2015-10-22 05:34+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Northern Sami (http://www.transifex.com/solydxk/updatemanager/"
@@ -310,7 +310,7 @@ msgstr "URL"
 msgid "Speed"
 msgstr "Hastighet"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:375
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:372
 msgid "The new settings will take effect after UM restart."
 msgstr ""
 "De nya inställningarna träder i kraft efter en omstart av "

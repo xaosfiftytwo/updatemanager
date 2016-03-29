@@ -4,14 +4,14 @@
 #
 # Translators:
 # Arjen Balfoort <schoelje@solydxk.com>, 2015
-# Eduard Selma <selma@tinet.cat>, 2015
+# Eduard Selma <selma@tinet.cat>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-26 12:34+0100\n"
-"PO-Revision-Date: 2016-01-19 10:17+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2016-03-29 14:43+0200\n"
+"PO-Revision-Date: 2016-03-22 15:59+0000\n"
+"Last-Translator: Eduard Selma <selma@tinet.cat>\n"
 "Language-Team: Catalan (http://www.transifex.com/solydxk/updatemanager/"
 "language/ca/)\n"
 "Language: ca\n"
@@ -298,7 +298,7 @@ msgstr "URL "
 msgid "Speed"
 msgstr "Velocitat "
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:375
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:372
 msgid "The new settings will take effect after UM restart."
 msgstr "Els nous paràmetres s'activaran en tornar a engegar. "
 
@@ -394,29 +394,29 @@ msgstr "Safata del Gestor d'Actualitzacions "
 
 #: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
-msgstr ""
+msgstr "No trobo la informació d'actualització "
 
 #: en/notfound.html+html.body.div.div.p:11
 msgid "We could not retrieve the current update information from our server."
 msgstr ""
+"No s'ha pogut recuperar la informació d'actualització del nostre servidor. "
 
 #: en/notfound.html+html.body.div.div.p:12
-#, fuzzy
-#| msgid "No internet connection"
 msgid "Please, check your internet connection."
-msgstr "Sense connexió a internet "
+msgstr "Si us plau, comproveu la connexió a internet. "
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
 "If this problem persists, please visit our forum: <a href=\"http://forums."
 "solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
 msgstr ""
+"Si el problema persisteix, si us plau visiteu el nostre fòrum: <a href="
+"\"http://forums.solydxk.com\" target=\"_blank\">http://forums.solydxk.com</"
+"a>."
 
 #: en/updates.html+html.body.h1:8
-#, fuzzy
-#| msgid "There are updates available"
 msgid "Updates available"
-msgstr "Hi ha actualitzacions disponibles "
+msgstr "Hi ha actualitzacions "
 
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
@@ -424,10 +424,13 @@ msgid ""
 "our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
 "forums.solydxk.com</a>."
 msgstr ""
+"Hi ha actualitzacions. Si teniu algun problema, si us plau visiteu el nostre "
+"fòrum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
+"solydxk.com</a>."
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
-msgstr ""
+msgstr "Actualitzat "
 
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
@@ -435,3 +438,6 @@ msgid ""
 "forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
 "solydxk.com</a>."
 msgstr ""
+"El vostre sistema està actualitzat. Si teniu algun problema, si us plau "
+"visiteu el nostre fòrum: <a href=\"http://forums.solydxk.com\" target="
+"\"_blank\">http://forums.solydxk.com</a>."

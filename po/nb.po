@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-26 12:34+0100\n"
-"PO-Revision-Date: 2016-01-19 10:17+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2016-03-29 14:43+0200\n"
+"PO-Revision-Date: 2016-01-29 11:49+0000\n"
+"Last-Translator: Anders Dalen <anders@andersdalen.no>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/solydxk/"
 "updatemanager/language/nb/)\n"
 "Language: nb\n"
@@ -300,7 +300,7 @@ msgstr "URL"
 msgid "Speed"
 msgstr "Hastighet"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:375
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:372
 msgid "The new settings will take effect after UM restart."
 msgstr "De nye innstillingene vil tre i kraft når programmet restartes."
 
@@ -372,7 +372,7 @@ msgstr "Avslutt"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:83
 msgid "Quick Update"
-msgstr "Avslutt Oppdatering"
+msgstr "Hurtigoppdatering"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:91
 msgid "Legend"

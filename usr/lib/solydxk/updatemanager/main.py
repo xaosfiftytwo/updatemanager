@@ -123,7 +123,7 @@ msg = _("Update Manager cannot be started in a live environment\n"
 
 if args.pref:
     if isRunningLive() and not args.force:
-        WarningDialog(self.umglobal.title, msg, None, None, True, 'update-manager')
+        WarningDialog(umglobal.title, msg, None, None, True, 'update-manager')
     else:
         if umglobal.isProcessRunning("updatemanagerpref.py"):
             print(("updatemanagerpref.py already running - exiting"))
@@ -143,7 +143,7 @@ else:
             os.system(cmd)
     if not args.tray:
         if isRunningLive() and not args.force:
-            WarningDialog(self.umglobal.title, msg, None, None, True, 'update-manager')
+            WarningDialog(umglobal.title, msg, None, None, True, 'update-manager')
         else:
             if umglobal.isProcessRunning("updatemanager.py"):
                 print(("updatemanager.py already running - exiting"))

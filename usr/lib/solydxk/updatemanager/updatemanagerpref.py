@@ -271,9 +271,6 @@ class UpdateManagerPref(object):
     def isUrlInSources(self, url):
         blnRet = False
 
-        # Change old URL
-        url = url.replace("packages.solydxk.com", "home.solydxk.com")
-
         for repo in self.umglobal.repos:
             if url in repo:
                 blnRet = True
