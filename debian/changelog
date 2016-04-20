@@ -1,3 +1,22 @@
+updatemanager (2.9.5) solydxk; urgency=low
+
+  * Better catch urlopen timout errors
+  * Add new repository if selected and none was present in sources.list
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Tue, 19 Apr 2016 12:03:13 +0200
+
+updatemanager (2.9.4) solydxk; urgency=low
+
+  * Fix dependency error
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Mon, 18 Apr 2016 17:20:02 +0200
+
+updatemanager (2.9.3) solydxk; urgency=low
+
+  * Fixed Quick Update not refreshing apt cache before upgrading
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Fri, 15 Apr 2016 19:44:00 +0200
+
 updatemanager (2.9.2) solydxk; urgency=low
 
   * Removed reference to self in main.py

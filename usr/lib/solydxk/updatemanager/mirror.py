@@ -5,6 +5,7 @@
 import os
 import threading
 import datetime
+import re
 from execcmd import ExecCmd
 
 
@@ -76,19 +77,47 @@ class Mirror():
                 srcList = []
                 with open(src, 'r') as f:
                     srcList = f.readlines()
+
+                # Get the suite of the Debian repositories
+                debian_suite = ''
+                matchObj = re.search("debian\.org\/debian/?\s+(\S*)", ' '.join(srcList))
+                if matchObj:
+                    debian_suite = matchObj.group(1).replace('-backports', '')
+                if debian_suite == '':
+                    distribution = self.umglobal.getDistribution()
+                    if 'ee' in distribution:
+                        debian_suite = 'testing'
+                    else:
+                        debian_suite = 'stable'
+
                 for line in srcList:
                     line = line.strip()
                     if not line.startswith('#'):
                         for repo in replaceRepos:
-                            if repo[0] in line:
+                            if repo[0] != '' and repo[0] in line:
                                 skip = False
                                 for excl in excludeStrings:
                                     if excl in line:
                                         skip = True
                                         break
                                 if not skip:
+                                    # Change repository url
                                     line = line.replace(repo[0], repo[1])
-                    new_repos.append(line)
+                                    break
+                    if line != '':
+                        new_repos.append(line)
+
+                for repo in replaceRepos:
+                    if repo[0] == '':
+                        # Check if repo is already present in new_repos (replacement)
+                        if not any(repo[1] in x for x in new_repos):
+                            line = ''
+                            if 'solydxk' in repo[1]:
+                                line = "deb http://%s solydxk main upstream import" % repo[1]
+                            elif 'debian.org/debian' in repo[1] and debian_suite != '':
+                                line = "deb http://%s %s main contrib non-free" % (repo[1], debian_suite)
+                            if line != '':
+                                new_repos.append(line)
 
                 if new_repos:
                     # Backup the current sources.list

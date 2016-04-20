@@ -4,7 +4,8 @@ import re
 from config import Config
 import os
 from os.path import join, abspath, dirname, exists, basename
-from urllib.request import urlopen, URLError
+from urllib.request import urlopen
+from urllib.error import URLError
 from datetime import date
 from execcmd import ExecCmd
 
@@ -79,11 +80,13 @@ class UmGlobal(object):
         cont = None
         try:
             cont = urlopen(url, timeout=10)
+        except URLError as e:
+            if hasattr(e, 'reason'):
+                print(("ERROR: unable to reach a server: %s" % e.reason))
+            elif hasattr(e, 'code'):
+                print(("ERROR: server could not fulfill the request: %s" % e.code))
+        else:
             self.hasInternet = True
-        except URLError:
-            pass
-
-        if self.hasInternet:
             for line in cont.readlines():
                 # urlopen returns bytes, need to convert to str
                 line = line.decode('utf-8').strip()
@@ -143,10 +146,13 @@ class UmGlobal(object):
             lines = f.readlines()
         for line in lines:
             line = line.strip()
-            matchObj = re.search("^deb\s*(http[:\/a-zA-Z0-9\.\-]*)", line)
+            matchObj = re.search("^deb\s+(https?:[\/a-zA-Z0-9\.\-]*).*", line)
             if matchObj:
+                line = matchObj.group(0)
                 repo = matchObj.group(1)
-                self.repos.append(repo)
+                # Do not add backports or security repositories
+                if not 'backport' in line and not 'security' in line:
+                    self.repos.append(repo)
 
         # Cleanup hist file first
         self.cleanupHist()
@@ -331,7 +337,6 @@ class UmGlobal(object):
             settings["umfilesdir"] = self.cfg.getValue(section, 'umfilesdir')
             settings["apt-packages"] = self.cfg.getValue(section, 'apt-packages').split(",")
             settings["hide-tabs"] = self.cfg.getValue(section, 'hide-tabs').split(",")
-            settings["um-dependencies"] = self.cfg.getValue(section, 'um-dependencies').split(",")
             settings["apt-get-string"] = self.cfg.getValue(section, 'apt-get-string')
             settings["autostart"] = True
             if not exists(self.autostartDestFile):
@@ -342,7 +347,6 @@ class UmGlobal(object):
             settings["umfilesdir"] = 'umfiles'
             settings["apt-packages"] = ["dpkg", "apt-get", "synaptic", "adept", "adept-notifier"]
             settings["hide-tabs"] = ["maintenance"]
-            settings["um-dependencies"] = ["gksu", "apt-show-versions", "deborphan", "apt", "curl", "python3-gi", "python-vte", "gir1.2-vte-2.90", "gir1.2-webkit-3.0", "python3", "gir1.2-gtk-3.0", "python3-pyinotify"]
             settings["apt-get-string"] = 'DEBIAN_FRONTEND=gnome apt-get --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes'
             settings["autostart"] = True
             if not exists(self.autostartDestFile):
@@ -352,7 +356,6 @@ class UmGlobal(object):
             self.saveSettings(section, 'umfilesdir', settings["umfilesdir"])
             self.saveSettings(section, 'apt-packages', ",".join(settings["apt-packages"]))
             self.saveSettings(section, 'hide-tabs', ",".join(settings["hide-tabs"]))
-            self.saveSettings(section, 'um-dependencies', ",".join(settings["um-dependencies"]))
             self.saveSettings(section, 'apt-get-string', settings["apt-get-string"])
 
         return settings
@@ -414,7 +417,7 @@ class UmGlobal(object):
             try:
                 os.execl(path, path, scriptPath, runAsUser)
             except OSError as err:
-                self.log.write("Reload UM: %s" % str(err), "UM.reloadWindow", "error")
+                print(("Reload UM: %s" % str(err)))
 
     def getKernelVersion(self):
         version = self.ec.run(cmd="uname -r", realTime=False)[0]

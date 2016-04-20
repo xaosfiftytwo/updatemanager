@@ -43,7 +43,10 @@ class ExecCmd(object):
                     self.log.write(line, 'execcmd.run', 'info')
                 else:
                     print(line)
-            sys.stdout.flush()
+            try:
+                sys.stdout.flush()
+            except:
+                pass
             while Gtk.events_pending():
                 Gtk.main_iteration()
 

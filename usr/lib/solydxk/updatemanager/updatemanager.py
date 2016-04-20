@@ -95,6 +95,7 @@ class UpdateManager(object):
         # Quick update
         if self.quickUpdate:
             # Refresh data
+            self.refresh()
             self.umglobal.collectData()
             self.apt.createPackagesInfoList()
             self.apt.createPackageLists()
@@ -269,7 +270,7 @@ class UpdateManager(object):
             contMsg = _("Continue installation?")
             if self.upgradableUM:
                 cmd = "%s install updatemanager" % self.umglobal.settings['apt-get-string']
-                cmd += "; %s install %s" % (self.umglobal.settings['apt-get-string'], " ".join(self.umglobal.settings["um-dependencies"]))
+                cmd += "; %s install %s" % (self.umglobal.settings['apt-get-string'], " ".join(self.apt.getPackageDependencies('updatemanager')))
                 nid = 'uminstallum'
                 self.prepForCommand(nid)
                 if self.quickUpdate:
@@ -626,32 +627,36 @@ class UpdateManager(object):
             MessageDialog(self.btnRefresh.get_label(), msg)
             self.log.write("%s is locking the apt cache" % prog, "UM.refresh", "warning")
         elif self.umglobal.hasInternet:
-            # Update the apt cache
-            self.btnPreferences.set_sensitive(True)
-            self.btnOutput.set_sensitive(True)
-            self.btnRefresh.set_sensitive(False)
-            self.btnInstall.set_sensitive(False)
-            self.btnMaintenance.set_sensitive(False)
-            self.btnPackages.set_sensitive(True)
-
-            self.showOutput()
+            if not self.quickUpdate:
+                # Update the apt cache
+                self.btnPreferences.set_sensitive(True)
+                self.btnOutput.set_sensitive(True)
+                self.btnRefresh.set_sensitive(False)
+                self.btnInstall.set_sensitive(False)
+                self.btnMaintenance.set_sensitive(False)
+                self.btnPackages.set_sensitive(True)
+                self.showOutput()
             cmd = "dpkg --configure -a; %s -f install; apt-get update" % self.umglobal.settings['apt-get-string']
             nid = 'umrefresh'
             self.prepForCommand(nid)
-            self.terminal.executeCommand(cmd, nid)
+            if self.quickUpdate:
+                self.ec.run(cmd)
+            else:
+                self.terminal.executeCommand(cmd, nid)
             self.apt.initAptShowVersions()
             self.log.write("Execute command: %s (%s)" % (cmd, nid), "UM.refresh", "debug")
         else:
-            # No internet connection
-            self.btnInstall.set_sensitive(True)
-            self.btnRefresh.set_sensitive(True)
-            self.btnPackages.set_sensitive(True)
-            self.btnMaintenance.set_sensitive(True)
-            self.btnInfo.set_sensitive(True)
-            self.btnOutput.set_sensitive(True)
-            self.btnPreferences.set_sensitive(True)
-            self.loadInfo()
-            self.showInfo()
+            if not self.quickUpdate:
+                # No internet connection
+                self.btnInstall.set_sensitive(True)
+                self.btnRefresh.set_sensitive(True)
+                self.btnPackages.set_sensitive(True)
+                self.btnMaintenance.set_sensitive(True)
+                self.btnInfo.set_sensitive(True)
+                self.btnOutput.set_sensitive(True)
+                self.btnPreferences.set_sensitive(True)
+                self.loadInfo()
+                self.showInfo()
 
     def postUpdate(self):
         # Check for changed version information

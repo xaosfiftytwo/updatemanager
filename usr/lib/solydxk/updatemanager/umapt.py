@@ -239,3 +239,8 @@ class UmApt(object):
         if not safe:
             cmd = "apt-get --yes --force-yes clean"
         self.ec.run(cmd, realTime=False)
+
+    def getPackageDependencies(self, package):
+        cmd = "env LANG=C apt-cache depends %s | grep Depends | grep -v '<' | sed 's/.*ends:\ //' | tr '\n' ' '" % package
+        lst = self.ec.run(cmd, realTime=False)[0].strip().split(' ')
+        return lst

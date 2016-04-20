@@ -219,10 +219,16 @@ class UpdateManagerPref(object):
                 url = model.get_value(itr, 3)
                 # Get currently selected data
                 for mirror in self.mirrors:
-                    if mirror[0] and mirror[2] == repo and mirror[3] != url:
-                        # Currently selected mirror
-                        replaceRepos.append([mirror[3], url])
+                    if mirror[0] and mirror[2] == repo:
+                        if mirror[3] != url:
+                            # Currently selected mirror
+                            replaceRepos.append([mirror[3], url])
+                        else:
+                            not_changed = url
                         break
+                if url not in replaceRepos and url not in not_changed:
+                    # Append the repositoriy to the sources file
+                    replaceRepos.append(['', url])
             itr = model.iter_next(itr)
 
         if not replaceRepos:
@@ -258,6 +264,9 @@ class UpdateManagerPref(object):
             remove(self.umglobal.umfiles["umrefresh"])
             self.btnSaveMirrors.set_sensitive(True)
             self.btnCheckMirrorsSpeed.set_sensitive(True)
+        else:
+            msg = _("There are no repositories to save.")
+            MessageDialog(self.lblMirrors.get_label(), msg)
 
     def getMirrors(self):
         mirrors = [[_("Current"), _("Country"), _("Repository"), _("URL"), _("Speed")]]
