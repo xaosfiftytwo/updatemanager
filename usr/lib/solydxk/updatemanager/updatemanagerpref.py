@@ -251,17 +251,17 @@ class UpdateManagerPref(object):
         if replaceRepos:
             self.btnSaveMirrors.set_sensitive(False)
             self.btnCheckMirrorsSpeed.set_sensitive(False)
-            cmd = "touch %s" % self.umglobal.umfiles["umrefresh"]
-            system(cmd)
 
             m = Mirror()
-            m.save(replaceRepos, self.excludeMirrors)
-            self.ec.run(cmd="apt-get update", outputTreeView=self.tvMirrors)
-            self.umglobal.getLocalInfo()
-            self.mirrors = self.getMirrors()
-            self.fillTreeViewMirrors()
+            ret = m.save(replaceRepos, self.excludeMirrors)
+            if ret == '':
+                self.ec.run(cmd="apt-get update", outputTreeView=self.tvMirrors)
+                self.umglobal.getLocalInfo()
+                self.mirrors = self.getMirrors()
+                self.fillTreeViewMirrors()
+            else:
+                self.log.write(ret, "UMPref.saveMirrors", "exception")
 
-            remove(self.umglobal.umfiles["umrefresh"])
             self.btnSaveMirrors.set_sensitive(True)
             self.btnCheckMirrorsSpeed.set_sensitive(True)
         else:

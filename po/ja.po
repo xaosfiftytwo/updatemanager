@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-20 12:10+0200\n"
-"PO-Revision-Date: 2016-01-26 02:10+0000\n"
-"Last-Translator: BALLOON a.k.a. Fu-sen.\n"
+"POT-Creation-Date: 2016-04-21 19:50+0200\n"
+"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/solydxk/updatemanager/"
 "language/ja/)\n"
 "Language: ja\n"
@@ -343,7 +343,7 @@ msgstr "実行コマンド"
 msgid "Warning"
 msgstr "警告"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:407
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "パスワードを入力して下さい"

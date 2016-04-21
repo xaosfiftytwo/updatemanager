@@ -142,6 +142,7 @@ class UmGlobal(object):
     def getLocalInfo(self):
         # Get configured repos
         self.repos = []
+        skip_repos = ['backports', 'security', 'updates']
         with open("/etc/apt/sources.list", 'r') as f:
             lines = f.readlines()
         for line in lines:
@@ -150,8 +151,8 @@ class UmGlobal(object):
             if matchObj:
                 line = matchObj.group(0)
                 repo = matchObj.group(1)
-                # Do not add backports or security repositories
-                if not 'backport' in line and not 'security' in line:
+                # Do not add these repositories
+                if not any(x in line for x in skip_repos):
                     self.repos.append(repo)
 
         # Cleanup hist file first

@@ -82,7 +82,7 @@ class Mirror():
                 debian_suite = ''
                 matchObj = re.search("debian\.org\/debian/?\s+(\S*)", ' '.join(srcList))
                 if matchObj:
-                    debian_suite = matchObj.group(1).replace('-backports', '')
+                    debian_suite = matchObj.group(1).replace('-backports', '').replace('-updates', '')
                 if debian_suite == '':
                     distribution = self.umglobal.getDistribution()
                     if 'ee' in distribution:
@@ -129,9 +129,9 @@ class Mirror():
                         for repo in new_repos:
                             f.write("%s\n" % repo)
 
-            return True
+            return ''
 
         except Exception as detail:
             # This is a best-effort attempt, fail graciously
-            print(("Error: %s" % str(detail)))
-            return False
+            print(("Error: %s" % detail))
+            return detail

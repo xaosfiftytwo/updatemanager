@@ -1,3 +1,9 @@
+updatemanager (2.9.6) solydxk; urgency=low
+
+  * Minor improvement on mirror handling
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 21 Apr 2016 18:05:07 +0200
+
 updatemanager (2.9.5) solydxk; urgency=low
 
   * Better catch urlopen timout errors

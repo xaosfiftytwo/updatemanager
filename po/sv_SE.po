@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-20 12:10+0200\n"
-"PO-Revision-Date: 2016-03-18 11:42+0000\n"
-"Last-Translator: Magnus Johansson <johanssongreppet@yahoo.se>\n"
+"POT-Creation-Date: 2016-04-21 19:50+0200\n"
+"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/solydxk/"
 "updatemanager/language/sv_SE/)\n"
 "Language: sv_SE\n"
@@ -344,7 +344,7 @@ msgstr "Utför kommando"
 msgid "Warning"
 msgstr "Varning"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:407
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Ange ditt lösenord"

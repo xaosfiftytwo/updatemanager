@@ -5,14 +5,14 @@
 # Translators:
 # Arjen Balfoort <schoelje@solydxk.com>, 2015
 # Davide Favaro <belzebu87@gmail.com>, 2015
-# Franco Frolloni <frolloni@gmail.com>, 2015
+# Franco Frolloni <frolloni@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-20 12:10+0200\n"
-"PO-Revision-Date: 2016-01-19 10:17+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2016-04-21 19:50+0200\n"
+"PO-Revision-Date: 2016-04-21 09:34+0000\n"
+"Last-Translator: Franco Frolloni <frolloni@gmail.com>\n"
 "Language-Team: Italian (http://www.transifex.com/solydxk/updatemanager/"
 "language/it/)\n"
 "Language: it\n"
@@ -285,7 +285,7 @@ msgstr "Impostazioni generali"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
 msgid "There are no repositories to save."
-msgstr ""
+msgstr "Non ci sono repository da slavare"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
 msgid "Current"
@@ -352,7 +352,7 @@ msgstr "Comando in esecuzione"
 msgid "Warning"
 msgstr "Avviso"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:407
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Per favore, digitare la password per avviare il gestore aggiornamenti"
