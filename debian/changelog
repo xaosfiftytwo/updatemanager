@@ -1,3 +1,9 @@
+updatemanager (2.9.7) solydxk; urgency=low
+
+  * Changed SolydXK mirror speed test
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Tue, 26 Apr 2016 08:59:08 +0200
+
 updatemanager (2.9.6) solydxk; urgency=low
 
   * Minor improvement on mirror handling

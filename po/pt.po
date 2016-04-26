@@ -4,14 +4,14 @@
 #
 # Translators:
 # Arjen Balfoort <schoelje@solydxk.com>, 2015
-# Luis Filipe Teixeira <lufilte@gmail.com>, 2015
+# Luis Filipe Teixeira <lufilte@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-21 19:50+0200\n"
-"PO-Revision-Date: 2016-04-21 09:08+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2016-04-26 09:23+0200\n"
+"PO-Revision-Date: 2016-04-22 17:29+0000\n"
+"Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/solydxk/updatemanager/"
 "language/pt/)\n"
 "Language: pt\n"
@@ -282,7 +282,7 @@ msgstr "Opções globais"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
 msgid "There are no repositories to save."
-msgstr ""
+msgstr "Não há nenhum repositórios para salvar."
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
 msgid "Current"

@@ -301,7 +301,7 @@ class UmGlobal(object):
             settings["mirrors-list"] = self.cfg.getValue(section, 'mirrors-list')
             settings["dl-test"] = self.cfg.getValue(section, 'dl-test')
         except:
-            settings["mirrors-list"] = 'http://repository.solydxk.com/mirrors.list'
+            settings["mirrors-list"] = 'http://repository.solydxk.com/umfiles/mirrors.list'
             settings["dl-test"] = 'README.mirrors.html'
             self.saveSettings(section, 'mirrors-list', settings["mirrors-list"])
             self.saveSettings(section, 'dl-test', settings["dl-test"])

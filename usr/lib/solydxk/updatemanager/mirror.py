@@ -23,14 +23,22 @@ class MirrorGetSpeed(threading.Thread):
         for mirrorData in self.mirrors:
             try:
                 mirror = mirrorData[3].strip()
+                if mirror == "URL":
+                    continue
                 if mirror.endswith('/'):
                     mirror = mirror[:-1]
 
                 # Only check Debian repository: SolydXK is on the same server
                 httpCode = -1
                 dlSpeed = 0
-                url = "%s/%s" % (mirror, self.umglobal.settings["dl-test"])
-                cmd = "curl --connect-timeout 5 -m 5 -w '%%{http_code}\n%%{speed_download}\n' -o /dev/null -s http://%s" % url
+                dl_file = "umfiles/speedtest"
+                if "debian" in mirrorData[2].lower():
+                    dl_file = self.umglobal.settings["dl-test"]
+                url = os.path.join(mirror, dl_file)
+                http = "http://"
+                if url[0:4] == "http":
+                    http = ""
+                cmd = "curl --connect-timeout 5 -m 5 -w '%%{http_code}\n%%{speed_download}\n' -o /dev/null -s --location %s%s" % (http, url)
 
                 lst = self.ec.run(cmd, False)
                 if lst:
@@ -55,6 +63,8 @@ class MirrorGetSpeed(threading.Thread):
     def getHumanReadableHttpCode(self, httpCode):
         if httpCode == 200:
             return "OK"
+        elif httpCode == 302:
+            return "302: found (redirect)"
         elif httpCode == 403:
             return "403: forbidden"
         elif httpCode == 404:

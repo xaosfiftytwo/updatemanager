@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Arjen Balfoort <schoelje@solydxk.com>, 2015
+# Arjen Balfoort <schoelje@solydxk.com>, 2015-2016
 # root <arjenbalfoort@solydxk.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-21 19:50+0200\n"
-"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"POT-Creation-Date: 2016-04-26 09:23+0200\n"
+"PO-Revision-Date: 2016-04-21 17:58+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/solydxk/updatemanager/"
 "language/nl/)\n"
@@ -283,7 +283,7 @@ msgstr "Globale instellingen"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
 msgid "There are no repositories to save."
-msgstr ""
+msgstr "Er is geen repository om te bewaren."
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
 msgid "Current"
