@@ -217,6 +217,7 @@ class UpdateManagerPref(object):
             if sel:
                 repo = model.get_value(itr, 2)
                 url = model.get_value(itr, 3)
+                not_changed = ''
                 # Get currently selected data
                 for mirror in self.mirrors:
                     if mirror[0] and mirror[2] == repo:
@@ -278,6 +279,7 @@ class UpdateManagerPref(object):
         return mirrors
 
     def isUrlInSources(self, url):
+        url = "://%s" % url
         blnRet = False
 
         for repo in self.umglobal.repos:

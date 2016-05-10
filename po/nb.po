@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-26 09:23+0200\n"
+"POT-Creation-Date: 2016-05-10 14:14+0200\n"
 "PO-Revision-Date: 2016-04-21 09:08+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/solydxk/"
@@ -280,31 +280,31 @@ msgstr "Tilgjengelige pakker"
 msgid "Global settings"
 msgstr "Globale innstillinger"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "There are no repositories to save."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Current"
 msgstr "Gjeldende"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Country"
 msgstr "Land"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Repository"
 msgstr "Pakkebrønn"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Speed"
 msgstr "Hastighet"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:381
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr "De nye innstillingene vil tre i kraft når programmet restartes."
 

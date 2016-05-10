@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-26 09:23+0200\n"
+"POT-Creation-Date: 2016-05-10 14:14+0200\n"
 "PO-Revision-Date: 2016-04-22 17:29+0000\n"
 "Last-Translator: Luis Filipe Teixeira <lufilte@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/solydxk/updatemanager/"
@@ -280,31 +280,31 @@ msgstr "Pacotes disponíveis"
 msgid "Global settings"
 msgstr "Opções globais"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:268
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "There are no repositories to save."
 msgstr "Não há nenhum repositórios para salvar."
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Current"
 msgstr "Actual"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Country"
 msgstr "País"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Repository"
 msgstr "Repositório"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "URL"
 msgstr "URL"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:272
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Speed"
 msgstr "Velocidade"
 
-#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:381
+#: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:383
 msgid "The new settings will take effect after UM restart."
 msgstr "As novas definições terão efeito depois do reinicio do GA."
 
