@@ -1,3 +1,9 @@
+updatemanager (2.9.9) solydxk; urgency=low
+
+  * Removed unsafe hyperlinks (opening browser as root)
+
+ -- Arjen Balfoort <arjenbalfoort@solydxk.com>  Thu, 02 Jun 2016 08:59:58 +0200
+
 updatemanager (2.9.8) solydxk; urgency=low
 
   * Bug: not saving mirror change

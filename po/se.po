@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 14:14+0200\n"
+"POT-Creation-Date: 2016-06-02 09:16+0200\n"
 "PO-Revision-Date: 2015-10-22 05:34+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Northern Sami (http://www.transifex.com/solydxk/updatemanager/"
@@ -24,7 +24,7 @@ msgid "New update: %s"
 msgstr ""
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "There are updates available"
 msgstr "Följande uppdateringar finns tillgängliga:"
 
@@ -332,33 +332,33 @@ msgstr "Installerar uppdateringar.."
 msgid "Sources changed: start UM to refresh"
 msgstr "merp"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:29
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Uppdateringsverktyget"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
 msgid "Your system is up to date"
 msgstr "Systemet är uppdaterat"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
 #, fuzzy
 msgid "No internet connection"
 msgstr "Ingen internetanslutning tillgänglig"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
 msgid "Error"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Executing command"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Warning"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Ange ditt lösenord."
@@ -426,8 +426,7 @@ msgstr "Ingen internetanslutning tillgänglig"
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
-"If this problem persists, please visit our forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"If this problem persists, please visit our forum: https://forums.solydxk.com"
 msgstr ""
 
 #: en/updates.html+html.body.h1:8
@@ -439,8 +438,7 @@ msgstr "Följande uppdateringar finns tillgängliga:"
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
-"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"our forum: https://forums.solydxk.com"
 msgstr ""
 
 #: en/uptodate.html+html.body.h1:8
@@ -450,8 +448,7 @@ msgstr ""
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 msgstr ""
 
 #~ msgid "Refreshing..."

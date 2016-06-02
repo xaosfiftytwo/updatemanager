@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Arjen Balfoort <schoelje@solydxk.com>, 2016
 # Magnus Johansson <johanssongreppet@yahoo.se>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 14:14+0200\n"
-"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"PO-Revision-Date: 2016-06-02 07:15+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/solydxk/"
 "updatemanager/language/sv_SE/)\n"
@@ -25,7 +26,7 @@ msgid "New update: %s"
 msgstr "Ny uppdatering: %s"
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "There are updates available"
 msgstr "Uppdateringar är tillgängliga"
 
@@ -319,32 +320,32 @@ msgstr "Installerar uppdateringar ..."
 msgid "Sources changed: start UM to refresh"
 msgstr "Källor ändrades: Starta Uppdateringshanteraren för att förnya"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:29
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Uppdateringshanteraren"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
 msgid "Your system is up to date"
 msgstr "Ditt system är uppdaterat"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
 msgid "No internet connection"
 msgstr "Ingen internetanslutning"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
 msgid "Error"
 msgstr "Fel"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Executing command"
 msgstr "Utför kommando"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Warning"
 msgstr "Varning"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Ange ditt lösenord"
@@ -411,11 +412,9 @@ msgstr "Var vänlig och kontrollera din internetanslutning."
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
-"If this problem persists, please visit our forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"If this problem persists, please visit our forum: https://forums.solydxk.com"
 msgstr ""
-"Om detta problem kvarstår, besök vårt forum: <a href=\"http://forums.solydxk."
-"com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"Om detta problem kvarstår, besök vårt forum: https://forums.solydxk.com"
 
 #: en/updates.html+html.body.h1:8
 msgid "Updates available"
@@ -424,12 +423,10 @@ msgstr "Uppdateringar tillgängliga"
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
-"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"our forum: https://forums.solydxk.com"
 msgstr ""
 "Uppdateringar är tillgängliga. Om du erfar problem, var vänlig och besök "
-"vårt forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"vårt forum: https://forums.solydxk.com"
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
@@ -438,9 +435,7 @@ msgstr "Uppdaterat"
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 msgstr ""
 "Ditt system är uppdaterat. Om du erfar problem, var vänlig och besök vårt "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"

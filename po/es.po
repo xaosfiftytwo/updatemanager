@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 14:14+0200\n"
-"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"PO-Revision-Date: 2016-06-02 07:04+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/solydxk/updatemanager/"
 "language/es/)\n"
@@ -26,7 +26,7 @@ msgid "New update: %s"
 msgstr "Nueva actualización: %s"
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "There are updates available"
 msgstr "Existen actualizaciones disponibles"
 
@@ -317,32 +317,32 @@ msgstr "Instalando actualizaciones..."
 msgid "Sources changed: start UM to refresh"
 msgstr "Orígenes cambiados: iniciar el GA para actualizar"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:29
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Gestor de Actualizaciones"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
 msgid "Your system is up to date"
 msgstr "Su sistema está actualizado"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
 msgid "No internet connection"
 msgstr "Sin conexión a Internet"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
 msgid "Error"
 msgstr "Error"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Executing command"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Warning"
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Por favor, introduzca su contraseña"
@@ -411,8 +411,7 @@ msgstr "Sin conexión a Internet"
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
-"If this problem persists, please visit our forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"If this problem persists, please visit our forum: https://forums.solydxk.com"
 msgstr ""
 
 #: en/updates.html+html.body.h1:8
@@ -424,8 +423,7 @@ msgstr "Existen actualizaciones disponibles"
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
-"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"our forum: https://forums.solydxk.com"
 msgstr ""
 
 #: en/uptodate.html+html.body.h1:8
@@ -435,6 +433,5 @@ msgstr ""
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 msgstr ""

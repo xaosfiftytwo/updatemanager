@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 14:14+0200\n"
-"PO-Revision-Date: 2016-04-21 17:58+0000\n"
+"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"PO-Revision-Date: 2016-06-02 07:07+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/solydxk/updatemanager/"
 "language/nl/)\n"
@@ -26,7 +26,7 @@ msgid "New update: %s"
 msgstr "Nieuwe update: %s"
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "There are updates available"
 msgstr "Updates beschikbaar"
 
@@ -321,32 +321,32 @@ msgstr "Updates installeren..."
 msgid "Sources changed: start UM to refresh"
 msgstr "Sources gewijzigd: start UM om te verversen"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:29
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Update Manager"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
 msgid "Your system is up to date"
 msgstr "Uw systeem is up to date"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
 msgid "No internet connection"
 msgstr "Geen internetverbinding"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
 msgid "Error"
 msgstr "Fout"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Executing command"
 msgstr "Commando uitvoeren"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Voer uw wachtwoord in"
@@ -413,11 +413,9 @@ msgstr "Controleer a.u.b. uw internet connectie."
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
-"If this problem persists, please visit our forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"If this problem persists, please visit our forum: https://forums.solydxk.com"
 msgstr ""
-"Als het probleem aanhoudt, bezoek dan onze forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"Als het probleem aanhoudt, bezoek dan onze forum: https://forums.solydxk.com"
 
 #: en/updates.html+html.body.h1:8
 msgid "Updates available"
@@ -426,12 +424,10 @@ msgstr "Updates beschikbaar"
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
-"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"our forum: https://forums.solydxk.com"
 msgstr ""
 "Er zijn updates beschikbaar. Mocht u problemen ondervinden, bezoek dan ons "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
@@ -440,9 +436,7 @@ msgstr "Up to date"
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 msgstr ""
 "Uw systeem is up to date. Mocht u problemen ondervinden, bezoek dan ons "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"

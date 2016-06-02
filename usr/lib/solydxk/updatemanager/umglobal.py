@@ -5,7 +5,6 @@ from config import Config
 import os
 from os.path import join, abspath, dirname, exists, basename
 from urllib.request import urlopen
-from urllib.error import URLError
 from datetime import date
 from execcmd import ExecCmd
 
@@ -80,11 +79,8 @@ class UmGlobal(object):
         cont = None
         try:
             cont = urlopen(url, timeout=10)
-        except URLError as e:
-            if hasattr(e, 'reason'):
-                print(("ERROR: unable to reach a server: %s" % e.reason))
-            elif hasattr(e, 'code'):
-                print(("ERROR: server could not fulfill the request: %s" % e.code))
+        except Exception as e:
+            print(("ERROR: unable to reach %s: %s" % (url, e)))
         else:
             self.hasInternet = True
             for line in cont.readlines():

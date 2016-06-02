@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Arjen Balfoort <schoelje@solydxk.com>, 2015
+# Arjen Balfoort <schoelje@solydxk.com>, 2015-2016
 # ilu lu, 2015
+# pitfd <pitfd@openmailbox.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 14:14+0200\n"
-"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"PO-Revision-Date: 2016-06-02 07:08+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: German (http://www.transifex.com/solydxk/updatemanager/"
 "language/de/)\n"
@@ -26,7 +27,7 @@ msgid "New update: %s"
 msgstr "Neue Aktualisierung: %s"
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "There are updates available"
 msgstr "Es sind Aktualisierungen verfügbar"
 
@@ -277,7 +278,7 @@ msgstr "Allgemeine Einstellungen"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:269
 msgid "There are no repositories to save."
-msgstr ""
+msgstr "Es sind keine Repositorien zur Sicherung vorhanden. "
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagerpref.py:273
 msgid "Current"
@@ -315,32 +316,32 @@ msgstr "Installiere Aktualisierungen ..."
 msgid "Sources changed: start UM to refresh"
 msgstr "Die Quellen haben sich geändert: UM starten um neu zu laden"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:29
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Update Manager"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
 msgid "Your system is up to date"
 msgstr "Das System ist auf dem aktuellen Stand"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
 msgid "No internet connection"
 msgstr "Keine Internetverbindung"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
 msgid "Error"
 msgstr "Fehler"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Executing command"
 msgstr "Befehl wird ausgeführt"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Warning"
 msgstr "Warnung"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Bitte das Passwort eingeben"
@@ -407,11 +408,10 @@ msgstr "Bitte Internetverbindung überprüfen."
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
-"If this problem persists, please visit our forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"If this problem persists, please visit our forum: https://forums.solydxk.com"
 msgstr ""
-"Besteht das Problem weiterhin, besucht bitte unser Forum: <a href=\"http://"
-"forums.solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"Besteht das Problem weiterhin, besucht bitte unser Forum: https://forums."
+"solydxk.com"
 
 #: en/updates.html+html.body.h1:8
 msgid "Updates available"
@@ -420,12 +420,10 @@ msgstr "Aktualisierungen verfügbar."
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
-"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"our forum: https://forums.solydxk.com"
 msgstr ""
 "Es sind Aktualisierungen verfügbar. Hilfe bei Problemen gibt es in unserem "
-"Forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"Forum: https://forums.solydxk.com"
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
@@ -434,9 +432,7 @@ msgstr "Aktualisiert"
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 msgstr ""
-"Ihr System ist aktuell. Hilfe bei Problemen gibt es in unserem Forum: <a "
-"href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums.solydxk."
-"com</a>."
+"Ihr System ist aktuell. Hilfe bei Problemen gibt es in unserem Forum: "
+"https://forums.solydxk.com"

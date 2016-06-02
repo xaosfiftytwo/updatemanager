@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Arjen Balfoort <schoelje@solydxk.com>, 2015
+# Arjen Balfoort <schoelje@solydxk.com>, 2015-2016
 # Eduard Selma <selma@tinet.cat>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-10 14:14+0200\n"
-"PO-Revision-Date: 2016-04-21 09:08+0000\n"
+"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"PO-Revision-Date: 2016-06-02 07:09+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/solydxk/updatemanager/"
 "language/ca/)\n"
@@ -26,7 +26,7 @@ msgid "New update: %s"
 msgstr "Nova actualització: %s "
 
 #: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
 msgid "There are updates available"
 msgstr "Hi ha actualitzacions disponibles "
 
@@ -318,32 +318,32 @@ msgstr "Instal·lant actualitzacions..."
 msgid "Sources changed: start UM to refresh"
 msgstr "Fonts canviades: torneu a engegar GdA per refrescar "
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:29
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
 #: ../usr/share/applications/updatemanager.desktop.in.h:1
 msgid "Update Manager"
 msgstr "Gestor d'actualitzacions"
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
 msgid "Your system is up to date"
 msgstr "El vostre sistema està actualitzat "
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
 msgid "No internet connection"
 msgstr "Sense connexió a internet "
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
 msgid "Error"
 msgstr "Error "
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
 msgid "Executing command"
 msgstr "Executant l'ordre "
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:51
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
 msgid "Warning"
 msgstr "Atenció "
 
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:408
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
 #: ../usr/lib/solydxk/updatemanager/main.py:84
 msgid "Please enter your password"
 msgstr "Entreu la vostra contrasenya"
@@ -411,12 +411,10 @@ msgstr "Si us plau, comproveu la connexió a internet. "
 
 #: en/notfound.html+html.body.div.div.p:13
 msgid ""
-"If this problem persists, please visit our forum: <a href=\"http://forums."
-"solydxk.com\" target=\"_blank\">http://forums.solydxk.com</a>."
+"If this problem persists, please visit our forum: https://forums.solydxk.com"
 msgstr ""
-"Si el problema persisteix, si us plau visiteu el nostre fòrum: <a href="
-"\"http://forums.solydxk.com\" target=\"_blank\">http://forums.solydxk.com</"
-"a>."
+"Si el problema persisteix, si us plau visiteu el nostre fòrum: https://"
+"forums.solydxk.com"
 
 #: en/updates.html+html.body.h1:8
 msgid "Updates available"
@@ -425,12 +423,10 @@ msgstr "Hi ha actualitzacions "
 #: en/updates.html+html.body.div.div.p:11
 msgid ""
 "There are updates available. If you experience any problems, please visit "
-"our forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://"
-"forums.solydxk.com</a>."
+"our forum: https://forums.solydxk.com"
 msgstr ""
 "Hi ha actualitzacions. Si teniu algun problema, si us plau visiteu el nostre "
-"fòrum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"fòrum: https://forums.solydxk.com"
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"
@@ -439,9 +435,7 @@ msgstr "Actualitzat "
 #: en/uptodate.html+html.body.div.div.p:11
 msgid ""
 "Your system is up to date. If you experience any problems, please visit our "
-"forum: <a href=\"http://forums.solydxk.com\" target=\"_blank\">http://forums."
-"solydxk.com</a>."
+"forum: https://forums.solydxk.com"
 msgstr ""
 "El vostre sistema està actualitzat. Si teniu algun problema, si us plau "
-"visiteu el nostre fòrum: <a href=\"http://forums.solydxk.com\" target="
-"\"_blank\">http://forums.solydxk.com</a>."
+"visiteu el nostre fòrum: https://forums.solydxk.com"
