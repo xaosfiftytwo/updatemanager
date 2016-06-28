@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-02 09:16+0200\n"
-"PO-Revision-Date: 2016-06-02 07:10+0000\n"
-"Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
+"POT-Creation-Date: 2016-06-28 09:48+0200\n"
+"PO-Revision-Date: 2016-06-08 19:58+0000\n"
+"Last-Translator: Franco Frolloni <frolloni@gmail.com>\n"
 "Language-Team: Italian (http://www.transifex.com/solydxk/updatemanager/"
 "language/it/)\n"
 "Language: it\n"
@@ -21,19 +21,75 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:53
-#, python-format
-msgid "New update: %s"
-msgstr "Nuovi aggiornamenti: %s"
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:28
+msgid "Refreshing update list..."
+msgstr "Ricostruzione lista aggiornamenti..."
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:33
+msgid "Installing updates..."
+msgstr "Installazione aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:47
+msgid "Sources changed: start UM to refresh"
+msgstr ""
+"Repository modificati: riavvia Gestore aggiornamenti per ricaricare le "
+"informazioni"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:72
+msgid "Unexpected error"
+msgstr "Errore inatteso"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:73
+msgid ""
+"Updatemanager has failed with the following unexpected error. Please submit "
+"a bug report!"
+msgstr ""
+"Updatemanager riporta il seguente messaggio di errore inatteso. Si consiglia "
+"di inviare una segnalazione del bug!"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:84
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:410
+msgid "Please enter your password"
+msgstr "Per favore, digitare la password per avviare il gestore aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:121
+msgid ""
+"Update Manager cannot be started in a live environment\n"
+"You can use the --force argument to start UM in a live environment"
+msgstr ""
+"Update Manager non può essere eseguito in un live environment\n"
+"\n"
+"Per forzare l'avvio, usare l'argomento --force"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
+#: ../usr/share/applications/updatemanager.desktop.in.h:1
+msgid "Update Manager"
+msgstr "Gestore aggiornamenti"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
+msgid "Your system is up to date"
+msgstr "Il sistema è aggiornato"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+msgid "No internet connection"
+msgstr "Nessuna connessione internet"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+msgid "Error"
+msgstr "Errore"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+msgid "Executing command"
+msgstr "Comando in esecuzione"
+
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
 msgid "There are updates available"
 msgstr "Aggiornamenti disponibili"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:71
-msgid "Unable to retrieve sources information"
-msgstr "Impossibile scaricare informazioni per sources"
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+msgid "Warning"
+msgstr "Avviso"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:79
 msgid "Apt error"
@@ -313,70 +369,14 @@ msgstr ""
 "Le impostazioni applicate avranno effetto dopo il riavvio del Gestore "
 "aggiornamenti"
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:28
-msgid "Refreshing update list..."
-msgstr "Ricostruzione lista aggiornamenti..."
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:53
+#, python-format
+msgid "New update: %s"
+msgstr "Nuovi aggiornamenti: %s"
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:33
-msgid "Installing updates..."
-msgstr "Installazione aggiornamenti"
-
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:47
-msgid "Sources changed: start UM to refresh"
-msgstr ""
-"Repository modificati: riavvia Gestore aggiornamenti per ricaricare le "
-"informazioni"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
-#: ../usr/share/applications/updatemanager.desktop.in.h:1
-msgid "Update Manager"
-msgstr "Gestore aggiornamenti"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
-msgid "Your system is up to date"
-msgstr "Il sistema è aggiornato"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
-msgid "No internet connection"
-msgstr "Nessuna connessione internet"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
-msgid "Error"
-msgstr "Errore"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
-msgid "Executing command"
-msgstr "Comando in esecuzione"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
-msgid "Warning"
-msgstr "Avviso"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
-#: ../usr/lib/solydxk/updatemanager/main.py:84
-msgid "Please enter your password"
-msgstr "Per favore, digitare la password per avviare il gestore aggiornamenti"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:72
-msgid "Unexpected error"
-msgstr "Errore inatteso"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:73
-msgid ""
-"Updatemanager has failed with the following unexpected error. Please submit "
-"a bug report!"
-msgstr ""
-"Updatemanager riporta il seguente messaggio di errore inatteso. Si consiglia "
-"di inviare una segnalazione del bug!"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:121
-msgid ""
-"Update Manager cannot be started in a live environment\n"
-"You can use the --force argument to start UM in a live environment"
-msgstr ""
-"Update Manager non può essere eseguito in un live environment\n"
-"\n"
-"Per forzare l'avvio, usare l'argomento --force"
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:71
+msgid "Unable to retrieve sources information"
+msgstr "Impossibile scaricare informazioni per sources"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:75
 msgid "Quit"
@@ -394,10 +394,6 @@ msgstr "Legenda"
 msgid "Cannot quit: upgrade in progress"
 msgstr "Impossibile uscire: aggiornamento in corso"
 
-#: ../usr/share/applications/updatemanager.desktop.in.h:2
-msgid "Show and install available updates"
-msgstr "Visualizza e installa aggiornamenti disponibili"
-
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:1
 msgid "updatemanagertray"
 msgstr "Gestore aggiornamenti"
@@ -405,6 +401,10 @@ msgstr "Gestore aggiornamenti"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Gestore aggiornamenti"
+
+#: ../usr/share/applications/updatemanager.desktop.in.h:2
+msgid "Show and install available updates"
+msgstr "Visualizza e installa aggiornamenti disponibili"
 
 #: en/notfound.html+html.body.h1:8
 msgid "Update information not found"
@@ -436,7 +436,7 @@ msgid ""
 "our forum: https://forums.solydxk.com"
 msgstr ""
 "Ci sono aggiornamenti disponibili. In caso di problemi visita il nostro "
-"orum: https://forums.solydxk.com"
+"forum: https://forums.solydxk.com"
 
 #: en/uptodate.html+html.body.h1:8
 msgid "Up to date"

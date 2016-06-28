@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"POT-Creation-Date: 2016-06-28 09:48+0200\n"
 "PO-Revision-Date: 2016-06-02 07:15+0000\n"
 "Last-Translator: Arjen Balfoort <schoelje@solydxk.com>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/solydxk/"
@@ -20,19 +20,72 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:53
-#, python-format
-msgid "New update: %s"
-msgstr "Ny uppdatering: %s"
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:28
+msgid "Refreshing update list..."
+msgstr "Förnyar uppdateringslista ..."
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:33
+msgid "Installing updates..."
+msgstr "Installerar uppdateringar ..."
+
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:47
+msgid "Sources changed: start UM to refresh"
+msgstr "Källor ändrades: Starta Uppdateringshanteraren för att förnya"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:72
+msgid "Unexpected error"
+msgstr "Oväntat fel"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:73
+msgid ""
+"Updatemanager has failed with the following unexpected error. Please submit "
+"a bug report!"
+msgstr ""
+"Uppdateringshanteraren har misslyckats och givit följande oväntade fel. Var "
+"vänlig och skicka en en felanmälan!"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:84
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:410
+msgid "Please enter your password"
+msgstr "Ange ditt lösenord"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:121
+msgid ""
+"Update Manager cannot be started in a live environment\n"
+"You can use the --force argument to start UM in a live environment"
+msgstr ""
+"Uppdateringshanteraren kan inte startas i en oinstallerad miljö.\n"
+"Du kan använda flaggan \"--force\" för att starta den i det fallet."
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
+#: ../usr/share/applications/updatemanager.desktop.in.h:1
+msgid "Update Manager"
+msgstr "Uppdateringshanteraren"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
+msgid "Your system is up to date"
+msgstr "Ditt system är uppdaterat"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+msgid "No internet connection"
+msgstr "Ingen internetanslutning"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+msgid "Error"
+msgstr "Fel"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+msgid "Executing command"
+msgstr "Utför kommando"
+
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
 msgid "There are updates available"
 msgstr "Uppdateringar är tillgängliga"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:71
-msgid "Unable to retrieve sources information"
-msgstr "Kunde inte hämta källinformation"
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+msgid "Warning"
+msgstr "Varning"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:79
 msgid "Apt error"
@@ -308,67 +361,14 @@ msgstr "Hastighet"
 msgid "The new settings will take effect after UM restart."
 msgstr "De nya inställningarna kommer att träda i kraft efter programomstart."
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:28
-msgid "Refreshing update list..."
-msgstr "Förnyar uppdateringslista ..."
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:53
+#, python-format
+msgid "New update: %s"
+msgstr "Ny uppdatering: %s"
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:33
-msgid "Installing updates..."
-msgstr "Installerar uppdateringar ..."
-
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:47
-msgid "Sources changed: start UM to refresh"
-msgstr "Källor ändrades: Starta Uppdateringshanteraren för att förnya"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
-#: ../usr/share/applications/updatemanager.desktop.in.h:1
-msgid "Update Manager"
-msgstr "Uppdateringshanteraren"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
-msgid "Your system is up to date"
-msgstr "Ditt system är uppdaterat"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
-msgid "No internet connection"
-msgstr "Ingen internetanslutning"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
-msgid "Error"
-msgstr "Fel"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
-msgid "Executing command"
-msgstr "Utför kommando"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
-msgid "Warning"
-msgstr "Varning"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
-#: ../usr/lib/solydxk/updatemanager/main.py:84
-msgid "Please enter your password"
-msgstr "Ange ditt lösenord"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:72
-msgid "Unexpected error"
-msgstr "Oväntat fel"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:73
-msgid ""
-"Updatemanager has failed with the following unexpected error. Please submit "
-"a bug report!"
-msgstr ""
-"Uppdateringshanteraren har misslyckats och givit följande oväntade fel. Var "
-"vänlig och skicka en en felanmälan!"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:121
-msgid ""
-"Update Manager cannot be started in a live environment\n"
-"You can use the --force argument to start UM in a live environment"
-msgstr ""
-"Uppdateringshanteraren kan inte startas i en oinstallerad miljö.\n"
-"Du kan använda flaggan \"--force\" för att starta den i det fallet."
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:71
+msgid "Unable to retrieve sources information"
+msgstr "Kunde inte hämta källinformation"
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:75
 msgid "Quit"
@@ -386,10 +386,6 @@ msgstr "Symbol"
 msgid "Cannot quit: upgrade in progress"
 msgstr "Kan inte avsluta: uppgradering pågår"
 
-#: ../usr/share/applications/updatemanager.desktop.in.h:2
-msgid "Show and install available updates"
-msgstr "Visa och installera tillgängliga uppdateringar"
-
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:1
 msgid "updatemanagertray"
 msgstr "uppdateringshanterarbricka"
@@ -397,6 +393,10 @@ msgstr "uppdateringshanterarbricka"
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:2
 msgid "Update Manager Tray"
 msgstr "Uppdateringshanterarens bricka"
+
+#: ../usr/share/applications/updatemanager.desktop.in.h:2
+msgid "Show and install available updates"
+msgstr "Visa och installera tillgängliga uppdateringar"
 
 #: en/notfound.html+html.body.h1:8
 msgid "Update information not found"

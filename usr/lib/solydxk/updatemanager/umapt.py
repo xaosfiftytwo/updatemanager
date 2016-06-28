@@ -21,6 +21,9 @@ class UmApt(object):
         self.notavailablePackages = []
         self.orphanedPackages = []
 
+        # --force-yes is deprecated in stretch
+        self.force = self.umglobal.get_apt_force()
+
         # Build installed packages info list
         #self.createPackagesInfoList()
 
@@ -73,7 +76,8 @@ class UmApt(object):
         # Use env LANG=C to ensure the output of dist-upgrade is always en_US
         cmd = "env LANG=C apt-get dist-upgrade --assume-no"
         if "apt-get" in customAptGetCommand:
-            customAptGetCommand = customAptGetCommand.replace("--force-yes", "")
+            for cmd in self.force.split(" "):
+                customAptGetCommand = customAptGetCommand.replace(cmd, "")
             customAptGetCommand = customAptGetCommand.replace("--assume-yes", "")
             customAptGetCommand = customAptGetCommand.replace("--yes", "")
             customAptGetCommand = customAptGetCommand.replace("-y", "")
@@ -235,9 +239,10 @@ class UmApt(object):
         return None
 
     def cleanCache(self, safe=True):
-        cmd = "apt-get --yes --force-yes autoclean"
+
+        cmd = "apt-get --yes %s autoclean" % self.force
         if not safe:
-            cmd = "apt-get --yes --force-yes clean"
+            cmd = "apt-get --yes %s clean" % self.force
         self.ec.run(cmd, realTime=False)
 
     def getPackageDependencies(self, package):

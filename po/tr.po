@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: updatemanager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-02 09:16+0200\n"
+"POT-Creation-Date: 2016-06-28 09:48+0200\n"
 "PO-Revision-Date: 2013-12-26 22:06+0200\n"
 "Last-Translator: Taylan Tatlı <taylantatli90@gmail.com>\n"
 "Language-Team: SolydXK <admin@solydxk.com>\n"
@@ -18,19 +18,72 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:53
-#, fuzzy, python-format
-msgid "New update: %s"
-msgstr "Hiçbir güncelleştirme seçilmedi"
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:28
+#, fuzzy
+msgid "Refreshing update list..."
+msgstr "Tazele"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:33
+#, fuzzy
+msgid "Installing updates..."
+msgstr "Güncelleştirmeler yükleniyor"
+
+#: ../usr/lib/solydxk/updatemanager/umnotifier.py:47
+msgid "Sources changed: start UM to refresh"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/main.py:72
+msgid "Unexpected error"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/main.py:73
+msgid ""
+"Updatemanager has failed with the following unexpected error. Please submit "
+"a bug report!"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/main.py:84
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:410
+#, fuzzy
+msgid "Please enter your password"
+msgstr "Güncelleştirme yöneticisini başlatmak için lütfen parolanızı girin"
+
+#: ../usr/lib/solydxk/updatemanager/main.py:121
+msgid ""
+"Update Manager cannot be started in a live environment\n"
+"You can use the --force argument to start UM in a live environment"
+msgstr ""
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
+#: ../usr/share/applications/updatemanager.desktop.in.h:1
+msgid "Update Manager"
+msgstr "Güncelleştirme Yöneticisi"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
+msgid "Your system is up to date"
+msgstr "Sisteminiz güncel"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
+#, fuzzy
+msgid "No internet connection"
+msgstr "İlk bağlantı test ediliyor"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
+msgid "Error"
+msgstr "Hata"
+
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
+msgid "Executing command"
+msgstr ""
+
 #: ../usr/lib/solydxk/updatemanager/umglobal.py:49
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:57
 #, fuzzy
 msgid "There are updates available"
 msgstr "Güncelleştirmeler mevcut"
 
-#: ../usr/lib/solydxk/updatemanager/umrefresh.py:71
-msgid "Unable to retrieve sources information"
+#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
+msgid "Warning"
 msgstr ""
 
 #: ../usr/lib/solydxk/updatemanager/updatemanager.py:79
@@ -312,66 +365,13 @@ msgstr "Hız"
 msgid "The new settings will take effect after UM restart."
 msgstr ""
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:28
-#, fuzzy
-msgid "Refreshing update list..."
-msgstr "Tazele"
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:53
+#, fuzzy, python-format
+msgid "New update: %s"
+msgstr "Hiçbir güncelleştirme seçilmedi"
 
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:33
-#, fuzzy
-msgid "Installing updates..."
-msgstr "Güncelleştirmeler yükleniyor"
-
-#: ../usr/lib/solydxk/updatemanager/umnotifier.py:47
-msgid "Sources changed: start UM to refresh"
-msgstr ""
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:28
-#: ../usr/share/applications/updatemanager.desktop.in.h:1
-msgid "Update Manager"
-msgstr "Güncelleştirme Yöneticisi"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:45
-msgid "Your system is up to date"
-msgstr "Sisteminiz güncel"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:46
-#, fuzzy
-msgid "No internet connection"
-msgstr "İlk bağlantı test ediliyor"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:47
-msgid "Error"
-msgstr "Hata"
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:48
-msgid "Executing command"
-msgstr ""
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:50
-msgid "Warning"
-msgstr ""
-
-#: ../usr/lib/solydxk/updatemanager/umglobal.py:404
-#: ../usr/lib/solydxk/updatemanager/main.py:84
-#, fuzzy
-msgid "Please enter your password"
-msgstr "Güncelleştirme yöneticisini başlatmak için lütfen parolanızı girin"
-
-#: ../usr/lib/solydxk/updatemanager/main.py:72
-msgid "Unexpected error"
-msgstr ""
-
-#: ../usr/lib/solydxk/updatemanager/main.py:73
-msgid ""
-"Updatemanager has failed with the following unexpected error. Please submit "
-"a bug report!"
-msgstr ""
-
-#: ../usr/lib/solydxk/updatemanager/main.py:121
-msgid ""
-"Update Manager cannot be started in a live environment\n"
-"You can use the --force argument to start UM in a live environment"
+#: ../usr/lib/solydxk/updatemanager/umrefresh.py:71
+msgid "Unable to retrieve sources information"
 msgstr ""
 
 #: ../usr/lib/solydxk/updatemanager/updatemanagertray.py:75
@@ -390,10 +390,6 @@ msgstr ""
 msgid "Cannot quit: upgrade in progress"
 msgstr ""
 
-#: ../usr/share/applications/updatemanager.desktop.in.h:2
-msgid "Show and install available updates"
-msgstr "Mevcut güncelleştirmeleri göster ve kur"
-
 #: ../usr/lib/solydxk/updatemanager/files/updatemanagertray.desktop.in.h:1
 #, fuzzy
 msgid "updatemanagertray"
@@ -403,6 +399,10 @@ msgstr "Güncelleştirme Yöneticisi"
 #, fuzzy
 msgid "Update Manager Tray"
 msgstr "Güncelleştirme Yöneticisi"
+
+#: ../usr/share/applications/updatemanager.desktop.in.h:2
+msgid "Show and install available updates"
+msgstr "Mevcut güncelleştirmeleri göster ve kur"
 
 #: en/notfound.html+html.body.h1:8
 msgid "Update information not found"

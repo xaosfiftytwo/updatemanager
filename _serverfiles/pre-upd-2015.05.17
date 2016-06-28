@@ -3,6 +3,13 @@
 # Debug mode (set to true or false)
 DEBUG=false
 
+# --force-yes is deprecated in stretch
+FORCE='--force-yes'
+VER=$(head -c 1 /etc/debian_version | sed 's/[a-zA-Z]/0/' 2>/dev/null || echo 0)
+if [ "$VER" -eq 0 ] || [ "$VER" -gt 8 ]; then
+  FORCE='--allow-downgrades --allow-remove-essential --allow-change-held-packages'
+fi
+
 # Get the current release: solydx32, solydx64, solydk32, solydk64, solydkbo64, solydkbe64, solydxbe64
 RELEASE=$(cat /etc/solydxk/info | grep EDITION= | cut -d'=' -f2)
 
@@ -67,7 +74,7 @@ function handle_pck {
 		
 		echo -e "$(date +%Y/%m/%d\ %H:%M:%S)\tPre-update script\tDEBUG\tapt-get $ACTION $PCK"
 		if ! $DEBUG; then
-		    apt-get $ACTION --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --force-yes $PCK
+		    apt-get $ACTION --assume-yes -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold $FORCE $PCK
 		fi
 	    fi
 	fi

@@ -355,6 +355,12 @@ class UmGlobal(object):
             self.saveSettings(section, 'hide-tabs', ",".join(settings["hide-tabs"]))
             self.saveSettings(section, 'apt-get-string', settings["apt-get-string"])
 
+        # Check if on Debian 8
+        force = self.get_apt_force()
+        if force not in settings["apt-get-string"]:
+            settings["apt-get-string"] = settings["apt-get-string"].replace("--force-yes", force)
+            self.saveSettings(section, 'apt-get-string', settings["apt-get-string"])
+
         return settings
 
     def saveSettings(self, section, name, value):
@@ -455,3 +461,12 @@ class UmGlobal(object):
             text = entry.get_text().strip().lower()
             entry.set_text(''.join([i for i in text if i in '0123456789']))
         widget.connect('changed', filter)
+
+    def get_apt_force(self):
+        # --force-yes is deprecated in stretch
+        force = '--force-yes'
+        ver = self.strToNumber(self.ec.run(cmd="head -c 1 /etc/debian_version | sed 's/[a-zA-Z]/0/' 2>/dev/null || echo 0", realTime=False, returnAsList=False))
+        print((ver))
+        if ver == 0 or ver > 8:
+            force = '--allow-downgrades --allow-remove-essential --allow-change-held-packages'
+        return force
